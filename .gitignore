@@ -4,3 +4,9 @@
 # React Router
 /.react-router/
 /build/
+
+# WebStorm
+.idea/
+*.iml
+.idea/workspace.xml
+

@@ -1,88 +1,47 @@
-# Welcome to React Router!
+## 아이디어 기본 사항
+- **생각 중인 제품/스타트업 이름(있다면)**: - *SejongClass: Code Your Life with Math & Physics*
+- **제품 아이디어에 대한 한 문장 설명**: - *코드로 배우는 수학, 물리, 그리고 인생공략 알고리즘*
+- **이 아이디어를 얼마나 오래 생각해왔나요?**: - *3년정도*
+- **이미 작업을 시작했다면 어느 정도 진행되었나요?**: - *파일럿 교재 작성 및 기본 기능 구상 단계*
 
-A modern, production-ready template for building full-stack React applications using React Router.
+## 문제 및 해결책
+1. **문제 진술**: - *현재 학습 방식은 여전히 강의와 종이와 연필을 통한 문제풀이 위주라서 개발과 같은 시각적, 체험적 학습 경험 부족*
+2. **개인적 연결**: - *초,중,고 학생들을 직접 1:1로 가르치면서 수학 개념을 한 번 놓치면 평생 다시 배울 기회를 놓치는 사례를 자주 목격함*
+3. **타겟 사용자**: - *① 초·중·고 학생 (기초 개념 학습) -> 학습 격차 예방, ② 대학생 (심화 학습의 기반), ③ 성인 학습자 (취미 & 자기개발)*
+4. **현재 대안**: - *EBS & 유튜브 무료강좌, Khan Academy, 대학 교재 등*
+5. **당신의 솔루션**: - *기존의 종이와 연필로 공부하던 방식에서 코드를 통해 공부하는 새로운 방식 도입*
+6. **독특한 접근 방식**: - *일반 대중이 자연스럽게 인공지능과 시각화 라이브러리에 친숙해지면서 고급개념 접근 가능*
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## 초기 검증 단계
+1. **대화 경험**: - *수학, 물리, 코딩을 인공지능과 함께 한번에 배울 수 있다면 좋겠다는 의견이 있었음*
+2. **비공식 조사**: - *개인적으로 수학, 물리의 어려운 개념들을 컴퓨터로 계산하고 풀어보고 싶은 욕구가 있음*
+3. **초기 피드백**: - *수학, 물리, 코드를 통해 훈련된 추상화 능력은 삶의 문제를 풀어나가는데 큰 도움이 됨*
+4. **가정들**: - *기존에 하던 일자리들은 대부분 인공지능에게 대체되고 학습 자체를 취미로 하는 인구가 늘것이다*
+5. **검증 계획**: - *초,중,고 기초내용부터 종이와 연필 없이 코드만으로 공부할 수 있는 방법을 소개하고 반응 볼 계획 반응 적더라도 그 방식으로 대학수학, 물리과정들을 공부해 나아갈 예정*
 
-## Features
+## 시장에 대한 이해
+1. **잠재 시장**: - *온라인 수학/물리 튜터링 시장은 연평균 14% 성장 중, 기본소득, 일자리 감소로 인해 취미가 학습인 사람들이 늘어날 전망*
+2. **경쟁사**: - *Khan Academy, MooK, 인프런*
+3. **차별화 요소**: - *단순 강의 전달이 아니라 코드를 직접 실행해 개념을 확인하는 상호작용형 학습 경험 제공, 신뢰있는 강사와 함께 성장하는 브랜드*
+4. **초기 가격 전략**: - *초,중,고 콘텐츠는 무료, 대학수학(미적분, 선형대수, 확률통계, 이산수학)은 과목별 10만원 정도, 추후 물리, 화학, 생물, 알고리즘, 인생관 등등 확장.*
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## 최소 기능 제품 (MVP)
+1. **핵심 기능**: - *1차 : 코드 + 수식 변환 + 시각화, 2차 : AI 질문 답변, 영상, 교재”, 3차 : 개인별 학습상황 저장 및 및 커뮤니티 기능*
+2. **성공 지표**: - *한번 접속한 유저들이 지속적으로 접속하여 공부를해 나아가는 활성화 유저수*
+3. **유저 확보 계획**: - *유튜브 채널을 운영하여 홍보*
+4. **타임라인**: - *6주 안에 기본기능을 만들고 그 이후로는 지속적으로 수학, 물리, 알고리즘등을 공부 하며 콘텐츠 업로드*
 
-## Getting Started
+## 배경 & 동기
+1. **배경**: - *수학 교육 경험, 코딩 공부 경험, 그리고 개인적으로 수학, 물리, 과학공부를 좋아함*
+2. **보유 기술**: - *내가 필요한 서비스를 직접 만들고 사용할 예정임*
+3. **기술 격차**: - *아직 수학을 공부할 때 사용할 수 있는 라이브러리 등에 대한 지식이 부족, 웹 서비스 자체에 내장시키는 것은 어려울 것 같아서, 다양한 서비스들을 조합해서 수학, 물리를 공부하는 방법을 교육하는 방향으로 초기 방향을 정할 예정*
+4. **지원 네트워크**: - *노마더 코더 동기분들, 그리고 인공지능과의 대화를 통해 해결해 나아갈 예정*
+5. **도메인 지식**: - *초중고 수학개념에 대한 높은 이해도, 물리, 뇌과학, 종교, 독서등을 통해 얻은 다양한 분야의 지식들*
+6. **동기**: - *이런 서비스가 있었으면 좋겠는데 없어서 직접 만들어야 겠다는 생각이 들었고 나와 관심사가 비슷한 사람들을 만나보고 싶은 생각도 있음, 이 서비스는 수학과 물리를 배움과 동시에 코딩 리터러시를 쌓을 수 있는, 기존에 없는 유일한 플랫폼을 목표로 함*
+7. **아이디어의 기원**: - *SejongClass는 궁극적으로 수학·물리·코딩을 넘어서 인류가 배워야 할 ‘생각하는 힘’을 훈련하는 글로벌 러닝 플랫폼으로 확장할 수 있음.*
 
-### Installation
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
-# 250818_SejongClass
+## 학습 & 성장 마인드셋
+1. **프로젝트 경험**: *6개월 부트캠프에서 지식관리 웹서비스를 Vue(Javascript), Spring(Java), MariaDB(SQL) 를 통해 배포해본 경험이 있음  *
+2. **교훈 & 인사이트**: *코딩은 앞으로 수학·물리 학습의 공용 언어가 될 것이다”*
+3. **리소스**: *지능의 기원 - 맥스 베넷 저 (인공지능을 개발하기 위해 인류의 지능의 기원을 추적하며 인간에 대한 이해가 점점 넓어지고 삶에 도움되는 통찰을 얻게 되는 책)*
+4. **롤모델**: *노마드 코더(니코) - 1인 강의를 꾸준히 하면서 스스로 성장해 나아가는 삶의 과정을 보면서, 나도 대중들의 지식수준을 한 단계 올리는데 기여하는 사람이 되고 싶다는 생각을 함*  
