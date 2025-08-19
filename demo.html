@@ -1,93 +1,313 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>SejongClass — Code Your Life with Math & Physics</title>
     <style>
-        :root{
-            --bg0:#0a0f1d; --bg1:#111a33; --acc1:#7aa2ff; --acc2:#ff6ad5; --acc3:#41ffb3; --text:#e8ecff;
-            --muted:#a9b4d0; --panel:#141c34cc; --card:#111827cc; --border:#2a355a;
+        :root {
+            --bg0: #0a0f1d;
+            --bg1: #111a33;
+            --acc1: #7aa2ff;
+            --acc2: #ff6ad5;
+            --acc3: #41ffb3;
+            --text: #e8ecff;
+            --muted: #a9b4d0;
+            --panel: #141c34cc;
+            --card: #111827cc;
+            --border: #2a355a;
         }
-        *{box-sizing:border-box}
-        html,body{height:100%}
-        body{
-            margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Helvetica, Arial;
-            color:var(--text); background: radial-gradient(1200px 600px at 20% -10%, #233266 0%, transparent 60%), radial-gradient(1000px 500px at 110% 10%, #3a1d51 0%, transparent 60%), linear-gradient(160deg, var(--bg0), var(--bg1));
-            overflow-x:hidden;
+
+        * {
+            box-sizing: border-box
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Helvetica, Arial;
+            color: var(--text);
+            background: radial-gradient(1200px 600px at 20% -10%, #233266 0%, transparent 60%), radial-gradient(1000px 500px at 110% 10%, #3a1d51 0%, transparent 60%), linear-gradient(160deg, var(--bg0), var(--bg1));
+            overflow-x: hidden;
         }
 
         /* Floating math/physics glyphs */
-        .glyph{position:absolute; font-weight:700; color:#d7e1ff22; user-select:none; pointer-events:none; filter:drop-shadow(0 0 6px #7aa2ff22)}
-        @keyframes float {
-            0% { transform: translateY(0) rotate(0deg); opacity:.3 }
-            50%{ transform: translateY(-25px) rotate(6deg); opacity:.6 }
-            100%{ transform: translateY(0) rotate(0deg); opacity:.3 }
+        .glyph {
+            position: absolute;
+            font-weight: 700;
+            color: #d7e1ff22;
+            user-select: none;
+            pointer-events: none;
+            filter: drop-shadow(0 0 6px #7aa2ff22)
         }
-        .glyph{animation: float 6s ease-in-out infinite}
-        .g2{animation-duration:8s}.g3{animation-duration:10s}.g4{animation-duration:12s}
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: .3
+            }
+            50% {
+                transform: translateY(-25px) rotate(6deg);
+                opacity: .6
+            }
+            100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: .3
+            }
+        }
+
+        .glyph {
+            animation: float 6s ease-in-out infinite
+        }
+
+        .g2 {
+            animation-duration: 8s
+        }
+
+        .g3 {
+            animation-duration: 10s
+        }
+
+        .g4 {
+            animation-duration: 12s
+        }
 
         /* Matrix code rain (subtle) */
-        #codeRain{position:fixed; inset:0; z-index:0; opacity:.12; mix-blend:screen}
-
-        header.hero{
-            position:relative; z-index:1; padding:96px 24px 56px; text-align:center;
+        #codeRain {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: .12;
+            mix-blend-mode: screen
         }
-        .brand{font-weight:900; letter-spacing:.5px; font-size: clamp(28px, 4vw, 42px);}
-        .brand .accent{background:linear-gradient(90deg,var(--acc1),var(--acc2)); -webkit-background-clip:text; background-clip:text; color:transparent}
-        .tagline{margin:14px auto 26px; max-width:880px; color:var(--muted); font-size: clamp(16px, 2.2vw, 20px)}
-        .cta{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
-        .btn{
-            border:1px solid var(--border); background:linear-gradient(180deg,#152143,#0c1228);
-            color:var(--text); padding:14px 22px; border-radius:14px; font-weight:700; cursor:pointer;
+
+        header.hero {
+            position: relative;
+            z-index: 1;
+            padding: 96px 24px 56px;
+            text-align: center;
+        }
+
+        .brand {
+            font-weight: 900;
+            letter-spacing: .5px;
+            font-size: clamp(28px, 4vw, 42px);
+        }
+
+        .brand .accent {
+            background: linear-gradient(90deg, var(--acc1), var(--acc2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent
+        }
+
+        .tagline {
+            margin: 14px auto 26px;
+            max-width: 880px;
+            color: var(--muted);
+            font-size: clamp(16px, 2.2vw, 20px)
+        }
+
+        .cta {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap
+        }
+
+        .btn {
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, #152143, #0c1228);
+            color: var(--text);
+            padding: 14px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
             transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
         }
-        .btn:hover{transform:translateY(-2px); box-shadow:0 10px 30px #0007; border-color:#3b4a7a}
-        .btn.primary{background: linear-gradient(90deg, var(--acc1), var(--acc2)); color:#0b0f1f}
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px #0007;
+            border-color: #3b4a7a
+        }
+
+        .btn.primary {
+            background: linear-gradient(90deg, var(--acc1), var(--acc2));
+            color: #0b0f1f
+        }
 
         /* Hero canvas */
-        #heroCanvas{position:absolute; inset:0; z-index:-1; opacity:.7}
-        .hero-wrap{position:relative; max-width:1100px; margin:0 auto}
-        .hero-frame{
-            border:1px solid #2a3760; border-radius:18px; padding:18px; background:linear-gradient(180deg,#0d1530cc,#0a1128aa); backdrop-filter: blur(6px);
+        #heroCanvas {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            opacity: .7
         }
-        .hero-caption{font-size:14px; color:#b8c3ea; margin-top:10px}
+
+        .hero-wrap {
+            position: relative;
+            max-width: 1100px;
+            margin: 0 auto
+        }
+
+        .hero-frame {
+            border: 1px solid #2a3760;
+            border-radius: 18px;
+            padding: 18px;
+            background: linear-gradient(180deg, #0d1530cc, #0a1128aa);
+            backdrop-filter: blur(6px);
+        }
+
+        .hero-caption {
+            font-size: 14px;
+            color: #b8c3ea;
+            margin-top: 10px
+        }
 
         /* Feature cards */
-        .section{position:relative; z-index:1; padding:56px 20px}
-        .grid{display:grid; gap:20px; grid-template-columns: repeat(12, 1fr); max-width:1200px; margin:0 auto}
-        .card{
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 56px 20px
+        }
+
+        .grid {
+            display: grid;
+            gap: 20px;
+            grid-template-columns: repeat(12, 1fr);
+            max-width: 1200px;
+            margin: 0 auto
+        }
+
+        .card {
             grid-column: span 12;
-            border:1px solid var(--border); border-radius:18px; background:var(--card); padding:22px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--card);
+            padding: 22px;
             transition: transform .18s ease, box-shadow .25s ease, border-color .2s ease;
         }
-        .card:hover{transform: translateY(-6px); box-shadow: 0 24px 60px #0008; border-color:#415090}
-        @media(min-width:740px){
-            .card{grid-column: span 4}
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 60px #0008;
+            border-color: #415090
         }
-        .pill{display:inline-flex; align-items:center; gap:8px; font-size:12px; padding:6px 10px; background:#101733; border:1px solid #2b3a6a; border-radius:999px; color:#a9b4d0}
-        .card h3{margin:10px 0 6px; font-size:20px}
-        .muted{color:#9fb0e5}
+
+        @media (min-width: 740px) {
+            .card {
+                grid-column: span 4
+            }
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            padding: 6px 10px;
+            background: #101733;
+            border: 1px solid #2b3a6a;
+            border-radius: 999px;
+            color: #a9b4d0
+        }
+
+        .card h3 {
+            margin: 10px 0 6px;
+            font-size: 20px
+        }
+
+        .muted {
+            color: #9fb0e5
+        }
 
         /* Playground split */
-        .play{grid-column: span 12; display:grid; gap:20px}
-        @media(min-width:920px){ .play{grid-template-columns: 1fr 1fr} }
-        .panel{border:1px solid var(--border); background:var(--panel); border-radius:18px; padding:18px}
-
-        .editor{
-            background:#0b1227; border:1px solid #2a3a6a; border-radius:14px; padding:14px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; color:#d6e2ff;
+        .play {
+            grid-column: span 12;
+            display: grid;
+            gap: 20px
         }
-        .editor small{color:#93a1cf}
-        .control{display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin:10px 0 14px}
-        .control input[type="text"], .control input[type="number"], .control input[type="range"]{
-            background:#0b1227; border:1px solid #2a3a6a; color:#d6e2ff; padding:8px 10px; border-radius:10px; outline:none;
-        }
-        .control label{font-size:13px; color:#c7d3ff}
-        .inline-code{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background:#0c1430; border:1px solid #2a3a6a; padding:2px 6px; border-radius:8px}
 
-        canvas.plot{width:100%; height:320px; background:linear-gradient(180deg,#0a1128,#0c132e); border:1px solid #263461; border-radius:14px}
-        footer{padding:40px 20px; text-align:center; color:#9fb0e5}
-        .footer-syms{opacity:.25; letter-spacing:6px; margin-top:10px; font-weight:700}
+        @media (min-width: 920px) {
+            .play {
+                grid-template-columns: 1fr 1fr
+            }
+        }
+
+        .panel {
+            border: 1px solid var(--border);
+            background: var(--panel);
+            border-radius: 18px;
+            padding: 18px
+        }
+
+        .editor {
+            background: #0b1227;
+            border: 1px solid #2a3a6a;
+            border-radius: 14px;
+            padding: 14px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+            color: #d6e2ff;
+        }
+
+        .editor small {
+            color: #93a1cf
+        }
+
+        .control {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: 10px 0 14px
+        }
+
+        .control input[type="text"], .control input[type="number"], .control input[type="range"] {
+            background: #0b1227;
+            border: 1px solid #2a3a6a;
+            color: #d6e2ff;
+            padding: 8px 10px;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .control label {
+            font-size: 13px;
+            color: #c7d3ff
+        }
+
+        .inline-code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            background: #0c1430;
+            border: 1px solid #2a3a6a;
+            padding: 2px 6px;
+            border-radius: 8px
+        }
+
+        canvas.plot {
+            width: 100%;
+            height: 320px;
+            background: linear-gradient(180deg, #0a1128, #0c132e);
+            border: 1px solid #263461;
+            border-radius: 14px
+        }
+
+        footer {
+            padding: 40px 20px;
+            text-align: center;
+            color: #9fb0e5
+        }
+
+        .footer-syms {
+            opacity: .25;
+            letter-spacing: 6px;
+            margin-top: 10px;
+            font-weight: 700
+        }
     </style>
 </head>
 <body>
@@ -111,8 +331,12 @@
             수학과 물리를 배우며 동시에 <b>코딩 리터러시</b>와 <b>생각하는 힘</b>을 기릅니다.
         </p>
         <div class="cta">
-            <button class="btn primary" onclick="document.getElementById('playground').scrollIntoView({behavior:'smooth'})">지금 시작하기 (무료)</button>
-            <button class="btn" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">강의 둘러보기</button>
+            <button class="btn primary"
+                    onclick="document.getElementById('playground').scrollIntoView({behavior:'smooth'})">지금 시작하기 (무료)
+            </button>
+            <button class="btn" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">강의
+                                                                                                                  둘러보기
+            </button>
         </div>
         <div class="hero-frame" style="margin-top:28px;">
             <canvas id="heroCanvas" height="440"></canvas>
@@ -152,11 +376,14 @@
                 <span class="pill">📈 수학 · f(x) 플로터</span>
                 <h3 style="margin:10px 0 6px">수식을 입력하면 즉시 그려집니다</h3>
                 <div class="editor">
-                    <div>예시: <span class="inline-code">Math.sin(x)</span>, <span class="inline-code">Math.cos(2*x)</span>, <span class="inline-code">Math.exp(-x*x)</span></div>
+                    <div>예시: <span class="inline-code">Math.sin(x)</span>, <span
+                            class="inline-code">Math.cos(2*x)</span>, <span class="inline-code">Math.exp(-x*x)</span>
+                    </div>
                 </div>
                 <div class="control">
                     <label>f(x) = <input id="fxInput" type="text" value="Math.sin(x)"></label>
-                    <label>범위: <input id="rangeInput" type="number" value="6.28" min="1" max="50" step="0.1"> (±)</label>
+                    <label>범위: <input id="rangeInput" type="number" value="6.28" min="1" max="50" step="0.1">
+                           (±)</label>
                     <button class="btn" id="plotBtn">그리기</button>
                 </div>
                 <canvas class="plot" id="plotCanvas" width="800" height="320" aria-label="함수 그래프"></canvas>
@@ -167,9 +394,12 @@
                 <span class="pill">🧪 물리 · 포물선 운동</span>
                 <h3 style="margin:10px 0 6px">초기속도와 각도를 바꿔 궤적을 확인하세요</h3>
                 <div class="control">
-                    <label>속도 v₀: <input id="v0" type="range" min="5" max="60" step="1" value="30"> <span id="v0Val">30</span> m/s</label>
-                    <label>각도 θ: <input id="theta" type="range" min="5" max="85" step="1" value="45"> <span id="thVal">45</span> °</label>
-                    <label>중력 g: <input id="grav" type="range" min="3" max="20" step="0.5" value="9.8"> <span id="gVal">9.8</span> m/s²</label>
+                    <label>속도 v₀: <input id="v0" type="range" min="5" max="60" step="1" value="30"> <span
+                            id="v0Val">30</span> m/s</label>
+                    <label>각도 θ: <input id="theta" type="range" min="5" max="85" step="1" value="45"> <span id="thVal">45</span>
+                           °</label>
+                    <label>중력 g: <input id="grav" type="range" min="3" max="20" step="0.5" value="9.8"> <span id="gVal">9.8</span>
+                           m/s²</label>
                     <button class="btn" id="shootBtn">발사</button>
                 </div>
                 <canvas class="plot" id="physCanvas" width="800" height="320" aria-label="포물선 궤적"></canvas>
@@ -181,180 +411,259 @@
 
 <footer>
     <div>© SejongClass — Code Your Life with Math & Physics</div>
-    <div class="footer-syms">∫  Σ  π  dx  λ  ψ  →  F=ma  ·  E=mc²</div>
+    <div class="footer-syms">∫ Σ π dx λ ψ → F=ma · E=mc²</div>
 </footer>
 
 <script>
     /* ====== Matrix-like code rain (subtle background) ====== */
-    (function(){
+    (function () {
         const c = document.getElementById('codeRain'), ctx = c.getContext('2d');
-        let w,h,cols,ypos,chars="01{}[]()/*+-=<>πΣ∫λψxyzvθ→";
-        const resize=()=>{w= c.width = innerWidth; h = c.height = innerHeight; cols = Math.floor(w/16); ypos = Array(cols).fill(0)}
-        resize(); addEventListener('resize', resize);
-        function step(){
-            ctx.fillStyle = "rgba(10,15,30,0.35)"; ctx.fillRect(0,0,w,h);
-            ctx.fillStyle = "#41ffb3"; ctx.font = "14px monospace";
-            for(let i=0;i<cols;i++){
-                const ch = chars[Math.floor(Math.random()*chars.length)];
-                ctx.fillText(ch, i*16, ypos[i]*16);
-                if (ypos[i]*16 > h && Math.random() > 0.975) ypos[i]=0; else ypos[i]++;
+        let w, h, cols, ypos, chars = "01{}[]()/*+-=<>πΣ∫λψxyzvθ→";
+        const resize = () => {
+            w = c.width = innerWidth;
+            h = c.height = innerHeight;
+            cols = Math.floor(w / 16);
+            ypos = Array(cols).fill(0)
+        }
+        resize();
+        addEventListener('resize', resize);
+
+        function step() {
+            ctx.fillStyle = "rgba(10,15,30,0.35)";
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = "#41ffb3";
+            ctx.font = "14px monospace";
+            for (let i = 0; i < cols; i++) {
+                const ch = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(ch, i * 16, ypos[i] * 16);
+                if (ypos[i] * 16 > h && Math.random() > 0.975) ypos[i] = 0; else ypos[i]++;
             }
             requestAnimationFrame(step);
         }
+
         step();
     })();
 
     /* ====== Hero Lissajous curve animation ====== */
-    (function(){
+    (function () {
         const hero = document.getElementById('heroCanvas');
         const ctx = hero.getContext('2d');
-        function resize(){
+
+        function resize() {
             const wrap = hero.parentElement.getBoundingClientRect();
             hero.width = wrap.width - 36; // minus padding
             hero.height = 360;
         }
-        resize(); addEventListener('resize', resize);
 
-        let t=0;
-        function draw(){
+        resize();
+        addEventListener('resize', resize);
+
+        let t = 0;
+
+        function draw() {
             t += 0.008;
-            const {width:w, height:h} = hero;
-            ctx.clearRect(0,0,w,h);
+            const { width: w, height: h } = hero;
+            ctx.clearRect(0, 0, w, h);
 
             // axes grid
-            ctx.strokeStyle = "#2a3a6a"; ctx.lineWidth = 1;
+            ctx.strokeStyle = "#2a3a6a";
+            ctx.lineWidth = 1;
             ctx.beginPath();
-            for(let x=0;x<=w;x+=40){ ctx.moveTo(x,0); ctx.lineTo(x,h) }
-            for(let y=0;y<=h;y+=40){ ctx.moveTo(0,y); ctx.lineTo(w,y) }
+            for (let x = 0; x <= w; x += 40) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h)
+            }
+            for (let y = 0; y <= h; y += 40) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y)
+            }
             ctx.stroke();
 
             // Lissajous
             ctx.lineWidth = 2;
-            const A = h*0.32, B = h*0.24, a = 3, b = 2, delta = t*1.5;
+            const A = h * 0.32, B = h * 0.24, a = 3, b = 2, delta = t * 1.5;
             ctx.beginPath();
-            for(let i=0;i<1200;i++){
-                const s = i/1200 * Math.PI*2;
-                const x = w/2 + A * Math.sin(a*s + delta);
-                const y = h/2 + B * Math.sin(b*s);
-                if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+            for (let i = 0; i < 1200; i++) {
+                const s = i / 1200 * Math.PI * 2;
+                const x = w / 2 + A * Math.sin(a * s + delta);
+                const y = h / 2 + B * Math.sin(b * s);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
-            const grad = ctx.createLinearGradient(0,0,w,h);
-            grad.addColorStop(0, "#7aa2ff"); grad.addColorStop(1, "#ff6ad5");
-            ctx.strokeStyle=grad; ctx.shadowBlur=18; ctx.shadowColor="#7aa2ff66"; ctx.stroke(); ctx.shadowBlur=0;
+            const grad = ctx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, "#7aa2ff");
+            grad.addColorStop(1, "#ff6ad5");
+            ctx.strokeStyle = grad;
+            ctx.shadowBlur = 18;
+            ctx.shadowColor = "#7aa2ff66";
+            ctx.stroke();
+            ctx.shadowBlur = 0;
 
             requestAnimationFrame(draw);
         }
+
         draw();
     })();
 
     /* ====== Math: function plotter ====== */
-    (function(){
+    (function () {
         const canvas = document.getElementById('plotCanvas');
         const ctx = canvas.getContext('2d');
         const fxInput = document.getElementById('fxInput');
         const rangeInput = document.getElementById('rangeInput');
         const btn = document.getElementById('plotBtn');
 
-        function safeEval(expr, x){
+        function safeEval(expr, x) {
             // Very lightweight sandbox: expose only Math and x
             // eslint-disable-next-line no-new-func
-            return Function("x","Math","'use strict'; return ("+expr+")")(x, Math);
+            return Function("x", "Math", "'use strict'; return (" + expr + ")")(x, Math);
         }
 
-        function draw(){
-            const w=canvas.width, h=canvas.height;
-            ctx.clearRect(0,0,w,h);
+        function draw() {
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
 
             // bounds
-            const R = parseFloat(rangeInput.value)||6.28;
-            const xmin=-R, xmax=R, ymin=-R, ymax=R;
-            function X(x){return (x-xmin)/(xmax-xmin)*w}
-            function Y(y){return h - (y-ymin)/(ymax-ymin)*h}
+            const R = parseFloat(rangeInput.value) || 6.28;
+            const xmin = -R, xmax = R, ymin = -R, ymax = R;
+
+            function X(x) {
+                return (x - xmin) / (xmax - xmin) * w
+            }
+
+            function Y(y) {
+                return h - (y - ymin) / (ymax - ymin) * h
+            }
 
             // grid
-            ctx.strokeStyle="#22325d"; ctx.lineWidth=1;
+            ctx.strokeStyle = "#22325d";
+            ctx.lineWidth = 1;
             ctx.beginPath();
-            for(let gx=Math.ceil(xmin); gx<=xmax; gx++){
-                const xx = X(gx); ctx.moveTo(xx,0); ctx.lineTo(xx,h)
+            for (let gx = Math.ceil(xmin); gx <= xmax; gx++) {
+                const xx = X(gx);
+                ctx.moveTo(xx, 0);
+                ctx.lineTo(xx, h)
             }
-            for(let gy=Math.ceil(ymin); gy<=ymax; gy++){
-                const yy = Y(gy); ctx.moveTo(0,yy); ctx.lineTo(w,yy)
+            for (let gy = Math.ceil(ymin); gy <= ymax; gy++) {
+                const yy = Y(gy);
+                ctx.moveTo(0, yy);
+                ctx.lineTo(w, yy)
             }
             ctx.stroke();
 
             // axes
-            ctx.strokeStyle="#6f84c8"; ctx.lineWidth=1.5;
+            ctx.strokeStyle = "#6f84c8";
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(0, Y(0)); ctx.lineTo(w, Y(0));
-            ctx.moveTo(X(0), 0); ctx.lineTo(X(0), h);
+            ctx.moveTo(0, Y(0));
+            ctx.lineTo(w, Y(0));
+            ctx.moveTo(X(0), 0);
+            ctx.lineTo(X(0), h);
             ctx.stroke();
 
             // plot
             const expr = fxInput.value || "Math.sin(x)";
             ctx.beginPath();
-            let first=true;
-            for(let i=0;i<w;i++){
-                const x = xmin + (i/w)*(xmax-xmin);
+            let first = true;
+            for (let i = 0; i < w; i++) {
+                const x = xmin + (i / w) * (xmax - xmin);
                 let y = NaN;
-                try{ y = safeEval(expr, x) } catch(e){ y = NaN }
-                if(Number.isFinite(y)){
+                try {
+                    y = safeEval(expr, x)
+                } catch (e) {
+                    y = NaN
+                }
+                if (Number.isFinite(y)) {
                     const px = i, py = Y(y);
-                    if(first){ ctx.moveTo(px,py); first=false } else ctx.lineTo(px,py);
-                }else{
-                    first=true;
+                    if (first) {
+                        ctx.moveTo(px, py);
+                        first = false
+                    } else ctx.lineTo(px, py);
+                } else {
+                    first = true;
                 }
             }
-            const grad = ctx.createLinearGradient(0,0,w,0);
-            grad.addColorStop(0,"#41ffb3"); grad.addColorStop(1,"#7aa2ff");
-            ctx.strokeStyle=grad; ctx.lineWidth=2.2; ctx.shadowBlur=14; ctx.shadowColor="#41ffb366"; ctx.stroke(); ctx.shadowBlur=0;
+            const grad = ctx.createLinearGradient(0, 0, w, 0);
+            grad.addColorStop(0, "#41ffb3");
+            grad.addColorStop(1, "#7aa2ff");
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 2.2;
+            ctx.shadowBlur = 14;
+            ctx.shadowColor = "#41ffb366";
+            ctx.stroke();
+            ctx.shadowBlur = 0;
         }
+
         btn.addEventListener('click', draw);
         draw();
     })();
 
     /* ====== Physics: projectile motion ====== */
-    (function(){
+    (function () {
         const c = document.getElementById('physCanvas'), ctx = c.getContext('2d');
-        const v0 = document.getElementById('v0'), theta = document.getElementById('theta'), grav = document.getElementById('grav');
-        const v0Val=document.getElementById('v0Val'), thVal=document.getElementById('thVal'), gVal=document.getElementById('gVal');
-        [v0,theta,grav].forEach(el=>el.addEventListener('input',()=>{
-            v0Val.textContent=v0.value; thVal.textContent=theta.value; gVal.textContent=grav.value;
+        const v0 = document.getElementById('v0'), theta = document.getElementById('theta'),
+            grav = document.getElementById('grav');
+        const v0Val = document.getElementById('v0Val'), thVal = document.getElementById('thVal'),
+            gVal = document.getElementById('gVal');
+        [v0, theta, grav].forEach(el => el.addEventListener('input', () => {
+            v0Val.textContent = v0.value;
+            thVal.textContent = theta.value;
+            gVal.textContent = grav.value;
         }));
 
-        function drawTrajectory(){
-            const w=c.width, h=c.height; ctx.clearRect(0,0,w,h);
+        function drawTrajectory() {
+            const w = c.width, h = c.height;
+            ctx.clearRect(0, 0, w, h);
             // grid
-            ctx.strokeStyle="#22325d"; ctx.lineWidth=1;
+            ctx.strokeStyle = "#22325d";
+            ctx.lineWidth = 1;
             ctx.beginPath();
-            for(let x=0;x<=w;x+=40){ ctx.moveTo(x,0); ctx.lineTo(x,h); }
-            for(let y=0;y<=h;y+=40){ ctx.moveTo(0,y); ctx.lineTo(w,y); }
+            for (let x = 0; x <= w; x += 40) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, h);
+            }
+            for (let y = 0; y <= h; y += 40) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+            }
             ctx.stroke();
 
-            const v = +v0.value, th = (+theta.value)*Math.PI/180, g = +grav.value;
+            const v = +v0.value, th = (+theta.value) * Math.PI / 180, g = +grav.value;
             // scale to canvas
-            const R = v*v*Math.sin(2*th)/g;
-            const H = v*v*Math.sin(th)*Math.sin(th)/(2*g);
+            const R = v * v * Math.sin(2 * th) / g;
+            const H = v * v * Math.sin(th) * Math.sin(th) / (2 * g);
             const margin = 30;
-            const sx = (w - margin*2) / Math.max(R, 10);
-            const sy = (h - margin*2) / Math.max(H*1.2, 10);
+            const sx = (w - margin * 2) / Math.max(R, 10);
+            const sy = (h - margin * 2) / Math.max(H * 1.2, 10);
 
             // axes
-            ctx.strokeStyle="#6f84c8"; ctx.lineWidth=1.5;
-            ctx.beginPath(); ctx.moveTo(margin, h-margin); ctx.lineTo(w-margin, h-margin); ctx.moveTo(margin, h-margin); ctx.lineTo(margin, margin); ctx.stroke();
+            ctx.strokeStyle = "#6f84c8";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(margin, h - margin);
+            ctx.lineTo(w - margin, h - margin);
+            ctx.moveTo(margin, h - margin);
+            ctx.lineTo(margin, margin);
+            ctx.stroke();
 
             // trajectory
             ctx.beginPath();
-            for(let t=0;t<=200;t++){
-                const time = t/200 * (2*v*Math.sin(th)/g);
-                const x = v*Math.cos(th)*time;
-                const y = v*Math.sin(th)*time - 0.5*g*time*time;
-                const px = margin + x*sx;
-                const py = (h - margin) - y*sy;
-                if(t===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+            for (let t = 0; t <= 200; t++) {
+                const time = t / 200 * (2 * v * Math.sin(th) / g);
+                const x = v * Math.cos(th) * time;
+                const y = v * Math.sin(th) * time - 0.5 * g * time * time;
+                const px = margin + x * sx;
+                const py = (h - margin) - y * sy;
+                if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
             }
-            const grad = ctx.createLinearGradient(0,0,w,0);
-            grad.addColorStop(0,"#ff6ad5"); grad.addColorStop(1,"#7aa2ff");
-            ctx.strokeStyle=grad; ctx.lineWidth=2.2; ctx.shadowBlur=14; ctx.shadowColor="#ff6ad566"; ctx.stroke(); ctx.shadowBlur=0;
+            const grad = ctx.createLinearGradient(0, 0, w, 0);
+            grad.addColorStop(0, "#ff6ad5");
+            grad.addColorStop(1, "#7aa2ff");
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 2.2;
+            ctx.shadowBlur = 14;
+            ctx.shadowColor = "#ff6ad566";
+            ctx.stroke();
+            ctx.shadowBlur = 0;
         }
 
         document.getElementById('shootBtn').addEventListener('click', drawTrajectory);
