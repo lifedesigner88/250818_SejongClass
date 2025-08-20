@@ -1,3 +1,9 @@
-import { type RouteConfig, index } from "@react-router/dev/routes";
+import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
-export default [index("common/pages/home-page.tsx")] satisfies RouteConfig;
+export default [
+    index("common/pages/home-page.tsx"),
+    route("/monaco-demo", "common/components/pages/monaco-demo.tsx"),
+
+
+    route("*", "common/pages/not-found.tsx")
+] satisfies RouteConfig;
