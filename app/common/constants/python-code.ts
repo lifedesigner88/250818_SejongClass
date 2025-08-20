@@ -118,7 +118,7 @@ print(primes)
 
 # 여러 수의 소인수분해 결과 출력
 test_numbers = [12, 15, 28, 36, 100]
-print("\n소인수분해:")
+print("소인수분해:")
 for num in test_numbers:
     factors = prime_factors(num)
     factor_str = ' × '.join(map(str, factors))
@@ -128,7 +128,7 @@ for num in test_numbers:
 range_start = 1
 range_end = 100
 prime_count = sum(1 for n in range(range_start, range_end + 1) if is_prime(n))
-print(f"\n{range_start}부터 {range_end}까지의 소수 개수: {prime_count}")`,
+print(f"{range_start}부터 {range_end}까지의 소수 개수: {prime_count}")`,
 
     game: `# 간단한 숫자 맞추기 게임
 # 순수 파이썬만 사용
@@ -146,7 +146,7 @@ def number_guessing_game():
     
     while attempts < max_attempts:
         try:
-            guess = int(input(f"\n{attempts+1}번째 시도. 숫자를 입력하세요: "))
+            guess = int(input(f"{attempts+1}번째 시도. 숫자를 입력하세요: "))
             
             if guess < 1 or guess > 100:
                 print("1부터 100 사이의 숫자를 입력해주세요.")
@@ -159,7 +159,7 @@ def number_guessing_game():
             elif guess > secret_number:
                 print("더 작은 숫자입니다.")
             else:
-                print(f"\n축하합니다! {attempts}번째 시도에 정답을 맞추셨습니다.")
+                print(f"축하합니다! {attempts}번째 시도에 정답을 맞추셨습니다.")
                 print(f"정답은 {secret_number}입니다.")
                 return
                 
@@ -169,43 +169,11 @@ def number_guessing_game():
         except ValueError:
             print("유효한 숫자를 입력해주세요.")
     
-    print(f"\n게임 오버! 정답은 {secret_number}였습니다.")
+    print(f"게임 오버! 정답은 {secret_number}였습니다.")
 
 # 게임 시작
 print("===== 숫자 맞추기 게임 =====")
-number_guessing_game()
-
-# 아래 코드는 직접 실행해볼 수 있는 예제 출력입니다
-"""
-===== 숫자 맞추기 게임 =====
-1부터 100 사이의 숫자를 맞춰보세요!
-기회는 총 10번 있습니다.
-
-1번째 시도. 숫자를 입력하세요: 50
-더 큰 숫자입니다.
-남은 기회: 9번
-
-2번째 시도. 숫자를 입력하세요: 75
-더 작은 숫자입니다.
-남은 기회: 8번
-
-3번째 시도. 숫자를 입력하세요: 62
-더 큰 숫자입니다.
-남은 기회: 7번
-
-4번째 시도. 숫자를 입력하세요: 68
-더 작은 숫자입니다.
-남은 기회: 6번
-
-5번째 시도. 숫자를 입력하세요: 65
-더 작은 숫자입니다.
-남은 기회: 5번
-
-6번째 시도. 숫자를 입력하세요: 64
-정답입니다!
-축하합니다! 6번째 시도에 정답을 맞추셨습니다.
-정답은 64입니다.
-"""`,
+number_guessing_game()`,
 
     encrypt:`# 시저 암호와 비즈네르 암호 구현
 # 순수 파이썬만 사용
@@ -285,7 +253,7 @@ shift = 3
 caesar_encrypted = caesar_encrypt(plaintext, shift)
 caesar_decrypted = caesar_decrypt(caesar_encrypted, shift)
 
-print("\n시저 암호 (이동량 =", shift, "):")
+print("시저 암호 (이동량 =", shift, "):")
 print("암호화:", caesar_encrypted)
 print("복호화:", caesar_decrypted)
 
@@ -294,7 +262,7 @@ key = "KEY"
 vigenere_encrypted = vigenere_encrypt(plaintext, key)
 vigenere_decrypted = vigenere_decrypt(vigenere_encrypted, key)
 
-print("\n비즈네르 암호 (키 =", key, "):")
+print("비즈네르 암호 (키 =", key, "):")
 print("암호화:", vigenere_encrypted)
 print("복호화:", vigenere_decrypted)`,
 
@@ -367,25 +335,25 @@ pascal_triangle = generate_pascal_triangle(pascal_rows)
 print_pascal_triangle(pascal_triangle)
 
 # 숫자 패턴
-print("\n=== 숫자 패턴 ===")
+print("=== 숫자 패턴 ===")
 print_number_pattern(5)
 
 # 별 패턴 (삼각형)
-print("\n=== 별 패턴 (삼각형) ===")
+print("=== 별 패턴 (삼각형) ===")
 print_star_pattern(5)
 
 # 별 패턴 (다이아몬드)
-print("\n=== 별 패턴 (다이아몬드) ===")
+print("=== 별 패턴 (다이아몬드) ===")
 print_diamond_pattern(5)
 
 # 파스칼 삼각형에서 패턴 찾기
-print("\n=== 파스칼의 삼각형에서 발견되는 패턴 ===")
+print("=== 파스칼의 삼각형에서 발견되는 패턴 ===")
 print("1. 각 행의 합은 2의 거듭제곱:")
 for i, row in enumerate(pascal_triangle):
     row_sum = sum(row)
     print(f"  행 {i}: 합 = {row_sum} = 2^{i}")
 
-print("\n2. 대각선의 합:")
+print("2. 대각선의 합:")
 for i in range(min(5, pascal_rows)):
     diagonal_sum = sum(pascal_triangle[j][j] for j in range(i + 1))
     print(f"  대각선 {i}까지의 합: {diagonal_sum}")`,

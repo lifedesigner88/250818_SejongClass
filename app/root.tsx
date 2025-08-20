@@ -38,8 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration/>
         <Scripts/>
-        {/* https://pyodide.org/en/stable/index.html */}
-        {/*<script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"></script>*/}
+        <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"/>
         </body>
         </html>
     );
