@@ -9,25 +9,30 @@ export default function MonacoDemo() {
     const [code, setCode] = useState(PYTHON_CODE.basic);
 
     const toggleTheme = () => {
-        // 테마 순환: vs-dark -> vs -> hc-black -> vs-dark
-        if (theme === 'vs-dark') {
-            setTheme('vs');
-        } else if (theme === 'vs') {
-            setTheme('hc-black');
-        } else {
-            setTheme('vs-dark');
-        }
+        if (theme === 'vs-dark') setTheme('vs')
+        else if (theme === 'vs') setTheme('hc-black')
+        else setTheme('vs-dark');
     };
-
-
 
     // 에디터 초기화 함수
     const handleReset = () => {
-        setCode('# 코드를 입력하세요');
+        setCode(PYTHON_CODE.default);
     };
 
     // 예제 코드 적용 함수
-    const handleExample = () => setCode(PYTHON_CODE.math);
+    const handleExample = () => {
+        const examples = [
+            PYTHON_CODE.math,
+            PYTHON_CODE.physics,
+            PYTHON_CODE.data,
+            PYTHON_CODE.encrypt,
+            PYTHON_CODE.game,
+            PYTHON_CODE.pattern,
+            PYTHON_CODE.prime
+        ];
+        const randomIndex = Math.floor(Math.random() * examples.length);
+        setCode(examples[randomIndex]);
+    };
 
     return (
         <div className="container mx-auto p-6">
