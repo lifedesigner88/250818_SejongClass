@@ -262,3 +262,134 @@
 - **결제 시스템 오류**: 결제 중단 시 임시 저장 → 관리자 연락할 수 있는 채널 안내 → 24시간 내 해결 보장
 - **학습 데이터 손실**: 학습 진도 데이터 손실 → 매일 학습 진도관련 DB 백업 → 24시간 내에 데이터 복구 보장  
 - **부적절한 커뮤니티 활동**: 사용자 신고 시스템 → 3단계 경고 제도 → 영구 정지 시 환불 정책 적용
+
+
+
+
+# ✅ Data Model Planning Worksheet
+
+## [🔗 ERD Cloud Diagram Link](https://www.erdcloud.com/d/xhrSRC3koR8MXMipv)
+
+
+## 1. 시스템의 핵심 엔터티(Entities)는 무엇인가요?
+
+- **Users** - 시스템을 사용하는 사용자들 (학습자, 관리자 등)
+- **Textbooks** - 교재/교과서 (학습 콘텐츠의 최상위 단위)
+- **Units** - 학습 단위 (실제 학습이 이루어지는 최소 단위)
+- **Concepts** - 학습 개념 (지식의 기본 단위)
+- **Progress** - 학습 진도 (사용자의 학습 상태 추적)
+
+---
+
+## 2. 각 엔터티의 필드를 정의하세요:
+
+**[Users]**
+- `user_id` (UUID) - Primary Key
+- `email` (VARCHAR(255)) - Unique, Not Null
+- `username` (VARCHAR(100)) - Not Null
+- `password_hash` (VARCHAR(255)) - Not Null
+- `role` (VARCHAR(20)) - Not Null
+- `profile_image_url` (TEXT) - Optional
+- `created_at` (TIMESTAMP)
+- `updated_at` (TIMESTAMP)
+
+**[Textbooks]**
+- `textbook_id` (SMALLSERIAL) - Primary Key
+- `title` (VARCHAR(200)) - Not Null
+- `slug` (VARCHAR(200)) - Unique, Not Null
+- `description` (TEXT) - Optional
+- `grade_level` (VARCHAR(50)) - Optional
+- `semester` (VARCHAR(10)) - Optional
+- `price` (INTEGER) - Default 0
+- `cover_image_url` (TEXT) - Optional
+- `is_published` (BOOLEAN) - Default False
+- `sort_order` (INTEGER) - Not Null
+- `subjects_id` (SMALLINT) - Foreign Key
+
+**[Units]**
+- `unit_id` (SERIAL) - Primary Key
+- `title` (VARCHAR(300)) - Not Null
+- `slug` (VARCHAR(300)) - Unique, Not Null
+- `youtube_video_id` (VARCHAR(20)) - Optional
+- `readme_content` (TEXT) - Optional
+- `estimated_duration` (INTEGER) - Minutes
+- `sort_order` (INTEGER) - Not Null
+- `is_published` (BOOLEAN) - Default False
+- `middle_chapter_id` (SMALLINT) - Foreign Key
+
+**[Concepts]**
+- `concept_id` (SERIAL) - Primary Key
+- `name` (VARCHAR(200)) - Not Null
+- `slug` (VARCHAR(200)) - Unique, Not Null
+- `description` (TEXT) - Optional
+- `definition` (TEXT) - Optional
+- `difficulty_level` (INTEGER) - 1-10 scale
+- `tags` (JSONB) - Default '{}'
+- `created_at` (TIMESTAMP)
+- `updated_at` (TIMESTAMP)
+
+**[Progress]**
+- `user_id` (UUID) - Foreign Key, Composite Primary Key
+- `units_id` (INTEGER) - Foreign Key, Composite Primary Key
+- `completion_status` (BOOLEAN) - Default False
+- `completion_percentage` (INTEGER) - 0-100
+- `notes` (TEXT) - Optional
+- `created_at` (TIMESTAMP)
+- `updated_at` (TIMESTAMP)
+
+---
+
+## 3. 어떤 관계들이 존재하나요?
+
+- **Themes (1) ↔ Subjects (N)** - 하나의 테마는 여러 과목을 가질 수 있음
+- **Subjects (1) ↔ Textbooks (N)** - 하나의 과목은 여러 교재를 가질 수 있음
+- **Textbooks (1) ↔ Major Chapters (N)** - 교재는 여러 대단원을 포함
+- **Major Chapters (1) ↔ Middle Chapters (N)** - 대단원은 여러 중단원을 포함
+- **Middle Chapters (1) ↔ Units (N)** - 중단원은 여러 학습 단위를 포함
+- **Users (N) ↔ Textbooks (N)** - 다대다 관계 (user_textbook_enrollments를 통해)
+- **Users (N) ↔ Units (N)** - 다대다 관계 (progress를 통해)
+- **Users (N) ↔ Concepts (N)** - 다대다 관계 (user_concepts를 통해)
+- **Units (N) ↔ Concepts (N)** - 다대다 관계 (unit_concepts를 통해)
+- **Concepts (N) ↔ Concepts (N)** - 자기참조 관계 (prerequisites, supportives)
+
+---
+
+## 4. 어떤 CRUD 작업이 필요한가요?
+*각 엔터티에 대해 Create, Read, Update, Delete 중 어떤 작업이 필요한지, 그리고 누가 수행할 수 있는지를 정의하세요.*
+
+| Entity    | Create             | Read                | Update             | Delete           |
+|-----------|--------------------|---------------------|--------------------|------------------|
+| Users     | 회원가입시 (본인)         | 프로필조회 (본인, 관리자)     | 프로필수정 (본인, 관리자)    | 회원탈퇴 (본인, 관리자)   |
+| Textbooks | 콘텐츠 생성 (관리자, 강사)   | 교재 목록/상세 (모든 사용자)   | 교재 정보 수정 (관리자, 강사) | 교재 삭제 (관리자)      |
+| Units     | 학습 단위 생성 (관리자, 강사) | 학습 내용 조회 (수강생, 관리자) | 학습 내용 수정 (관리자, 강사) | 학습 단위 삭제 (관리자)   |
+| Concepts  | 개념 생성 (관리자, 강사)    | 개념 조회 (모든 사용자)      | 개념 수정 (관리자, 강사)    | 개념 삭제 (관리자)      |
+| Progress  | 학습 시작시 (본인)        | 진도 조회 (본인, 관리자)     | 진도 업데이트 (본인)       | 진도 초기화 (본인, 관리자) |
+
+---
+
+## 5. 어떤 규칙이나 제약이 존재하나요?
+
+- **사용자 관련**
+   - 이메일은 유니크해야 하며 유효한 이메일 형식이어야 함
+   - 사용자명은 중복될 수 없으며 특수문자 제한
+   - 비밀번호는 해시화하여 저장
+
+- **교재/학습 구조 관련**
+   - 교재는 발행(is_published)된 것만 수강 가능
+   - 학습 단위의 정렬 순서(sort_order)는 중복될 수 없음
+   - 상위 챕터가 삭제되면 하위 챕터/단위도 함께 삭제
+
+- **진도 관리 관련**
+   - 진도율(completion_percentage)은 0-100 사이의 값
+   - 사용자는 수강 등록된 교재의 단위만 학습 가능
+   - 완료 상태(completion_status)가 true면 completion_percentage는 100이어야 함
+
+- **개념 관리 관련**
+   - 선수 개념(prerequisites)에 순환 참조가 발생하면 안됨
+   - 난이도 레벨(difficulty_level)은 1-10 사이의 값
+   - 개념의 마스터율(master_rate)은 0-100 사이의 값
+
+- **수강 등록 관련**
+   - 유료 교재는 결제 완료 후 접근 가능
+   - 수강 기간(access_expires_at) 만료 시 접근 제한
+   - 리뷰와 평점은 수강 등록된 사용자만 작성 가능
