@@ -268,6 +268,7 @@
 
 # ✅ Data Model Planning Worksheet
 
+![img_1.png](app/src/readme/img/img_1.png)
 ## [🔗 ERD Cloud Diagram Link](https://www.erdcloud.com/d/xhrSRC3koR8MXMipv)
 
 
