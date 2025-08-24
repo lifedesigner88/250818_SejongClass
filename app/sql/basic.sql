@@ -10,18 +10,27 @@ CREATE TABLE "users" (
                          "updated_at" TIMESTAMP,
                          CONSTRAINT "PK_USERS" PRIMARY KEY ("user_id")
 );
-
 CREATE TABLE "themes" (
-                          "themes_id" SMALLSERIAL NOT NULL,
-                          "name" VARCHAR(100) NOT NULL,
-                          "slug" VARCHAR(100) NOT NULL,
-                          "description" TEXT,
-                          "icon_url" TEXT,
-                          "is_active" BOOLEAN,
-                          "sort_order" INTEGER NOT NULL,
-                          "created_at" TIMESTAMP,
-                          CONSTRAINT "PK_THEMES" PRIMARY KEY ("themes_id")
+                          "themes_id" serial PRIMARY KEY NOT NULL,
+                          "name" varchar(100) NOT NULL,
+                          "slug" varchar(100) NOT NULL,
+                          "is_active" boolean DEFAULT true NOT NULL,
+                          "sort_order" smallint NOT NULL,
+                          "icon_url" varchar(200)
 );
+
+--> sta
+CREATE TABLE "subjects" (
+                            "subjects" serial PRIMARY KEY NOT NULL,
+                            "name" varchar(100) NOT NULL,
+                            "slug" varchar(100) NOT NULL,
+                            "is_active" boolean DEFAULT true NOT NULL,
+                            "sort_order" smallint NOT NULL,
+                            "icon_url" varchar(200),
+                            "themes_id" integer NOT NULL
+);
+--> statement-breakpoint
+ALTER TABLE "subjects" ADD CONSTRAINT "subjects_themes_id_themes_themes_id_fk" FOREIGN KEY ("themes_id") REFERENCES "public"."themes"("themes_id") ON DELETE cascade ON UPDATE cascade;
 
 CREATE TABLE "concepts" (
                             "concept_id" SERIAL NOT NULL,
@@ -36,19 +45,6 @@ CREATE TABLE "concepts" (
                             CONSTRAINT "PK_CONCEPTS" PRIMARY KEY ("concept_id")
 );
 
--- themes에 의존하는 테이블
-CREATE TABLE "subjects" (
-                            "subjects_id" SMALLSERIAL NOT NULL,
-                            "name" VARCHAR(100) NOT NULL,
-                            "slug" VARCHAR(100) NOT NULL,
-                            "description" TEXT,
-                            "difficulty_level" INTEGER,
-                            "sort_order" INTEGER NOT NULL,
-                            "is_active" BOOLEAN,
-                            "created_at" TIMESTAMP,
-                            "themes_id" SMALLINT NOT NULL,
-                            CONSTRAINT "PK_SUBJECTS" PRIMARY KEY ("subjects_id"),
-                            CONSTRAINT "FK_SUBJECTS_THEMES" FOREIGN KEY ("themes_id") REFERENCES "themes" ("themes_id")
 );
 
 -- subjects에 의존하는 테이블

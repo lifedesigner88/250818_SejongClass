@@ -46,9 +46,11 @@ export default function HomePage() {
                                 🚀 지금 시작하기 (무료)
                             </Button>
                         </Link>
-                        <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-blue-400 text-blue-200 hover:bg-blue-500/10">
-                            📚 강의 둘러보기
-                        </Button>
+                        <Link to="/test-page">
+                            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-blue-400 text-blue-200 hover:bg-blue-500/10">
+                                📚 강의 둘러보기
+                            </Button>
+                        </Link>
                     </div>
 
                     {/* Demo Preview */}
