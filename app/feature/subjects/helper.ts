@@ -1,4 +1,4 @@
-import { themesTable } from "~/feature/themes/themesSchema";
+import { themesTable } from "~/feature/themes/schema";
 import { db } from "~/db";
 
 

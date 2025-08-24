@@ -1,0 +1,24 @@
+import { boolean, integer, pgTable, serial, varchar, check } from "drizzle-orm/pg-core";
+import { subjectsTable } from "~/feature/subjects/schema";
+import { sql } from "drizzle-orm";
+
+export const textbooksTable = pgTable("textbooks", {
+    textbook_id: serial().primaryKey(),
+
+    title: varchar({ length: 100 }).notNull().unique(),
+    slug: varchar({ length: 100 }).notNull().unique(),
+    price: integer().default(0).notNull(),
+    is_published: boolean().default(false).notNull(),
+    sort_order: integer().default(1).notNull(),
+    description: varchar({ length: 500 }),
+    cover_image_url: varchar({ length: 500 }),
+
+    // foreign key
+    subjects_id: integer().references(() => subjectsTable.subject_id, {
+        onDelete: "cascade"
+    }).notNull(),
+
+}, () => [
+    check("sort_order_positive", sql`sort_order > 0`),
+    check("price_positive", sql`price >= 0`),
+]);

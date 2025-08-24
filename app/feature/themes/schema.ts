@@ -1,0 +1,18 @@
+import { boolean, pgTable, serial, smallint, varchar, check } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+export const themesTable = pgTable("themes", {
+        themes_id: serial().primaryKey(),
+
+        name: varchar({ length: 100 }).notNull().unique(),
+        slug: varchar({ length: 100 }).notNull().unique(),
+        is_active: boolean().default(true).notNull(),
+        sort_order: smallint().default(1).notNull(),
+        icon_url: varchar({ length: 200 }),
+
+    }, (table) => [
+        check("sort_order_positive", sql`sort_order > 0`),
+    ]
+);
+
+

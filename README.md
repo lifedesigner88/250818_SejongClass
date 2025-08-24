@@ -1,3 +1,5 @@
+![img.png](app/src/readme/img/img.png)
+
 
 # ✅ SejongClass: Code Your Life with Math & Physics (코드로 배우는 수학, 물리, 그리고 인생공략 알고리즘)
 

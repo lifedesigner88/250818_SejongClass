@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { themesTable } from "~/feature/themes/themesSchema";
-import { subjectsTable } from "~/feature/subjects/subjectsSchema";
+import { themesTable } from "~/feature/themes/schema";
+import { subjectsTable } from "~/feature/subjects/schema";
 
 import { Pool } from 'pg';
 
