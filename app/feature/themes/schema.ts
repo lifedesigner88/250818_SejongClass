@@ -10,7 +10,7 @@ export const themesTable = pgTable("themes", {
         sort_order: smallint().default(1).notNull(),
         icon_url: varchar({ length: 200 }),
 
-    }, (table) => [
+    }, () => [
         check("sort_order_positive", sql`sort_order > 0`),
     ]
 );

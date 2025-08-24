@@ -1,4 +1,4 @@
-import { boolean,  integer, pgTable, primaryKey, smallint, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean,  integer, pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { unitsTable } from "~/feature/units/schema";
 

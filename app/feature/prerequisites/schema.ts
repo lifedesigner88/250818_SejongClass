@@ -1,4 +1,4 @@
-import { check, integer, pgTable, primaryKey, timestamp, varchar } from "drizzle-orm/pg-core";
+import { check, integer, pgTable, primaryKey, varchar } from "drizzle-orm/pg-core";
 import { conceptsTable } from "~/feature/concepts/schema";
 import { sql } from "drizzle-orm";
 

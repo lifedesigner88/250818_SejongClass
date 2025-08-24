@@ -1,4 +1,4 @@
-import { boolean, check, integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, check, integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
 import { majorsTable } from "~/feature/majors/schema";
 import { sql } from "drizzle-orm";
 
@@ -13,7 +13,7 @@ export const middlesTable = pgTable("middles", {
         onDelete: "cascade"
     }).notNull(),
 
-}, (table) => [
+}, () => [
     check("sort_order_positive", sql`sort_order >= 0`),
 ]);
 
