@@ -1,7 +1,7 @@
 import { check, integer, pgTable, primaryKey, varchar } from "drizzle-orm/pg-core";
 import { unitsTable } from "~/feature/units/schema";
 import { conceptsTable } from "~/feature/concepts/schema";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 export const dealingsTable = pgTable("dealings", {
         unit_id: integer().references(() => unitsTable.unit_id, {
@@ -22,3 +22,14 @@ export const dealingsTable = pgTable("dealings", {
         check("sort_order_positive", sql`sort_order > 0`),
     ]
 );
+
+export const dealingsRelations = relations(dealingsTable, ({ one }) => ({
+    unit: one(unitsTable, {
+        fields: [dealingsTable.unit_id],
+        references: [unitsTable.unit_id],
+    }),
+    concept: one(conceptsTable, {
+        fields: [dealingsTable.concept_id],
+        references: [conceptsTable.concept_id],
+    }),
+}))

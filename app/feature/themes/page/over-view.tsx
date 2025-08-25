@@ -1,20 +1,20 @@
 import { getThemesWithSubjects } from "~/feature/themes/quries";
 import type { Route } from "./+types/over-view";
+import { useEffect } from "react";
 
 export const loader = async () => {
 
     const themeWithSubjects = await getThemesWithSubjects();
-    console.dir(themeWithSubjects, {
-        depth: null,
-    })
 
     return { themeWithSubjects }
 }
 
-
 export default function OverViewPage({ loaderData }: Route.ComponentProps) {
     const { themeWithSubjects: themes } = loaderData;
-    console.log("themes", themes)
+    useEffect(() => {
+        console.log("🌐 [CLIENT ONLY] themes", themes);
+    }, [themes]);
+
     return (
         <div>
             {themes.map((theme) => (
@@ -39,7 +39,15 @@ export default function OverViewPage({ loaderData }: Route.ComponentProps) {
                                                                     <div>
                                                                         {middle.units.map((unit) => (
                                                                             <div key={unit.unit_id}>
-                                                                                <h1 >{`.............................. `}{unit.title} </h1>
+                                                                                <h1 className={"text-pink-500"}>{`.............................. `}{unit.title} </h1>
+                                                                                <div>
+                                                                                    {unit.dealings.map((unitConcept) => (
+                                                                                        <div
+                                                                                            key={unitConcept.concept.concept_id}>
+                                                                                            <h1 className={"text-cyan-500"}>{`................................... `}({unitConcept.concept.concept_id}) {unitConcept.concept.name}</h1>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
                                                                             </div>
                                                                         ))}
                                                                     </div>

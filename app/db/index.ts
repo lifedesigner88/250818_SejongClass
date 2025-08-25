@@ -9,6 +9,8 @@ import { textbooksRelations, textbooksTable } from "~/feature/textbooks/schema";
 import { majorsRelations, majorsTable } from "~/feature/majors/schema";
 import { middlesRelations, middlesTable } from "~/feature/middles/schema";
 import { unitsRelations, unitsTable } from "~/feature/units/schema";
+import { dealingsRelations, dealingsTable } from "~/feature/dealings/schema";
+import { conceptsRelations, conceptsTable } from "~/feature/concepts/schema";
 
 
 const pool = new Pool({
@@ -44,6 +46,11 @@ const db = drizzle({
         unitsTable,
         unitsRelations,
 
+        dealingsTable,
+        dealingsRelations,
+
+        conceptsTable,
+        conceptsRelations,
     }
 });
 

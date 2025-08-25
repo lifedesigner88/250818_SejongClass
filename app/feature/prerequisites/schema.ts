@@ -19,5 +19,6 @@ export const PrerequisitesTable = pgTable("prerequisites", {
             columns: [table.concept_id, table.prerequisite_id]
         }),
         check("sort_order_positive", sql`sort_order > 0`),
+        check("concept_not_self_prerequisite", sql`concept_id != prerequisite_id`),
     ]
 );

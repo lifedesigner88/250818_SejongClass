@@ -1,6 +1,7 @@
 import { boolean, check, integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
 import { middlesTable } from "~/feature/middles/schema";
 import { relations, sql } from "drizzle-orm";
+import { dealingsTable } from "~/feature/dealings/schema";
 
 export const unitsTable = pgTable("units", {
     unit_id: serial().primaryKey(),
@@ -23,9 +24,10 @@ export const unitsTable = pgTable("units", {
 ]);
 
 
-export const unitsRelations = relations(unitsTable, ({ one }) => ({
+export const unitsRelations = relations(unitsTable, ({ one, many }) => ({
     middle: one(middlesTable, {
         fields: [unitsTable.middle_chapter_id],
         references: [middlesTable.middle_id],
     }),
+    dealings: many(dealingsTable),
 }));

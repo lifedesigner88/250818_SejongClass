@@ -1,7 +1,9 @@
 import db from "~/db";
 
 export async function getThemesWithSubjects() {
-    return db.query.themesTable.findMany({
+    const startTime = performance.now();
+
+    const result = await db.query.themesTable.findMany({
         columns: {
             themes_id: true,
             name: true,
@@ -55,7 +57,22 @@ export async function getThemesWithSubjects() {
                                                     is_published: true,
                                                     sort_order: true,
                                                 },
-                                                orderBy: (units, { asc }) => [asc(units.sort_order)]
+                                                orderBy: (units, { asc }) => [asc(units.sort_order)],
+                                                with: {
+                                                    dealings: {
+                                                        with: {
+                                                            concept: {
+                                                                columns: {
+                                                                    concept_id: true,
+                                                                    name: true,
+                                                                    slug: true,
+                                                                    definition: true,
+                                                                    name_eng: true,
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -67,6 +84,22 @@ export async function getThemesWithSubjects() {
             }
         }
     });
+
+    const endTime = performance.now();
+    const duration = endTime - startTime;
+
+    console.log(`🚀 Query execution time: ${duration.toFixed(2)}ms`);
+    console.log(`📊 Total themes: ${result.length}`);
+
+    // 더 자세한 통계
+    const totalSubjects = result.reduce((acc, theme) => acc + theme.subjects.length, 0);
+    const totalTextbooks = result.reduce((acc, theme) =>
+        acc + theme.subjects.reduce((subAcc, subject) => subAcc + subject.textbooks.length, 0), 0);
+
+    console.log(`📚 Total subjects: ${totalSubjects}`);
+    console.log(`📖 Total textbooks: ${totalTextbooks}`);
+
+    return result;
 }
 
 

@@ -40,7 +40,6 @@ export default function TestPage({ loaderData, actionData }: Route.ComponentProp
     if (actionData) console.log("actionData", actionData)
     if (actionData && actionData.error) console.log("errors", actionData.error)
 
-    console.log("loaderData", loaderData)
 
 
     return (<>
