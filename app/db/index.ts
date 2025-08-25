@@ -5,6 +5,10 @@ import { Pool } from 'pg';
 // 모든 스키마 import
 import { themesTable, themesRelations } from "~/feature/themes/schema";
 import { subjectsTable, subjectsRelations } from "~/feature/subjects/schema";
+import { textbooksRelations, textbooksTable } from "~/feature/textbooks/schema";
+import { majorsRelations, majorsTable } from "~/feature/majors/schema";
+import { middlesRelations, middlesTable } from "~/feature/middles/schema";
+import { unitsRelations, unitsTable } from "~/feature/units/schema";
 
 
 const pool = new Pool({
@@ -27,6 +31,18 @@ const db = drizzle({
 
         subjectsTable,
         subjectsRelations,
+
+        textbooksTable,
+        textbooksRelations,
+
+        majorsTable,
+        majorsRelations,
+
+        middlesTable,
+        middlesRelations,
+
+        unitsTable,
+        unitsRelations,
 
     }
 });

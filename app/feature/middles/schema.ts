@@ -1,6 +1,7 @@
 import { boolean, check, integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
 import { majorsTable } from "~/feature/majors/schema";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
+import { unitsTable } from "~/feature/units/schema";
 
 export const middlesTable = pgTable("middles", {
     middle_id: serial().primaryKey(),
@@ -17,3 +18,10 @@ export const middlesTable = pgTable("middles", {
     check("sort_order_positive", sql`sort_order >= 0`),
 ]);
 
+export const middlesRelations = relations(middlesTable, ({ one, many }) => ({
+    major: one(majorsTable, {
+        fields: [middlesTable.major_id],
+        references: [majorsTable.major_id],
+    }),
+    units: many(unitsTable),
+}));

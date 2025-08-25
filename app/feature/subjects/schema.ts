@@ -1,6 +1,7 @@
 import { boolean, check, integer, pgTable, serial, smallint, varchar } from "drizzle-orm/pg-core";
 import { themesTable } from "~/feature/themes/schema";
 import { relations, sql } from "drizzle-orm";
+import { textbooksTable } from "~/feature/textbooks/schema";
 
 export const subjectsTable = pgTable("subjects", {
         subject_id: serial().primaryKey(),
@@ -20,9 +21,10 @@ export const subjectsTable = pgTable("subjects", {
         check("sort_order_positive", sql`sort_order > 0`),
     ]);
 
-export const subjectsRelations = relations(subjectsTable, ({ one }) => ({
+export const subjectsRelations = relations(subjectsTable, ({ one, many }) => ({
     themes: one(themesTable, {
         fields: [subjectsTable.themes_id],
         references: [themesTable.themes_id],
     }),
+    textbooks: many(textbooksTable),
 }))
