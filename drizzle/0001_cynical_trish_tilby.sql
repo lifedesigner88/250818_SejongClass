@@ -1,2 +1,0 @@
-ALTER TABLE "prerequisites" ADD CONSTRAINT "concept_not_self_prerequisite" CHECK (concept_id != prerequisite_id);--> statement-breakpoint
-ALTER TABLE "supportives" ADD CONSTRAINT "concept_not_self_supportive" CHECK (concept_id != supportive_id);

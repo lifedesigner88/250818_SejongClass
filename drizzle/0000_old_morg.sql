@@ -65,7 +65,8 @@ CREATE TABLE "prerequisites" (
 	"description" varchar(100),
 	"sort_order" integer DEFAULT 1 NOT NULL,
 	CONSTRAINT "pk_prerequisite_concept" PRIMARY KEY("concept_id","prerequisite_id"),
-	CONSTRAINT "sort_order_positive" CHECK (sort_order > 0)
+	CONSTRAINT "sort_order_positive" CHECK (sort_order > 0),
+	CONSTRAINT "concept_not_self_prerequisite" CHECK (concept_id != prerequisite_id)
 );
 --> statement-breakpoint
 CREATE TABLE "progress" (
@@ -93,7 +94,8 @@ CREATE TABLE "supportives" (
 	"description" varchar(100),
 	"sort_order" integer DEFAULT 1 NOT NULL,
 	CONSTRAINT "pk_supportive_concept" PRIMARY KEY("concept_id","supportive_id"),
-	CONSTRAINT "sort_order_positive" CHECK (sort_order > 0)
+	CONSTRAINT "sort_order_positive" CHECK (sort_order > 0),
+	CONSTRAINT "concept_not_self_supportive" CHECK (concept_id != supportive_id)
 );
 --> statement-breakpoint
 CREATE TABLE "textbooks" (

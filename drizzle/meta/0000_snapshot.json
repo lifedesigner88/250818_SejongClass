@@ -1,5 +1,5 @@
 {
-  "id": "d086fd55-52f4-4e52-838b-ce2170a331ee",
+  "id": "0364bbd4-27ba-4cc9-9afe-23a5b45547d9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -532,6 +532,10 @@
         "sort_order_positive": {
           "name": "sort_order_positive",
           "value": "sort_order > 0"
+        },
+        "concept_not_self_prerequisite": {
+          "name": "concept_not_self_prerequisite",
+          "value": "concept_id != prerequisite_id"
         }
       },
       "isRLSEnabled": false
@@ -760,6 +764,10 @@
         "sort_order_positive": {
           "name": "sort_order_positive",
           "value": "sort_order > 0"
+        },
+        "concept_not_self_supportive": {
+          "name": "concept_not_self_supportive",
+          "value": "concept_id != supportive_id"
         }
       },
       "isRLSEnabled": false

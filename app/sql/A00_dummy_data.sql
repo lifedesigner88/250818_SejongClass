@@ -1,306 +1,807 @@
--- 더미 데이터 삽입 스크립트
--- 의존성 순서: themes → subjects → textbooks → majors → middles → units → concepts → users → 관계 테이블들
-
--- 1. themes (최상위 테이블)
-INSERT INTO themes (name, slug, is_active, sort_order, icon_url)
-VALUES ('과학', 'science', true, 1, 'https://example.com/icons/science.svg'),
-       ('수학', 'mathematics', true, 2, 'https://example.com/icons/math.svg'),
-       ('언어', 'language', true, 3, 'https://example.com/icons/language.svg'),
-       ('예술', 'arts', true, 4, 'https://example.com/icons/arts.svg'),
-       ('기술', 'technology', true, 5, 'https://example.com/icons/tech.svg');
-
--- 2. subjects (themes 의존)
-INSERT INTO subjects (name, slug, is_active, sort_order, icon_url, themes_id)
-VALUES ('물리학', 'physics', true, 1, 'https://example.com/icons/physics.svg', 1),
-       ('화학', 'chemistry', true, 2, 'https://example.com/icons/chemistry.svg', 1),
-       ('생물학', 'biology', true, 3, 'https://example.com/icons/biology.svg', 1),
-       ('미적분학', 'calculus', true, 1, 'https://example.com/icons/calculus.svg', 2),
-       ('선형대수', 'linear-algebra', true, 2, 'https://example.com/icons/algebra.svg', 2),
-       ('한국어', 'korean', true, 1, 'https://example.com/icons/korean.svg', 3),
-       ('영어', 'english', true, 2, 'https://example.com/icons/english.svg', 3),
-       ('프로그래밍', 'programming', true, 1, 'https://example.com/icons/programming.svg', 5),
-       ('회화', 'painting', true, 1, 'https://example.com/icons/painting.svg', 4),
-       ('음악', 'music', true, 2, 'https://example.com/icons/music.svg', 4);
-
--- 3. textbooks (subjects 의존)
-INSERT INTO textbooks (title, slug, price, is_published, sort_order, description, cover_image_url, subjects_id)
-VALUES ('기초 물리학', 'basic-physics', 25000, true, 1, '물리학의 기본 개념을 다루는 교재입니다.', 'https://example.com/covers/physics.jpg',
-        1),
-       ('고급 물리학', 'advanced-physics', 35000, true, 2, '심화된 물리학 이론을 학습합니다.',
-        'https://example.com/covers/advanced-physics.jpg', 1),
-       ('일반 화학', 'general-chemistry', 28000, true, 1, '화학의 기본 원리를 배웁니다.', 'https://example.com/covers/chemistry.jpg',
-        2),
-       ('유기 화학', 'organic-chemistry', 32000, true, 2, '유기화합물의 구조와 반응을 학습합니다.',
-        'https://example.com/covers/organic-chemistry.jpg', 2),
-       ('세포 생물학', 'cell-biology', 30000, true, 1, '세포의 구조와 기능을 다룹니다.', 'https://example.com/covers/cell-biology.jpg',
-        3),
-       ('미적분학 I', 'calculus-1', 22000, true, 1, '미분과 적분의 기본을 배웁니다.', 'https://example.com/covers/calculus1.jpg', 4),
-       ('미적분학 II', 'calculus-2', 24000, true, 2, '다변수 함수와 벡터 해석을 학습합니다.', 'https://example.com/covers/calculus2.jpg',
-        4),
-       ('선형대수학', 'linear-algebra-book', 26000, true, 1, '벡터와 행렬의 이론을 다룹니다.',
-        'https://example.com/covers/linear-algebra.jpg', 5),
-       ('JavaScript 완전 정복', 'javascript-mastery', 35000, true, 1, '모던 JavaScript를 마스터하세요.',
-        'https://example.com/covers/javascript.jpg', 8),
-       ('Python 프로그래밍', 'python-programming', 30000, true, 2, 'Python의 기초부터 고급까지.',
-        'https://example.com/covers/python.jpg', 8);
-
--- 4. majors (textbooks 의존)
-INSERT INTO majors (title, sort_order, is_published, textbook_id)
-VALUES ('역학의 기초', 1, true, 1),
-       ('전자기학', 2, true, 1),
-       ('열역학과 통계역학', 3, true, 2),
-       ('양자역학 입문', 4, true, 2),
-       ('원자와 분자', 1, true, 3),
-       ('화학 반응과 평형', 2, true, 3),
-       ('세포막과 세포질', 1, true, 5),
-       ('유전학 기초', 2, true, 5),
-       ('극한과 연속성', 1, true, 6),
-       ('미분의 응용', 2, true, 6),
-       ('적분의 기법', 3, true, 6),
-       ('다중적분', 1, true, 7),
-       ('벡터 공간', 1, true, 8),
-       ('고유값과 고유벡터', 2, true, 8),
-       ('ES6와 모던 문법', 1, true, 9),
-       ('비동기 프로그래밍', 2, true, 9),
-       ('데이터 구조', 1, true, 10),
-       ('알고리즘 설계', 2, true, 10);
-
--- 5. middles (majors 의존)
-INSERT INTO middles (title, sort_order, is_published, major_id)
-VALUES ('뉴턴 법칙', 1, true, 1),
-       ('운동량과 에너지', 2, true, 1),
-       ('전기장의 개념', 1, true, 2),
-       ('자기장의 성질', 2, true, 2),
-       ('온도와 열', 1, true, 3),
-       ('엔트로피와 열역학 법칙', 2, true, 3),
-       ('파동함수', 1, true, 4),
-       ('불확정성 원리', 2, true, 4),
-       ('원자 구조', 1, true, 5),
-       ('분자 결합', 2, true, 5),
-       ('세포막의 구조', 1, true, 7),
-       ('세포 호흡', 2, true, 7),
-       ('극한의 정의', 1, true, 9),
-       ('연속함수', 2, true, 9),
-       ('변수와 함수', 1, true, 15),
-       ('조건문과 반복문', 2, true, 15),
-       ('Promise와 async/await', 1, true, 16),
-       ('이벤트 루프', 2, true, 16);
-
--- 6. units (middles 의존)
-INSERT INTO units (title, youtube_video_id, readme_content, estimated_duration, sort_order, is_published,
-                   middle_chapter_id)
-VALUES ('뉴턴 제1법칙 이해하기', 'abc123def456', '관성의 법칙에 대해 알아봅시다.', 1800, 1, true, 1),
-       ('뉴턴 제2법칙 적용하기', 'def456ghi789', 'F=ma 공식을 실생활에 적용해봅시다.', 2100, 2, true, 1),
-       ('뉴턴 제3법칙과 작용-반작용', 'ghi789jkl012', '작용-반작용 법칙의 예시를 살펴봅시다.', 1500, 3, true, 1),
-       ('운동량 보존법칙', 'jkl012mno345', '운동량이 보존되는 조건을 알아봅시다.', 2400, 1, true, 2),
-       ('운동 에너지와 위치 에너지', 'mno345pqr678', '에너지의 종류와 전환을 학습합니다.', 2700, 2, true, 2),
-       ('전기장의 정의', 'pqr678stu901', '전기장이란 무엇인지 알아봅시다.', 1800, 1, true, 3),
-       ('쿨롱의 법칙', 'stu901vwx234', '전기력에 대한 쿨롱의 법칙을 학습합니다.', 2100, 2, true, 3),
-       ('자기장과 로렌츠 힘', 'vwx234yz567', '자기장 속에서 움직이는 전하의 운동을 살펴봅시다.', 2400, 1, true, 4),
-       ('전자기 유도', 'yz567abc890', '패러데이 법칙과 전자기 유도 현상을 학습합니다.', 2700, 2, true, 4),
-       ('온도와 열의 차이', 'abc890def123', '온도와 열의 개념을 구분해봅시다.', 1500, 1, true, 5),
-       ('파동함수의 의미', 'def123ghi456', '양자역학에서 파동함수가 의미하는 바를 알아봅시다.', 3000, 1, true, 7),
-       ('원자 오비탈', 'ghi456jkl789', '전자가 존재할 수 있는 궤도를 학습합니다.', 2700, 1, true, 9),
-       ('극한의 엄밀한 정의', 'jkl789mno012', '엡실론-델타 정의를 이해해봅시다.', 3600, 1, true, 13),
-       ('연속함수의 성질', 'mno012pqr345', '연속함수가 갖는 특성들을 알아봅시다.', 2400, 1, true, 14),
-       ('변수 선언과 스코프', 'pqr345stu678', 'let, const, var의 차이점을 알아봅시다.', 1800, 1, true, 15),
-       ('Promise 기초', 'stu678vwx901', 'JavaScript의 비동기 처리를 학습합니다.', 2700, 1, true, 17);
-
--- 7. concepts (독립 테이블)
-INSERT INTO concepts (name, slug, definition, name_eng)
-VALUES ('관성', 'inertia', '물체가 현재의 운동 상태를 유지하려는 성질', 'Inertia'),
-       ('가속도', 'acceleration', '속도의 변화율', 'Acceleration'),
-       ('운동량', 'momentum', '질량과 속도의 곱', 'Momentum'),
-       ('에너지', 'energy', '물체가 일을 할 수 있는 능력', 'Energy'),
-       ('전기장', 'electric-field', '전하 주위에 형성되는 물리적 장', 'Electric Field'),
-       ('자기장', 'magnetic-field', '자석이나 전류 주위에 형성되는 물리적 장', 'Magnetic Field'),
-       ('온도', 'temperature', '물체의 차가운 정도나 뜨거운 정도를 나타내는 물리량', 'Temperature'),
-       ('엔트로피', 'entropy', '시스템의 무질서도를 나타내는 물리량', 'Entropy'),
-       ('파동함수', 'wave-function', '양자 시스템의 상태를 기술하는 수학적 함수', 'Wave Function'),
-       ('궤도', 'orbital', '전자가 존재할 확률이 높은 공간', 'Orbital'),
-       ('극한', 'limit', '함수값이 특정값에 한없이 가까워지는 것', 'Limit'),
-       ('연속성', 'continuity', '함수가 끊어지지 않고 이어지는 성질', 'Continuity'),
-       ('미분', 'derivative', '함수의 순간변화율', 'Derivative'),
-       ('적분', 'integral', '구간에서 함수의 넓이나 부피를 구하는 것', 'Integral'),
-       ('변수', 'variable', '값을 저장하는 메모리 공간', 'Variable'),
-       ('함수', 'function', '특정 작업을 수행하는 코드 블록', 'Function'),
-       ('배열', 'array', '여러 값을 순서대로 저장하는 자료구조', 'Array'),
-       ('객체', 'object', '속성과 메서드를 가진 데이터 구조', 'Object'),
-       ('비동기', 'asynchronous', '작업이 동시에 실행되는 방식', 'Asynchronous'),
-       ('프로미스', 'promise', '비동기 작업의 결과를 나타내는 객체', 'Promise');
-
--- 8. users (독립 테이블)
-INSERT INTO users (user_id, email, username, role, nickname, profile_url)
-VALUES ('550e8400-e29b-41d4-a716-446655440001', 'john@example.com', 'john_doe', 'user', 'John',
-        'https://example.com/profiles/john.jpg'),
-       ('550e8400-e29b-41d4-a716-446655440002', 'jane@example.com', 'jane_smith', 'user', 'Jane',
-        'https://example.com/profiles/jane.jpg'),
-       ('550e8400-e29b-41d4-a716-446655440003', 'admin@example.com', 'admin_user', 'admin', 'Admin',
-        'https://example.com/profiles/admin.jpg'),
-       ('550e8400-e29b-41d4-a716-446655440004', 'alice@example.com', 'alice_wonder', 'user', 'Alice',
-        'https://example.com/profiles/alice.jpg'),
-       ('550e8400-e29b-41d4-a716-446655440005', 'bob@example.com', 'bob_builder', 'user', 'Bob',
-        'https://example.com/profiles/bob.jpg'),
-       ('550e8400-e29b-41d4-a716-446655440006', 'charlie@example.com', 'charlie_brown', 'user', 'Charlie',
-        'https://example.com/profiles/charlie.jpg'),
-       ('550e8400-e29b-41d4-a716-446655440007', 'diana@example.com', 'diana_prince', 'user', 'Diana',
-        'https://example.com/profiles/diana.jpg'),
-       ('550e8400-e29b-41d4-a716-446655440008', 'edward@example.com', 'ed_tech', 'user', 'Edward',
-        'https://example.com/profiles/edward.jpg');
-
--- 9. dealings (units와 concepts 의존)
-INSERT INTO dealings (unit_id, concept_id, discription, sort_order)
-VALUES (1, 1, '관성의 법칙과 실생활 예시', 1),
-       (2, 2, '가속도 계산 방법', 1),
-       (3, 1, '작용-반작용과 관성', 2),
-       (4, 3, '운동량 계산과 보존', 1),
-       (5, 4, '에너지 변환 과정', 1),
-       (6, 5, '전기장의 세기 계산', 1),
-       (7, 5, '쿨롱 법칙 적용', 2),
-       (8, 6, '로렌츠 힘의 계산', 1),
-       (9, 6, '전자기 유도 현상', 2),
-       (10, 7, '온도 측정과 열량', 1),
-       (11, 9, '파동함수의 해석', 1),
-       (12, 10, '원자 궤도의 모양', 1),
-       (13, 11, '극한값의 계산', 1),
-       (14, 12, '연속함수의 판별', 1),
-       (15, 15, '변수의 스코프 규칙', 1),
-       (16, 20, 'Promise 사용법', 1);
-
-INSERT INTO dealings (unit_id, concept_id, discription, sort_order)
-VALUES
-    -- 기존 단원들에 추가 개념들
-    (1, 2, '관성과 가속도의 관계', 2),
-    (1, 3, '관성계에서의 운동량 보존', 3),
-    (2, 3, '가속도와 운동량 변화율', 2),
-    (2, 4, '운동 에너지와 가속도', 3),
-    (3, 2, '작용-반작용에서 가속도 분석', 1),
-    (3, 4, '충돌에서의 에너지 손실', 3),
-    (4, 1, '운동량 보존과 관성의 원리', 2),
-    (4, 4, '탄성충돌과 에너지 보존', 2),
-    (5, 3, '에너지 변환 시 운동량 변화', 2),
-    (5, 7, '열에너지 변환과 온도', 3),
-    (6, 6, '전기장과 자기장의 상호작용', 2),
-    (7, 6, '쿨롱 힘과 자기력 비교', 3),
-    (8, 5, '로렌츠 힘과 전기장', 2),
-    (9, 5, '전자기 유도와 전기장 변화', 3),
-    (10, 8, '온도와 엔트로피의 관계', 2),
-    (11, 10, '파동함수와 원자 궤도', 2),
-    (12, 9, '궤도 모양과 파동함수 해석', 2),
-    (13, 12, '극한과 연속성의 연결', 2),
-    (14, 13, '연속함수와 미분가능성', 2),
-    (15, 16, '변수 스코프와 함수 스코프', 2);
+-- TRUNCATE와 함께 IDENTITY 컬럼도 초기화
+TRUNCATE TABLE dealings RESTART IDENTITY CASCADE;
+TRUNCATE TABLE enrollments RESTART IDENTITY CASCADE;
+TRUNCATE TABLE masters RESTART IDENTITY CASCADE;
+TRUNCATE TABLE progress RESTART IDENTITY CASCADE;
+TRUNCATE TABLE prerequisites RESTART IDENTITY CASCADE;
+TRUNCATE TABLE supportives RESTART IDENTITY CASCADE;
+TRUNCATE TABLE units RESTART IDENTITY CASCADE;
+TRUNCATE TABLE middles RESTART IDENTITY CASCADE;
+TRUNCATE TABLE majors RESTART IDENTITY CASCADE;
+TRUNCATE TABLE textbooks RESTART IDENTITY CASCADE;
+TRUNCATE TABLE subjects RESTART IDENTITY CASCADE;
+TRUNCATE TABLE themes RESTART IDENTITY CASCADE;
+TRUNCATE TABLE concepts RESTART IDENTITY CASCADE;
+TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 
 
 
--- 10. enrollments (users와 textbooks 의존)
-INSERT INTO enrollments (user_id, textbook_id, progress_rate, payment_status, review, rating)
-VALUES ('550e8400-e29b-41d4-a716-446655440001', 1, 75, true, '물리학 기초를 잘 설명해주는 좋은 교재입니다.', 8),
-       ('550e8400-e29b-41d4-a716-446655440001', 6, 50, true, '미적분학이 어렵지만 차근차근 따라가고 있습니다.', 7),
-       ('550e8400-e29b-41d4-a716-446655440002', 3, 90, true, '화학 개념이 명확하게 정리되어 있어요.', 9),
-       ('550e8400-e29b-41d4-a716-446655440002', 9, 25, true, 'JavaScript 학습 시작했습니다.', 8),
-       ('550e8400-e29b-41d4-a716-446655440004', 2, 100, true, '고급 물리학까지 완주했습니다. 훌륭한 내용!', 10),
-       ('550e8400-e29b-41d4-a716-446655440004', 8, 60, true, '선형대수가 생각보다 재미있네요.', 8),
-       ('550e8400-e29b-41d4-a716-446655440005', 5, 30, true, '생물학 처음 공부하는데 이해하기 쉬워요.', 7),
-       ('550e8400-e29b-41d4-a716-446655440006', 10, 80, true, 'Python 프로그래밍 거의 다 봤어요.', 9),
-       ('550e8400-e29b-41d4-a716-446655440007', 7, 40, true, '미적분학 II 어렵지만 포기하지 않겠어요.', 6),
-       ('550e8400-e29b-41d4-a716-446655440008', 4, 65, true, '유기화학 반응 메커니즘이 흥미로워요.', 8);
+-- 1. themes 테이블 데이터
+INSERT INTO themes (name, slug, is_active, sort_order, icon_url) VALUES
+                                                                     ('수학', 'mathematics', true, 1, '/icons/math.svg'),
+                                                                     ('물리', 'physics', true, 2, '/icons/physics.svg'),
+                                                                     ('코딩', 'coding', true, 3, '/icons/code.svg'),
+                                                                     ('인생', 'life', true, 4, '/icons/life.svg');
 
--- 11. masters (users와 concepts 의존)
-INSERT INTO masters (user_id, concept_id, master_rate)
-VALUES ('550e8400-e29b-41d4-a716-446655440001', 1, 4),
-       ('550e8400-e29b-41d4-a716-446655440001', 2, 3),
-       ('550e8400-e29b-41d4-a716-446655440001', 11, 3),
-       ('550e8400-e29b-41d4-a716-446655440002', 3, 5),
-       ('550e8400-e29b-41d4-a716-446655440002', 15, 2),
-       ('550e8400-e29b-41d4-a716-446655440004', 4, 5),
-       ('550e8400-e29b-41d4-a716-446655440004', 5, 4),
-       ('550e8400-e29b-41d4-a716-446655440004', 6, 4),
-       ('550e8400-e29b-41d4-a716-446655440005', 10, 2),
-       ('550e8400-e29b-41d4-a716-446655440006', 16, 4),
-       ('550e8400-e29b-41d4-a716-446655440006', 17, 3),
-       ('550e8400-e29b-41d4-a716-446655440006', 20, 4),
-       ('550e8400-e29b-41d4-a716-446655440007', 13, 3),
-       ('550e8400-e29b-41d4-a716-446655440008', 18, 3),
-       ('550e8400-e29b-41d4-a716-446655440008', 19, 2);
+-- 2. subjects 테이블 데이터
+INSERT INTO subjects (name, slug, is_active, sort_order, icon_url, themes_id) VALUES
+-- 수학 subjects (theme_id = 1)
+('초등', 'elementary-math', true, 1, '/icons/elementary.svg', 1),
+('중등', 'middle-math', true, 2, '/icons/middle.svg', 1),
+('고등', 'high-math', true, 3, '/icons/high.svg', 1),
+('대학', 'college-math', true, 4, '/icons/college.svg', 1),
 
--- 12. prerequisites (concepts 자기 참조)
-INSERT INTO prerequisites (concept_id, prerequisite_id, description, sort_order)
-VALUES (2, 1, '가속도를 이해하기 위해서는 먼저 관성의 개념이 필요합니다.', 1),
-       (3, 2, '운동량은 가속도 개념을 기반으로 합니다.', 1),
-       (4, 3, '에너지 보존법칙은 운동량 개념과 연관됩니다.', 1),
-       (6, 5, '자기장을 이해하려면 전기장 개념이 선행되어야 합니다.', 1),
-       (8, 7, '엔트로피는 온도 개념을 기반으로 합니다.', 1),
-       (10, 9, '원자 궤도를 이해하려면 파동함수 개념이 필요합니다.', 1),
-       (12, 11, '연속성은 극한 개념을 기반으로 합니다.', 1),
-       (13, 12, '미분은 연속성과 극한 개념이 필요합니다.', 1),
-       (14, 13, '적분은 미분의 역과정으로 미분 이해가 선행되어야 합니다.', 1),
-       (16, 15, '함수는 변수 개념을 기반으로 합니다.', 1),
-       (17, 16, '배열은 함수와 변수 개념이 필요합니다.', 1),
-       (18, 17, '객체는 배열 개념을 확장한 것입니다.', 1),
-       (20, 19, '프로미스는 비동기 개념을 구현한 것입니다.', 1);
+-- 물리 subjects (theme_id = 2)
+('기초', 'basic-physics', true, 1, '/icons/basic.svg', 2),
+('일반', 'general-physics', true, 2, '/icons/general.svg', 2),
+('고급', 'advanced-physics', true, 3, '/icons/advanced.svg', 2),
+('예술', 'artistic-physics', true, 4, '/icons/art.svg', 2),
 
-INSERT INTO prerequisites (concept_id, prerequisite_id, description, sort_order)
-VALUES
-    -- 물리학 선행조건들
-    (5, 1, '전기장을 이해하려면 관성과 힘의 개념이 기본적으로 필요합니다.', 1),
-    (7, 2, '온도는 분자의 운동과 관련되어 가속도 개념이 필요합니다.', 1),
-    (9, 4, '파동함수는 에너지 보존 개념을 바탕으로 합니다.', 1),
-    (4, 1, '에너지 보존법칙을 이해하려면 관성의 기본 개념이 필요합니다.', 2),
-    (6, 2, '자기장은 움직이는 전하와 관련되어 가속도 개념이 필요합니다.', 2),
-    (8, 4, '엔트로피는 시스템의 에너지 상태와 밀접한 관련이 있습니다.', 2),
+-- 코딩 subjects (theme_id = 3)
+('웹개발', 'web-development', true, 1, '/icons/web.svg', 3),
+('알고리즘', 'algorithms', true, 2, '/icons/algorithm.svg', 3),
+('데이터과학', 'data-science', true, 3, '/icons/data.svg', 3),
+('인공지능', 'artificial-intelligence', true, 4, '/icons/ai.svg', 3),
 
-    -- 수학 선행조건들
-    (15, 11, '변수 개념을 이해하려면 극한에 대한 기초 이해가 필요합니다.', 1),
-    (14, 12, '적분은 연속성 개념도 동시에 필요합니다.', 2),
-    (16, 11, '함수를 정의하려면 극한 개념이 기반이 되어야 합니다.', 2),
-    (13, 11, '미분은 극한의 개념을 직접적으로 사용합니다.', 2),
+-- 인생 subjects (theme_id = 4)
+('뇌과학', 'neuroscience', true, 1, '/icons/brain.svg', 4),
+('철학', 'philosophy', true, 2, '/icons/philosophy.svg', 4),
+('심리학', 'psychology', true, 3, '/icons/psychology.svg', 4),
+('경제학', 'economics', true, 4, '/icons/economics.svg', 4);
 
-    -- 프로그래밍 선행조건들
-    (18, 15, '객체를 이해하려면 변수의 개념이 먼저 필요합니다.', 2),
-    (19, 15, '비동기 처리를 위해서는 변수와 함수의 기본 개념이 필요합니다.', 1),
-    (20, 16, '프로미스를 사용하려면 함수의 개념을 알아야 합니다.', 2),
-    (17, 15, '배열을 다루기 위해서는 변수 개념이 기본적으로 필요합니다.', 2),
+-- 3. textbooks 테이블 데이터
+INSERT INTO textbooks (title, slug, price, is_published, sort_order, description, cover_image_url, subjects_id) VALUES
+-- 수학 교재들
+('초등수학 3~6학년 완전정복', 'elementary-math-complete', 0, true, 1, '덧셈부터 분수까지, 코드로 배우는 초등수학', '/covers/elem-math.jpg', 1),
+('초등수학 심화과정', 'elementary-math-advanced', 0, true, 2, '영재교육원 수준의 초등수학 심화 문제', '/covers/elem-math-adv.jpg', 1),
+('중등수학 1~3학년 개념완성', 'middle-math-concepts', 0, true, 3, '정수부터 함수까지, 시각화로 이해하는 중등수학', '/covers/middle-math.jpg', 2),
+('중등수학 실전 문제해결', 'middle-math-problem-solving', 0, true, 4, '창의적 사고력을 기르는 중등수학 문제집', '/covers/middle-math-prob.jpg', 2),
+('고등수학 수능완성', 'high-math-complete', 100000, true, 5, '수학(상)(하)부터 미적분까지, 실전 코딩으로 정복', '/covers/high-math.jpg', 3),
+('고등수학 심화과정', 'high-math-advanced', 120000, true, 6, 'KMO와 올림피아드 대비 심화 수학', '/covers/high-math-adv.jpg', 3),
+('대학수학 미적분학', 'calculus-course', 100000, true, 7, '극한부터 다중적분까지 완전 마스터', '/covers/calculus.jpg', 4),
+('대학수학 선형대수학', 'linear-algebra-course', 100000, true, 8, '벡터공간부터 고유값까지 시각화로 이해', '/covers/linear-algebra.jpg', 4),
+('대학수학 확률통계학', 'statistics-course', 100000, true, 9, '확률론부터 통계적 추론까지', '/covers/statistics.jpg', 4),
+('대학수학 이산수학', 'discrete-math-course', 100000, true, 10, '논리와 집합부터 그래프 이론까지', '/covers/discrete-math.jpg', 4),
 
-    -- 복합적인 선행조건들
-    (14, 16, '적분을 코드로 구현하려면 함수 개념이 필요합니다.', 3),
-    (10, 14, '원자 궤도는 적분으로 계산되는 확률분포와 관련됩니다.', 2),
-    (6, 14, '자기장의 세기는 적분을 통해 계산할 수 있습니다.', 3),
-    (20, 18, '프로미스는 객체 형태로 구현되어 객체 개념이 필요합니다.', 3),
-    (9, 13, '파동함수의 변화율을 구하려면 미분 개념이 필요합니다.', 2),
-    (8, 14, '엔트로피 계산에는 적분 과정이 포함됩니다.', 3);
+-- 물리 교재들
+('물리학 첫걸음', 'physics-first-step', 0, true, 11, '힘과 운동부터 시작하는 물리학 기초', '/covers/basic-physics.jpg', 5),
+('일상속 물리법칙', 'everyday-physics', 0, true, 12, '생활 속에서 발견하는 흥미로운 물리', '/covers/everyday-physics.jpg', 5),
+('일반물리학 I (역학)', 'general-physics-1', 100000, true, 13, '뉴턴역학부터 회전운동까지', '/covers/mechanics.jpg', 6),
+('일반물리학 II (전자기학)', 'general-physics-2', 100000, true, 14, '쿨롱법칙부터 맥스웰 방정식까지', '/covers/electromagnetism.jpg', 6),
+('일반물리학 III (파동과 열)', 'general-physics-3', 100000, true, 15, '파동현상과 열역학 법칙', '/covers/waves-thermo.jpg', 6),
+('현대물리학 입문', 'modern-physics-intro', 150000, true, 16, '상대성이론과 양자역학 기초', '/covers/modern-physics.jpg', 7),
+('양자역학과 통계물리', 'quantum-statistical', 180000, true, 17, '양자세계의 신비로운 법칙들', '/covers/quantum.jpg', 7),
+('물리학과 예술의 만남', 'physics-meets-art', 80000, true, 18, '아름다운 물리학 법칙들의 예술적 해석', '/covers/artistic-physics.jpg', 8),
+('디지털 아트와 물리시뮬레이션', 'digital-art-physics', 90000, true, 19, 'Processing과 p5.js로 만드는 물리 예술', '/covers/digital-art.jpg', 8),
 
+-- 코딩 교재들
+('HTML/CSS 기초부터 반응형까지', 'html-css-fundamentals', 80000, true, 20, '웹의 기초를 탄탄히 다지는 첫걸음', '/covers/html-css.jpg', 9),
+('JavaScript 완전정복', 'javascript-mastery', 120000, true, 21, 'ES6+부터 최신 문법까지 완전 마스터', '/covers/javascript.jpg', 9),
+('React 실전 프로젝트', 'react-real-projects', 150000, true, 22, 'Hook부터 Next.js까지 실전 개발', '/covers/react.jpg', 9),
+('Node.js 백엔드 개발', 'nodejs-backend', 130000, true, 23, 'Express부터 데이터베이스 연동까지', '/covers/nodejs.jpg', 9),
+('자료구조와 알고리즘', 'data-structures-algorithms', 100000, true, 24, '배열부터 그래프까지 필수 자료구조', '/covers/algorithms.jpg', 10),
+('코딩테스트 완전정복', 'coding-test-master', 120000, true, 25, '삼성, 카카오, 네이버 기출문제 완전분석', '/covers/coding-test.jpg', 10),
+('동적계획법과 그리디', 'dp-greedy-algorithms', 110000, true, 26, '어려운 알고리즘 패턴 완전 이해', '/covers/dp-greedy.jpg', 10),
+('Python 데이터 분석', 'python-data-analysis', 130000, true, 27, 'Pandas부터 시각화까지', '/covers/data-analysis.jpg', 11),
+('머신러닝 실전 프로젝트', 'machine-learning-projects', 150000, true, 28, 'Scikit-learn으로 실무 프로젝트 구현', '/covers/ml-projects.jpg', 11),
+('딥러닝과 AI 개발', 'deep-learning-ai', 180000, true, 29, 'TensorFlow로 구현하는 인공지능 모델', '/covers/ai-dev.jpg', 12),
+('컴퓨터 비전과 NLP', 'computer-vision-nlp', 200000, true, 30, '이미지 처리와 자연어 처리 마스터', '/covers/cv-nlp.jpg', 12),
 
--- 13. progress (users와 units 의존)
-INSERT INTO progress (user_id, unit_id, completion_status)
-VALUES ('550e8400-e29b-41d4-a716-446655440001', 1, true),
-       ('550e8400-e29b-41d4-a716-446655440001', 2, true),
-       ('550e8400-e29b-41d4-a716-446655440001', 3, false),
-       ('550e8400-e29b-41d4-a716-446655440001', 13, true),
-       ('550e8400-e29b-41d4-a716-446655440001', 14, false),
-       ('550e8400-e29b-41d4-a716-446655440002', 6, true),
-       ('550e8400-e29b-41d4-a716-446655440002', 7, true),
-       ('550e8400-e29b-41d4-a716-446655440002', 15, true),
-       ('550e8400-e29b-41d4-a716-446655440002', 16, false),
-       ('550e8400-e29b-41d4-a716-446655440004', 4, true),
-       ('550e8400-e29b-41d4-a716-446655440004', 5, true),
-       ('550e8400-e29b-41d4-a716-446655440004', 8, true),
-       ('550e8400-e29b-41d4-a716-446655440004', 9, true),
-       ('550e8400-e29b-41d4-a716-446655440005', 12, true),
-       ('550e8400-e29b-41d4-a716-446655440006', 15, true),
-       ('550e8400-e29b-41d4-a716-446655440006', 16, true),
-       ('550e8400-e29b-41d4-a716-446655440007', 13, true),
-       ('550e8400-e29b-41d4-a716-446655440008', 10, true);
+-- 인생 교재들 (뇌과학으로 변경)
+('뇌과학으로 이해하는 학습법', 'neuroscience-learning', 60000, true, 31, '뇌가 어떻게 학습하는지 과학적으로 분석', '/covers/neuro-learning.jpg', 13),
+('기억과 인지의 과학', 'memory-cognition-science', 70000, true, 32, '기억형성부터 인지편향까지', '/covers/memory-science.jpg', 13),
+('뇌과학 기반 습관형성', 'neuroscience-habits', 65000, true, 33, '도파민과 신경가소성을 활용한 습관 만들기', '/covers/neuro-habits.jpg', 13),
+('철학자들과 함께하는 사고 여행', 'philosophy-journey', 60000, true, 34, '소크라테스부터 현대 철학까지', '/covers/philosophy.jpg', 14),
+('논리학과 비판적 사고', 'logic-critical-thinking', 55000, true, 35, '올바른 추론과 논증의 기술', '/covers/logic.jpg', 14),
+('인간의 마음을 이해하는 심리학', 'understanding-psychology', 70000, true, 36, '행동경제학부터 인지심리학까지', '/covers/psychology.jpg', 15),
+('발달심리학과 교육심리학', 'developmental-educational-psych', 75000, true, 37, '인간 발달과 학습의 심리적 메커니즘', '/covers/dev-psych.jpg', 15),
+('경제학으로 보는 세상', 'economics-world', 80000, true, 38, '미시경제학부터 행동경제학까지', '/covers/economics.jpg', 16),
+('게임이론과 의사결정', 'game-theory-decision', 85000, true, 39, '전략적 사고와 합리적 선택의 과학', '/covers/game-theory.jpg', 16);
 
--- 14. supportives (concepts 자기 참조)
-INSERT INTO supportives (concept_id, supportive_id, description, sort_order)
-VALUES (1, 3, '관성을 이해하면 운동량 개념도 더 쉽게 이해할 수 있습니다.', 1),
-       (2, 4, '가속도와 에너지는 밀접한 관련이 있습니다.', 1),
-       (5, 6, '전기장과 자기장은 전자기학의 핵심 개념들입니다.', 1),
-       (7, 8, '온도와 엔트로피는 열역학의 기본 개념들입니다.', 1),
-       (9, 10, '파동함수와 궤도는 양자역학에서 함께 다뤄집니다.', 1),
-       (11, 13, '극한을 이해하면 미분도 더 잘 이해할 수 있습니다.', 1),
-       (12, 14, '연속성은 적분의 기본 조건입니다.', 1),
-       (15, 17, '변수를 이해하면 배열 사용이 더 쉬워집니다.', 1),
-       (16, 18, '함수와 객체는 JavaScript의 핵심 요소들입니다.', 1),
-       (19, 20, '비동기와 프로미스는 모던 JavaScript 개발의 필수 요소입니다.', 1);
+-- 4. majors 테이블 데이터 (대단원) - 대폭 확장
+INSERT INTO majors (title, sort_order, is_published, textbook_id) VALUES
+-- 초등수학 완전정복 대단원들
+('3학년 1학기', 1, true, 1),
+('3학년 2학기', 2, true, 1),
+('4학년 1학기', 3, true, 1),
+('4학년 2학기', 4, true, 1),
+('5학년 1학기', 5, true, 1),
+('5학년 2학기', 6, true, 1),
+('6학년 1학기', 7, true, 1),
+('6학년 2학기', 8, true, 1),
+
+-- 초등수학 심화과정 대단원들
+('수와 연산 심화', 1, true, 2),
+('도형과 측정 심화', 2, true, 2),
+('규칙과 문제해결 심화', 3, true, 2),
+
+-- 중등수학 개념완성 대단원들
+('1학년 과정', 1, true, 3),
+('2학년 과정', 2, true, 3),
+('3학년 과정', 3, true, 3),
+
+-- 중등수학 실전 문제해결 대단원들
+('창의적 수학 탐구', 1, true, 4),
+('실생활 수학 모델링', 2, true, 4),
+('수학 올림피아드 기초', 3, true, 4),
+
+-- 고등수학 수능완성 대단원들
+('수학(상)', 1, true, 5),
+('수학(하)', 2, true, 5),
+('수학I', 3, true, 5),
+('수학II', 4, true, 5),
+('미적분', 5, true, 5),
+('확률과 통계', 6, true, 5),
+('기하', 7, true, 5),
+
+-- 고등수학 심화과정 대단원들
+('고급 대수학', 1, true, 6),
+('해석학 입문', 2, true, 6),
+('정수론과 조합론', 3, true, 6),
+
+-- 미적분학 대단원들
+('극한과 연속성', 1, true, 7),
+('미분법', 2, true, 7),
+('적분법', 3, true, 7),
+('급수와 테일러 전개', 4, true, 7),
+('다변수 미적분', 5, true, 7),
+
+-- 선형대수학 대단원들
+('벡터와 벡터공간', 1, true, 8),
+('행렬과 행렬식', 2, true, 8),
+('고유값과 고유벡터', 3, true, 8),
+('선형변환과 응용', 4, true, 8),
+
+-- 물리I 대단원들 (기초물리)
+('힘과 운동', 1, true, 11),
+('일과 에너지 (기초)', 2, true, 11),
+('열과 온도', 3, true, 11),
+('파동과 소리', 4, true, 11),
+('빛과 렌즈', 5, true, 11),
+
+-- 일상속 물리법칙 대단원들
+('우리집 물리학', 1, true, 12),
+('교통수단의 물리학', 2, true, 12),
+('스포츠 물리학', 3, true, 12),
+('날씨와 기후 물리학', 4, true, 12),
+
+-- 일반물리학 I (역학) 대단원들
+('직선운동과 벡터', 1, true, 13),
+('뉴턴의 운동법칙', 2, true, 13),
+('일과 에너지 (일반물리)', 3, true, 13),
+('운동량과 충돌', 4, true, 13),
+('회전운동', 5, true, 13),
+('만유인력과 궤도운동', 6, true, 13),
+
+-- 웹개발 대단원들
+('HTML/CSS 기초', 1, true, 20),
+('반응형 웹 디자인', 2, true, 20),
+('CSS 프레임워크 활용', 3, true, 20),
+
+-- JavaScript 완전정복 대단원들
+('JavaScript 기초 문법', 1, true, 21),
+('DOM 조작과 이벤트', 2, true, 21),
+('비동기 프로그래밍', 3, true, 21),
+('ES6+ 최신 문법', 4, true, 21),
+('함수형 프로그래밍', 5, true, 21),
+
+-- 뇌과학 학습법 대단원들
+('뇌의 구조와 기능', 1, true, 31),
+('기억과 학습의 신경과학', 2, true, 31),
+('주의집중과 인지부하', 3, true, 31),
+('뇌과학 기반 학습전략', 4, true, 31);
+
+-- 5. middles 테이블 데이터 (중단원) - 대폭 확장
+INSERT INTO middles (title, sort_order, is_published, major_id) VALUES
+-- 초등 3학년 1학기 중단원들
+('덧셈과 뺄셈', 1, true, 1),
+('평면도형', 2, true, 1),
+('나눗셈', 3, true, 1),
+('곱셈', 4, true, 1),
+('길이와 시간', 5, true, 1),
+('분수와 소수', 6, true, 1),
+
+-- 초등 3학년 2학기 중단원들
+('곱셈', 1, true, 2),
+('나눗셈', 2, true, 2),
+('원', 3, true, 2),
+('분수', 4, true, 2),
+('들이와 무게', 5, true, 2),
+('자료의 정리', 6, true, 2),
+
+-- 초등 4학년 1학기 중단원들
+('큰수', 1, true, 3),
+('각도', 2, true, 3),
+('곱셈과 나눗셈', 3, true, 3),
+('평면도형의 이동', 4, true, 3),
+('막대그래프', 5, true, 3),
+('규칙찾기', 6, true, 3),
+
+-- 중등 1학년 중단원들
+('소인수분해', 1, true, 9),
+('최대공약수와 최소공배수', 2, true, 9),
+('정수와 유리수', 3, true, 9),
+('정수와 유리수의 계산', 4, true, 9),
+('문자의 사용과 식의 계산', 5, true, 9),
+('일차방정식의 풀이', 6, true, 9),
+('일차방정식의 활용', 7, true, 9),
+('좌표와 그래프', 8, true, 9),
+('정비례와 반비례', 9, true, 9),
+
+-- 중등 2학년 중단원들
+('유리수와 순환소수', 1, true, 10),
+('단항식의 계산', 2, true, 10),
+('다항식의 계산', 3, true, 10),
+('일차부등식', 4, true, 10),
+('연립일차방정식', 5, true, 10),
+('일차함수와 그래프', 6, true, 10),
+('일차함수와 일차방정식의 관계', 7, true, 10),
+
+-- 고등 수학(상) 중단원들
+('다항식의 연산', 1, true, 12),
+('항등식과 나머지 정리', 2, true, 12),
+('인수분해', 3, true, 12),
+('복소수', 4, true, 12),
+('이차방정식', 5, true, 12),
+('이차방정식과 이차함수', 6, true, 12),
+('여러가지 방정식', 7, true, 12),
+('여러가지 부등식', 8, true, 12),
+('평면좌표', 9, true, 12),
+('직선의 방정식', 10, true, 12),
+('원의 방정식', 11, true, 12),
+('도형의 이동', 12, true, 12),
+
+-- 미적분 극한과 연속성 중단원들
+('함수의 극한', 1, true, 22),
+('함수의 연속성', 2, true, 22),
+('극한의 계산', 3, true, 22),
+('중요한 극한들', 4, true, 22),
+
+-- 미분법 중단원들
+('미분의 정의', 1, true, 23),
+('기본 함수의 미분', 2, true, 23),
+('연쇄법칙과 합성함수 미분', 3, true, 23),
+('역함수의 미분', 4, true, 23),
+('매개변수 함수의 미분', 5, true, 23),
+('음함수의 미분', 6, true, 23),
+
+-- 물리 힘과운동 중단원들
+('운동의 표현', 1, true, 33),
+('속도와 가속도', 2, true, 33),
+('뉴턴의 운동법칙', 3, true, 33),
+('운동량과 충격량', 4, true, 33),
+('원운동과 단진동', 5, true, 33),
+
+-- JavaScript 기초 문법 중단원들
+('변수와 자료형', 1, true, 49),
+('연산자와 조건문', 2, true, 49),
+('반복문과 함수', 3, true, 49),
+('배열과 객체', 4, true, 49),
+('스코프와 호이스팅', 5, true, 49),
+
+-- 뇌의 구조와 기능 중단원들
+('뉴런과 신경전달', 1, true, 54),
+('대뇌의 구조와 역할', 2, true, 54),
+('뇌간과 소뇌', 3, true, 54),
+('변연계와 감정', 4, true, 54),
+('뇌파와 의식', 5, true, 54);
+
+-- 6. units 테이블 데이터 (소단원/수업) - 대폭 확장
+INSERT INTO units (title, youtube_video_id, readme_content, estimated_duration, sort_order, is_published, middle_chapter_id) VALUES
+-- 덧셈과 뺄셈 소단원들
+('두 자리 수의 덧셈', 'abc123def456', '# 두 자리 수 덧셈 배우기\n\nPython으로 직접 계산해보며 덧셈의 원리를 이해해봅시다.\n\n## 학습목표\n- 두 자리 수의 덧셈 원리 이해\n- Python 기본 연산자 사용법\n- 시각화를 통한 개념 확인', 20, 1, true, 1),
+('두 자리 수의 뺄셈', 'def456ghi789', '# 두 자리 수 뺄셈 배우기\n\n시각화를 통해 뺄셈의 개념을 확실히 잡아봅시다.\n\n## 실습내용\n- 막대그래프로 뺄셈 표현\n- 음수 개념 미리보기\n- 검산하는 방법', 20, 2, true, 1),
+('받아올림이 있는 덧셈', 'ghi789jkl012', '# 받아올림 덧셈\n\n받아올림이 일어나는 과정을 코드로 단계별로 살펴봅시다.\n\n## 핵심포인트\n- 자릿수별 계산 과정\n- 10진법의 원리\n- 알고리즘적 사고', 25, 3, true, 1),
+('받아내림이 있는 뺄셈', 'jkl012mno345', '# 받아내림 뺄셈\n\n복잡한 뺄셈도 단계별로 나누면 쉬워집니다.\n\n## 학습내용\n- 받아내림 과정 시각화\n- 예외상황 처리\n- 실생활 활용 예제', 25, 4, true, 1),
+('세 자리 수의 덧셈과 뺄셈', 'mno345pqr678', '# 세 자리 수 연산\n\n배운 원리를 확장하여 더 큰 수로 계산해봅시다.', 30, 5, true, 1),
+
+-- 평면도형 소단원들
+('삼각형의 성질', 'pqr678stu901', '# 삼각형 탐구하기\n\n다양한 삼각형을 그려보며 성질을 발견해봅시다.\n\n## matplotlib 활용\n- 삼각형 그리기\n- 내각의 합 확인\n- 여러 종류의 삼각형', 30, 1, true, 2),
+('사각형의 종류', 'stu901vwx234', '# 사각형의 세계\n\n정사각형, 직사각형, 평행사변형의 차이점을 알아봅시다.', 30, 2, true, 2),
+('원의 성질', 'vwx234yz567', '# 원과 원주율\n\n원의 둘레와 넓이를 Python으로 계산해봅시다.', 35, 3, true, 2),
+('도형의 둘레와 넓이', 'yz567abc890', '# 넓이 계산의 마법\n\n여러 도형의 넓이를 공식으로 구해봅시다.', 40, 4, true, 2),
+
+-- 소인수분해 소단원들
+('소수와 합성수', 'abc890def123', '# 소수의 신비\n\n에라토스테네스의 체를 코드로 구현해봅시다.\n\n## 구현 목표\n- 소수 판별 알고리즘\n- 100까지 소수 찾기\n- 소수의 분포 시각화', 40, 1, true, 37),
+('소인수분해의 뜻', 'def123ghi456', '# 소인수분해 마스터\n\n임의의 자연수를 소인수로 분해하는 알고리즘을 만들어봅시다.', 45, 2, true, 37),
+('최대공약수 구하기', 'ghi456jkl789', '# 유클리드 호제법\n\n고대 그리스의 알고리즘을 현대 코딩으로 구현해봅시다.', 50, 3, true, 37),
+('최소공배수 활용', 'jkl789mno012', '# 실생활 속 최소공배수\n\n버스 시간표와 최소공배수의 관계를 알아봅시다.', 45, 4, true, 37),
+
+-- 다항식의 연산 소단원들
+('다항식의 덧셈과 뺄셈', 'mno012pqr345', '# 다항식 계산의 기초\n\nSymPy 라이브러리로 다항식 연산을 직접 해봅시다.\n\n## 라이브러리 활용\n- SymPy 기초 사용법\n- 다항식 정의하기\n- 연산 결과 시각화', 50, 1, true, 46),
+('다항식의 곱셈', 'pqr345stu678', '# 다항식 곱셈 정복\n\n분배법칙을 시각화하여 이해해봅시다.', 55, 2, true, 46),
+('곱셈공식', 'stu678vwx901', '# 아름다운 곱셈공식\n\n완전제곱식과 인수분해의 관계를 탐구해봅시다.', 60, 3, true, 46),
+('다항식의 나눗셈', 'vwx901yz234', '# 조립제법의 원리\n\n다항식 나눗셈을 알고리즘으로 구현해봅시다.', 65, 4, true, 46),
+
+-- 함수의 극한 소단원들
+('극한의 직관적 이해', 'yz234abc567', '# 극한이란 무엇인가\n\n그래프를 통해 극한의 개념을 시각적으로 이해해봅시다.\n\n## 시각화 도구\n- matplotlib으로 함수 그래프\n- 점점 가까워지는 과정\n- 좌극한과 우극한', 70, 1, true, 58),
+('극한의 엄밀한 정의', 'abc567def890', '# 엡실론-델타 논법\n\n극한의 수학적 정의를 코드로 확인해봅시다.', 75, 2, true, 58),
+('함수의 연속성', 'def890ghi123', '# 연속함수의 성질\n\n연속성의 조건을 그래프로 확인해봅시다.', 65, 3, true, 58),
+
+-- 물리 운동의 표현 소단원들
+('위치와 변위', 'ghi123jkl456', '# 운동을 수식으로 표현하기\n\nMatplotlib으로 운동 그래프를 그려봅시다.\n\n## 학습내용\n- 위치-시간 그래프\n- 변위의 개념\n- 벡터와 스칼라', 60, 1, true, 69),
+('속도와 가속도', 'jkl456mno789', '# 속도와 가속도의 관계\n\n미분의 개념을 물리학에 적용해봅시다.', 65, 2, true, 69),
+('등가속도 운동', 'mno789pqr012', '# 자유낙하와 포물선 운동\n\n중력 가속도를 시뮬레이션해봅시다.', 70, 3, true, 69),
+('상대속도', 'pqr012stu345', '# 관찰자와 상대성\n\n서로 다른 관찰자가 본 운동을 비교해봅시다.', 60, 4, true, 69),
+
+-- JavaScript 변수와 자료형 소단원들
+('변수 선언과 할당', 'stu345vwx678', '# JavaScript 변수의 세계\n\nvar, let, const의 차이점을 알아봅시다.\n\n## 핵심내용\n- 변수 선언 방법\n- 스코프의 개념\n- 호이스팅 현상', 30, 1, true, 65),
+('기본 자료형', 'vwx678yz901', '# 숫자, 문자열, 불리언\n\nJavaScript의 기본 타입들을 마스터해봅시다.', 35, 2, true, 65),
+('배열과 객체 소개', 'yz901abc234', '# 복합 자료형의 시작\n\n배열과 객체의 기본 개념을 익혀봅시다.', 40, 3, true, 65),
+('타입 변환', 'abc234def567', '# 자동 형변환의 함정\n\nJavaScript만의 독특한 타입 변환을 이해해봅시다.', 45, 4, true, 65),
+
+-- 뇌의 구조와 기능 - 뉴런과 신경전달 소단원들
+('뉴런의 구조와 종류', 'def567ghi890', '# 뇌의 기본 단위, 뉴런\n\n신경세포의 구조와 기능을 알아봅시다.\n\n## 학습목표\n- 뉴런의 해부학적 구조\n- 감각뉴런, 운동뉴런, 연합뉴런\n- 신경교세포의 역할', 45, 1, true, 68),
+('활동전위와 신호전달', 'ghi890jkl123', '# 뇌의 전기신호\n\n뉴런이 어떻게 정보를 전달하는지 시뮬레이션해봅시다.', 50, 2, true, 70),
+('시냅스와 신경전달물질', 'jkl123mno456', '# 뉴런 간의 소통\n\n도파민, 세로토닌 등 신경전달물질의 역할을 알아봅시다.', 55, 3, true, 70),
+('신경가소성의 원리', 'mno456pqr789', '# 변화하는 뇌\n\n학습과 기억이 뇌를 어떻게 바꾸는지 탐구해봅시다.', 60, 4, true, 68),
+('뇌파의 종류와 특성', 'pqr789stu012', '# 뇌의 리듬\n\n알파파, 베타파 등 뇌파의 의미를 알아봅시다.', 50, 5, true, 68);
+
+-- 7. concepts 테이블 데이터 (개념들) - 대폭 확장
+INSERT INTO concepts (name, slug, definition, name_eng) VALUES
+-- 기초 수학 개념들
+('덧셈', 'addition', '두 개 이상의 수를 합하는 연산', 'Addition'),
+('뺄셈', 'subtraction', '한 수에서 다른 수를 빼는 연산', 'Subtraction'),
+('곱셈', 'multiplication', '같은 수를 여러 번 더하는 연산', 'Multiplication'),
+('나눗셈', 'division', '한 수를 다른 수로 나누는 연산', 'Division'),
+('받아올림', 'carrying', '자릿수 계산에서 10이 넘을 때 윗자리로 올려주는 과정', 'Carrying'),
+('받아내림', 'borrowing', '뺄셈에서 부족한 수를 윗자리에서 빌려오는 과정', 'Borrowing'),
+('자릿값', 'place-value', '숫자에서 각 자리가 가지는 값', 'Place Value'),
+('10진법', 'decimal-system', '10을 기준으로 하는 기수법', 'Decimal System'),
+
+-- 도형 개념들
+('점', 'point', '위치만 있고 크기가 없는 기하학적 대상', 'Point'),
+('선분', 'line-segment', '두 점을 잇는 직선의 일부', 'Line Segment'),
+('직선', 'line', '양 방향으로 무한히 뻗은 1차원 도형', 'Line'),
+('각', 'angle', '한 점에서 시작하는 두 반직선이 이루는 도형', 'Angle'),
+('삼각형', 'triangle', '세 개의 선분으로 이루어진 다각형', 'Triangle'),
+('사각형', 'quadrangle', '네 개의 선분으로 이루어진 다각형', 'Quadrangle'),
+('원', 'circle', '한 점에서 같은 거리에 있는 점들의 집합', 'Circle'),
+('둘레', 'perimeter', '도형의 테두리의 길이', 'Perimeter'),
+('넓이', 'area', '평면도형이 차지하는 면의 크기', 'Area'),
+
+-- 대수 개념들
+('자연수', 'natural-number', '1, 2, 3, ... 과 같은 양의 정수', 'Natural Number'),
+('정수', 'integer', '양의 정수, 0, 음의 정수를 통틀어 이르는 수', 'Integer'),
+('유리수', 'rational-number', '두 정수의 비로 나타낼 수 있는 수', 'Rational Number'),
+('소수', 'prime-number', '1과 자기 자신만을 약수로 가지는 자연수', 'Prime Number'),
+('합성수', 'composite-number', '1과 자기 자신 외에 다른 약수를 가지는 자연수', 'Composite Number'),
+('소인수분해', 'prime-factorization', '합성수를 소수들의 곱으로 나타내는 것', 'Prime Factorization'),
+('최대공약수', 'gcd', '두 개 이상의 수의 공통된 약수 중 가장 큰 수', 'Greatest Common Divisor'),
+('최소공배수', 'lcm', '두 개 이상의 수의 공통된 배수 중 가장 작은 수', 'Least Common Multiple'),
+('일차식', 'linear-expression', '미지수의 차수가 1인 식', 'Linear Expression'),
+('이차식', 'quadratic-expression', '미지수의 차수가 2인 식', 'Quadratic Expression'),
+('다항식', 'polynomial', '변수의 거듭제곱들의 일차결합', 'Polynomial'),
+('인수분해', 'factorization', '다항식을 인수들의 곱으로 나타내는 것', 'Factorization'),
+('방정식', 'equation', '미지수가 포함된 등식', 'Equation'),
+('부등식', 'inequality', '두 식의 대소관계를 나타내는 식', 'Inequality'),
+('함수', 'function', '정의역의 각 원소에 치역의 원소를 대응시키는 관계', 'Function'),
+
+-- 미적분 개념들
+('극한', 'limit', '함수값이 어떤 값에 한없이 가까워지는 값', 'Limit'),
+('연속성', 'continuity', '함수가 끊어지지 않는 성질', 'Continuity'),
+('미분', 'derivative', '함수의 변화율을 구하는 연산', 'Derivative'),
+('적분', 'integral', '함수 아래의 넓이를 구하는 연산', 'Integral'),
+('미분계수', 'differential-coefficient', '한 점에서의 순간변화율', 'Differential Coefficient'),
+('도함수', 'derivative-function', '미분계수를 함수로 나타낸 것', 'Derivative Function'),
+
+-- 물리 개념들
+('운동', 'motion', '물체의 위치가 시간에 따라 변하는 현상', 'Motion'),
+('속력', 'speed', '단위시간당 이동한 거리', 'Speed'),
+('속도', 'velocity', '단위시간당 변위의 크기와 방향', 'Velocity'),
+('가속도', 'acceleration', '속도의 변화율', 'Acceleration'),
+('힘', 'force', '물체의 운동상태를 변화시키는 작용', 'Force'),
+('질량', 'mass', '물체가 가지고 있는 물질의 양', 'Mass'),
+('운동량', 'momentum', '질량과 속도의 곱', 'Momentum'),
+('에너지', 'energy', '일을 할 수 있는 능력', 'Energy'),
+('일', 'work', '힘이 물체를 이동시킬 때 한 일의 양', 'Work'),
+('전기장', 'electric-field', '전하 주위의 전기적 영향을 받는 공간', 'Electric Field'),
+('자기장', 'magnetic-field', '자석 주위의 자기적 영향을 받는 공간', 'Magnetic Field'),
+('파동', 'wave', '에너지가 매질을 통해 전달되는 현상', 'Wave'),
+('진동수', 'frequency', '단위시간당 진동하는 횟수', 'Frequency'),
+('파장', 'wavelength', '파동이 한 번 진동할 때 전파되는 거리', 'Wavelength'),
+
+-- 코딩 개념들
+('변수', 'variable', '값을 저장하는 메모리 공간', 'Variable'),
+('상수', 'constant', '프로그램 실행 중 값이 변하지 않는 데이터', 'Constant'),
+('자료형', 'data-type', '변수에 저장할 수 있는 데이터의 종류', 'Data Type'),
+('연산자', 'operator', '데이터를 조작하는 기호', 'Operator'),
+('조건문', 'conditional-statement', '조건에 따라 다른 코드를 실행하는 구문', 'Conditional Statement'),
+('반복문', 'loop', '특정 코드를 반복 실행하는 구문', 'Loop'),
+('함수', 'function-programming', '특정 작업을 수행하는 코드 블록', 'Function'),
+('배열', 'array', '같은 타입의 데이터를 순서대로 저장하는 구조', 'Array'),
+('객체', 'object', '관련된 데이터와 기능을 하나로 묶은 구조', 'Object'),
+('알고리즘', 'algorithm', '문제를 해결하는 단계적 절차', 'Algorithm'),
+('자료구조', 'data-structure', '데이터를 효율적으로 저장하고 관리하는 방법', 'Data Structure'),
+('재귀', 'recursion', '함수가 자기 자신을 호출하는 기법', 'Recursion'),
+('스코프', 'scope', '변수나 함수에 접근할 수 있는 범위', 'Scope'),
+('호이스팅', 'hoisting', 'JavaScript에서 변수와 함수 선언이 끌어올려지는 현상', 'Hoisting'),
+
+-- 뇌과학 개념들
+('뉴런', 'neuron', '신경계의 기본 단위인 신경세포', 'Neuron'),
+('시냅스', 'synapse', '뉴런과 뉴런 사이의 연결부위', 'Synapse'),
+('신경전달물질', 'neurotransmitter', '뉴런 간 신호전달을 담당하는 화학물질', 'Neurotransmitter'),
+('도파민', 'dopamine', '보상과 동기와 관련된 신경전달물질', 'Dopamine'),
+('세로토닌', 'serotonin', '기분과 감정조절에 관여하는 신경전달물질', 'Serotonin'),
+('신경가소성', 'neuroplasticity', '뇌가 경험에 따라 구조와 기능을 바꾸는 능력', 'Neuroplasticity'),
+('활동전위', 'action-potential', '뉴런에서 발생하는 전기신호', 'Action Potential'),
+('장기기억', 'long-term-memory', '오랫동안 저장되는 기억', 'Long-term Memory'),
+('작업기억', 'working-memory', '단기간 정보를 유지하고 처리하는 기억', 'Working Memory'),
+('인지부하', 'cognitive-load', '정보 처리 과정에서 뇌에 가해지는 부담', 'Cognitive Load'),
+('주의집중', 'attention', '특정 자극이나 정보에 집중하는 능력', 'Attention'),
+('집행기능', 'executive-function', '목표 지향적 행동을 계획하고 실행하는 능력', 'Executive Function'),
+
+-- 심리학 개념들
+('학습', 'learning-psychology', '경험을 통해 행동이나 지식이 변화하는 과정', 'Learning'),
+('기억', 'memory-psychology', '정보를 부호화, 저장, 인출하는 과정', 'Memory'),
+('동기', 'motivation', '행동을 시작하고 유지하게 하는 내적 추진력', 'Motivation'),
+('인지편향', 'cognitive-bias', '논리적 사고에서 벗어나는 체계적 오류', 'Cognitive Bias'),
+('조건형성', 'conditioning', '자극과 반응 사이의 연관성을 학습하는 과정', 'Conditioning'),
+
+-- 철학 개념들
+('논리', 'logic', '올바른 추론의 원리와 방법', 'Logic'),
+('윤리', 'ethics', '옳고 그름에 대한 판단 기준', 'Ethics'),
+('인식론', 'epistemology', '지식의 본질과 근원에 대한 연구', 'Epistemology'),
+('존재론', 'ontology', '존재의 본질에 대한 철학적 탐구', 'Ontology'),
+('비판적사고', 'critical-thinking', '논리적이고 합리적인 사고 방식', 'Critical Thinking'),
+
+-- 경제학 개념들
+('수요', 'demand', '소비자가 상품을 구매하려는 욕구와 능력', 'Demand'),
+('공급', 'supply', '생산자가 상품을 제공하려는 의사와 능력', 'Supply'),
+('기회비용', 'opportunity-cost', '어떤 선택을 함으로써 포기하는 최선의 대안', 'Opportunity Cost'),
+('효용', 'utility', '재화나 서비스로부터 얻는 만족도', 'Utility'),
+('게임이론', 'game-theory', '전략적 상황에서의 의사결정을 분석하는 이론', 'Game Theory');
+
+-- 8. dealings 테이블 데이터 (수업-개념 연결) - 대폭 확장
+INSERT INTO dealings (unit_id, concept_id, discription, sort_order) VALUES
+-- 두 자리 수의 덧셈 수업과 연결된 개념들
+(1, 1, '두 자리 수 덧셈의 기본 원리', 1),
+(1, 7, '자릿값의 개념 적용', 2),
+(1, 8, '10진법 시스템 이해', 3),
+
+-- 두 자리 수의 뺄셈 수업과 연결된 개념들
+(2, 2, '두 자리 수 뺄셈의 기본 원리', 1),
+(2, 7, '자릿값을 이용한 뺄셈', 2),
+
+-- 받아올림이 있는 덧셈 수업과 연결된 개념들
+(3, 1, '받아올림 개념이 포함된 덧셈', 1),
+(3, 5, '받아올림 과정의 원리', 2),
+(3, 8, '10진법에서의 받아올림', 3),
+
+-- 받아내림이 있는 뺄셈 수업과 연결된 개념들
+(4, 2, '받아내림 개념이 포함된 뺄셈', 1),
+(4, 6, '받아내림 과정의 원리', 2),
+(4, 8, '10진법에서의 받아내림', 3),
+
+-- 삼각형의 성질 수업과 연결된 개념들
+(6, 13, '삼각형의 기본 정의', 1),
+(6, 12, '각의 개념과 측정', 2),
+(6, 10, '선분으로 이루어진 도형', 3),
+
+-- 사각형의 종류 수업과 연결된 개념들
+(7, 14, '사각형의 기본 정의', 1),
+(7, 12, '직각과 평행의 개념', 2),
+
+-- 소수와 합성수 수업과 연결된 개념들
+(11, 22, '소수의 정의와 특징', 1),
+(11, 23, '합성수의 정의와 특징', 2),
+(11, 19, '자연수의 분류', 3),
+(11, 45, '소수 판별 알고리즘', 4),
+
+-- 소인수분해의 뜻 수업과 연결된 개념들
+(12, 24, '소인수분해의 정의', 1),
+(12, 22, '소인수분해에 필요한 소수 개념', 2),
+(12, 3, '곱셈의 역과정으로서의 소인수분해', 3),
+
+-- 다항식의 덧셈과 뺄셈 수업과 연결된 개념들
+(19, 28, '다항식의 기본 개념', 1),
+(19, 1, '다항식에서의 덧셈', 2),
+(19, 2, '다항식에서의 뺄셈', 3),
+(19, 21, '유리수 계수의 처리', 4),
+
+-- 극한의 직관적 이해 수업과 연결된 개념들
+(25, 32, '극한의 기본 개념', 1),
+(25, 31, '함수의 정의와 성질', 2),
+(25, 33, '연속성과의 관계', 3),
+
+-- 위치와 변위 수업과 연결된 개념들
+(28, 36, '운동의 기본 개념', 1),
+(28, 37, '속력과 속도의 구분', 2),
+(28, 42, '변수를 이용한 물리량 표현', 3),
+
+-- 속도와 가속도 수업과 연결된 개념들
+(29, 38, '속도의 정의와 특성', 1),
+(29, 39, '가속도의 정의', 2),
+(29, 34, '미분의 물리적 의미', 3),
+
+-- JavaScript 변수 선언 수업과 연결된 개념들
+(32, 42, '변수의 기본 개념', 1),
+(32, 44, '자료형의 종류', 2),
+(32, 53, '스코프의 개념', 3),
+(32, 54, '호이스팅 현상', 4),
+
+-- 뉴런의 구조와 종류 수업과 연결된 개념들
+(33, 55, '뉴런의 기본 구조', 1),
+(33, 56, '시냅스의 역할', 2),
+(33, 57, '신경전달물질의 기능', 3),
+(33, 61, '활동전위의 발생', 4);
+
+-- 9. users 테이블 데이터 (테스트 사용자들) - 확장
+INSERT INTO users (user_id, email, username, role, nickname, profile_url) VALUES
+                                                                              ('550e8400-e29b-41d4-a716-446655440001', 'student1@sejongclass.com', 'mathLover', 'user', '수학왕', '/profiles/student1.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440002', 'physics@sejongclass.com', 'physicsGeek', 'user', '물리마스터', '/profiles/student2.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440003', 'coder@sejongclass.com', 'codingNinja', 'user', '코딩닌자', '/profiles/student3.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440004', 'admin@sejongclass.com', 'sejongAdmin', 'admin', '세종관리자', '/profiles/admin.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440005', 'brain@sejongclass.com', 'brainScientist', 'user', '뇌과학자', '/profiles/student5.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440006', 'philosopher@sejongclass.com', 'deepThinker', 'user', '철학탐구자', '/profiles/student6.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440007', 'aidev@sejongclass.com', 'aiEnthusiast', 'user', 'AI개발자', '/profiles/student7.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440008', 'mathalgo@sejongclass.com', 'mathAlgorithm', 'user', '수학알고리즘', '/profiles/student8.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440009', 'quantum@sejongclass.com', 'quantumPhysics', 'user', '양자물리학자', '/profiles/student9.jpg'),
+                                                                              ('550e8400-e29b-41d4-a716-446655440010', 'webmaster@sejongclass.com', 'fullStackDev', 'user', '풀스택개발자', '/profiles/student10.jpg');
+
+-- 10. enrollments 테이블 데이터 (수강 정보) - 확장
+INSERT INTO enrollments (user_id, textbook_id, progress_rate, payment_status, review, rating) VALUES
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440001', 1, 85, true, '코드로 수학을 배우니 정말 재미있어요! 특히 시각화 부분이 인상적입니다.', 9),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440001', 3, 65, true, '중등수학이 이렇게 쉬울 줄 몰랐어요. 코딩과 함께하니 더 이해가 잘 됩니다.', 8),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440001', 5, 30, true, '고등수학도 도전해보고 있어요. 아직 초반이지만 기대됩니다.', 8),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440001', 7, 15, true, '미적분학이 이렇게 아름다운 학문인지 새롭게 깨달았습니다.', 9),
+
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440002', 11, 95, true, '물리학 첫걸음이 정말 좋았어요. 기초부터 탄탄히 배웠습니다.', 10),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440002', 13, 80, true, '일반물리학이 이렇게 아름다운 학문인지 처음 알았습니다. 시뮬레이션이 최고!', 10),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440002', 16, 45, true, '현대물리학은 정말 흥미진진해요. 상대성이론을 코드로 구현하다니!', 9),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440002', 18, 70, true, '물리와 예술의 만남이라니, 정말 창의적인 접근이에요.', 9),
+
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440003', 20, 90, true, '웹개발의 기초를 정말 탄탄히 배웠어요. HTML/CSS가 이렇게 재미있을 줄이야!', 9),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440003', 21, 75, true, 'JavaScript 정말 깊이있게 배웠습니다. 실무에 바로 적용할 수 있어요.', 9),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440003', 24, 60, true, '자료구조와 알고리즘이 이렇게 체계적으로 정리되다니 감동입니다.', 8),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440003', 29, 25, true, '딥러닝 과정이 정말 실전적이에요. TensorFlow 사용법이 명확해졌어요.', 9),
+
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440005', 31, 85, true, '뇌과학 기반 학습법이 정말 과학적이고 실용적이에요!', 10),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440005', 32, 70, true, '기억과 인지과학을 배우니 내 뇌가 어떻게 작동하는지 알 수 있어서 좋아요.', 9),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440005', 36, 55, true, '심리학 정말 흥미로워요. 인간의 마음을 과학적으로 이해하게 되었습니다.', 8),
+
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440006', 34, 65, true, '철학 사고 여행이 정말 의미있는 시간이었어요. 생각의 깊이가 달라졌습니다.', 9),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440006', 35, 40, true, '논리학과 비판적 사고 과정이 일상생활에서 정말 도움이 돼요.', 8),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440006', 38, 40, true, '경제학을 철학적 관점에서 바라보니 새로운 통찰이 생겼어요.', 9),
+
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440007', 29, 80, true, 'AI 개발 과정이 정말 체계적이고 실무 중심적이어서 만족합니다.', 10),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440007', 30, 50, true, '컴퓨터 비전과 NLP 과정이 최신 트렌드를 잘 반영하고 있어요.', 9),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440007', 27, 75, true, '데이터 분석을 배우면서 Python 실력이 많이 늘었어요.', 8),
+
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440008', 8, 90, true, '선형대수를 시각화로 배우니 정말 이해가 잘 돼요!', 10),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440008', 9, 70, true, '확률통계를 코딩으로 배우니 실전 감각이 생겼어요.', 9),
+                                                                                                  ('550e8400-e29b-41d4-a716-446655440008', 25, 45, true, '알고리즘 문제해결 능력이 많이 향상되었습니다.', 8);
+
+-- 11. progress 테이블 데이터 (학습 진도) - 확장
+INSERT INTO progress (user_id, unit_id, completion_status) VALUES
+-- mathLover 사용자의 상세 진도
+('550e8400-e29b-41d4-a716-446655440001', 1, true),
+('550e8400-e29b-41d4-a716-446655440001', 2, true),
+('550e8400-e29b-41d4-a716-446655440001', 3, true),
+('550e8400-e29b-41d4-a716-446655440001', 4, true),
+('550e8400-e29b-41d4-a716-446655440001', 5, false),
+('550e8400-e29b-41d4-a716-446655440001', 6, true),
+('550e8400-e29b-41d4-a716-446655440001', 7, true),
+('550e8400-e29b-41d4-a716-446655440001', 8, false),
+('550e8400-e29b-41d4-a716-446655440001', 11, true),
+('550e8400-e29b-41d4-a716-446655440001', 12, true),
+('550e8400-e29b-41d4-a716-446655440001', 13, false),
+('550e8400-e29b-41d4-a716-446655440001', 19, true),
+('550e8400-e29b-41d4-a716-446655440001', 20, false),
+
+-- physicsGeek 사용자의 상세 진도
+('550e8400-e29b-41d4-a716-446655440002', 28, true),
+('550e8400-e29b-41d4-a716-446655440002', 29, true),
+('550e8400-e29b-41d4-a716-446655440002', 30, true),
+('550e8400-e29b-41d4-a716-446655440002', 31, false),
+('550e8400-e29b-41d4-a716-446655440002', 25, true), -- 미적분 기초
+
+-- codingNinja 사용자의 상세 진도
+('550e8400-e29b-41d4-a716-446655440003', 31, true),
+('550e8400-e29b-41d4-a716-446655440003', 33, true),
+('550e8400-e29b-41d4-a716-446655440003', 32, true),
+('550e8400-e29b-41d4-a716-446655440003', 30, false),
+
+-- brainScientist 사용자의 상세 진도
+('550e8400-e29b-41d4-a716-446655440005', 33, true),
+('550e8400-e29b-41d4-a716-446655440005', 27, true),
+('550e8400-e29b-41d4-a716-446655440005', 28, false),
+('550e8400-e29b-41d4-a716-446655440005', 29, false),
+
+-- deepThinker 사용자의 진도
+('550e8400-e29b-41d4-a716-446655440006', 1, true), -- 기초 수학부터
+('550e8400-e29b-41d4-a716-446655440006', 2, true),
+('550e8400-e29b-41d4-a716-446655440006', 6, true), -- 기하학적 사고
+
+-- aiEnthusiast 사용자의 진도
+('550e8400-e29b-41d4-a716-446655440007', 31, true), -- JavaScript 기초
+('550e8400-e29b-41d4-a716-446655440007', 33, true),
+('550e8400-e29b-41d4-a716-446655440007', 25, true), -- 수학적 기초
+
+-- mathAlgorithm 사용자의 진도
+('550e8400-e29b-41d4-a716-446655440008', 11, true), -- 소수 알고리즘
+('550e8400-e29b-41d4-a716-446655440008', 12, true),
+('550e8400-e29b-41d4-a716-446655440008', 19, true), -- 다항식 계산
+
+-- quantumPhysics 사용자의 진도
+('550e8400-e29b-41d4-a716-446655440009', 25, true), -- 미적분
+('550e8400-e29b-41d4-a716-446655440009', 28, true), -- 물리 기초
+('550e8400-e29b-41d4-a716-446655440009', 29, true);
+
+-- 12. masters 테이블 데이터 (개념 숙련도) - 확장
+INSERT INTO masters (user_id, concept_id, master_rate) VALUES
+-- mathLover의 수학 개념 숙련도
+('550e8400-e29b-41d4-a716-446655440001', 1, 5), -- 덧셈 완전 숙달
+('550e8400-e29b-41d4-a716-446655440001', 2, 5), -- 뺄셈 완전 숙달
+('550e8400-e29b-41d4-a716-446655440001', 3, 4), -- 곱셈 거의 숙달
+('550e8400-e29b-41d4-a716-446655440001', 4, 4), -- 나눗셈 거의 숙달
+('550e8400-e29b-41d4-a716-446655440001', 5, 4), -- 받아올림 거의 숙달
+('550e8400-e29b-41d4-a716-446655440001', 22, 4), -- 소수 거의 숙달
+('550e8400-e29b-41d4-a716-446655440001', 24, 3), -- 소인수분해 보통
+('550e8400-e29b-41d4-a716-446655440001', 28, 3), -- 다항식 보통
+
+-- physicsGeek의 물리 개념 숙련도
+('550e8400-e29b-41d4-a716-446655440002', 36, 5), -- 운동 완전 숙달
+('550e8400-e29b-41d4-a716-446655440002', 38, 5), -- 속도 완전 숙달
+('550e8400-e29b-41d4-a716-446655440002', 39, 5), -- 가속도 완전 숙달
+('550e8400-e29b-41d4-a716-446655440002', 40, 4), -- 힘 거의 숙달
+('550e8400-e29b-41d4-a716-446655440002', 41, 4), -- 질량 거의 숙달
+('550e8400-e29b-41d4-a716-446655440002', 42, 4), -- 운동량 거의 숙달
+('550e8400-e29b-41d4-a716-446655440002', 43, 3), -- 에너지 보통
+('550e8400-e29b-41d4-a716-446655440002', 32, 3), -- 극한 보통 (미적분 기초)
+
+-- codingNinja의 코딩 개념 숙련도
+('550e8400-e29b-41d4-a716-446655440003', 42, 5), -- 변수 완전 숙달
+('550e8400-e29b-41d4-a716-446655440003', 44, 5), -- 자료형 완전 숙달
+('550e8400-e29b-41d4-a716-446655440003', 45, 4), -- 연산자 거의 숙달
+('550e8400-e29b-41d4-a716-446655440003', 46, 4), -- 조건문 거의 숙달
+('550e8400-e29b-41d4-a716-446655440003', 47, 4), -- 반복문 거의 숙달
+('550e8400-e29b-41d4-a716-446655440003', 48, 4), -- 함수 거의 숙달
+('550e8400-e29b-41d4-a716-446655440003', 51, 4), -- 알고리즘 거의 숙달
+('550e8400-e29b-41d4-a716-446655440003', 53, 3), -- 스코프 보통
+
+-- brainScientist의 뇌과학 개념 숙련도
+('550e8400-e29b-41d4-a716-446655440005', 55, 5), -- 뉴런 완전 숙달
+('550e8400-e29b-41d4-a716-446655440005', 56, 4), -- 시냅스 거의 숙달
+('550e8400-e29b-41d4-a716-446655440005', 57, 4), -- 신경전달물질 거의 숙달
+('550e8400-e29b-41d4-a716-446655440005', 58, 4), -- 도파민 거의 숙달
+('550e8400-e29b-41d4-a716-446655440005', 60, 4), -- 신경가소성 거의 숙달
+('550e8400-e29b-41d4-a716-446655440005', 62, 3), -- 장기기억 보통
+('550e8400-e29b-41d4-a716-446655440005', 64, 3), -- 인지부하 보통
+
+-- deepThinker의 철학/논리 개념 숙련도
+('550e8400-e29b-41d4-a716-446655440006', 70, 4), -- 논리 거의 숙달
+('550e8400-e29b-41d4-a716-446655440006', 74, 4), -- 비판적사고 거의 숙달
+('550e8400-e29b-41d4-a716-446655440006', 71, 3), -- 윤리 보통
+('550e8400-e29b-41d4-a716-446655440006', 13, 3), -- 삼각형 보통 (기하학적 사고)
+
+-- aiEnthusiast의 AI/수학 개념 숙련도
+('550e8400-e29b-41d4-a716-446655440007', 48, 5), -- 함수 완전 숙달
+('550e8400-e29b-41d4-a716-446655440007', 51, 4), -- 알고리즘 거의 숙달
+('550e8400-e29b-41d4-a716-446655440007', 32, 3), -- 극한 보통
+('550e8400-e29b-41d4-a716-446655440007', 34, 3), -- 미분 보통
+
+-- mathAlgorithm의 수학+알고리즘 개념 숙련도
+('550e8400-e29b-41d4-a716-446655440008', 22, 5), -- 소수 완전 숙달
+('550e8400-e29b-41d4-a716-446655440008', 24, 5), -- 소인수분해 완전 숙달
+('550e8400-e29b-41d4-a716-446655440008', 25, 4), -- 최대공약수 거의 숙달
+('550e8400-e29b-41d4-a716-446655440008', 28, 4), -- 다항식 거의 숙달
+('550e8400-e29b-41d4-a716-446655440008', 51, 4), -- 알고리즘 거의 숙달
+('550e8400-e29b-41d4-a716-446655440008', 53, 4); -- 재귀 거의 숙달
+
+-- 13. prerequisites 테이블 데이터 (선수 개념) - 확장
+INSERT INTO prerequisites (concept_id, prerequisite_id, description, sort_order) VALUES
+-- 기본 연산의 선수관계
+(2, 1, '뺄셈을 이해하려면 먼저 덧셈을 알아야 합니다', 1),
+(3, 1, '곱셈은 같은 수의 반복된 덧셈입니다', 1),
+(4, 3, '나눗셈을 이해하려면 곱셈을 먼저 알아야 합니다', 1),
+(5, 1, '받아올림은 덧셈의 심화 개념입니다', 1),
+(6, 2, '받아내림은 뺄셈의 심화 개념입니다', 1),
+
+-- 도형의 선수관계
+(13, 10, '삼각형을 이해하려면 선분의 개념이 필요합니다', 1),
+(13, 12, '삼각형을 이해하려면 각의 개념이 필요합니다', 2),
+(14, 13, '사각형을 이해하려면 삼각형을 먼저 이해해야 합니다', 1),
+(16, 9, '원을 이해하려면 점의 개념이 필요합니다', 1),
+
+-- 수론의 선수관계
+(23, 22, '합성수를 이해하려면 소수의 개념이 필요합니다', 1),
+(24, 22, '소인수분해를 하려면 소수가 무엇인지 알아야 합니다', 1),
+(24, 23, '소인수분해를 하려면 합성수의 개념이 필요합니다', 2),
+(25, 24, '최대공약수를 구하려면 소인수분해를 알아야 합니다', 1),
+(26, 24, '최소공배수를 구하려면 소인수분해를 알아야 합니다', 1),
+
+-- 대수의 선수관계
+(27, 19, '일차식을 이해하려면 자연수부터 시작해야 합니다', 1),
+(28, 27, '이차식을 이해하려면 일차식을 먼저 알아야 합니다', 1),
+(29, 28, '다항식을 이해하려면 차수별 식을 알아야 합니다', 1),
+(30, 29, '인수분해를 하려면 다항식의 개념을 알아야 합니다', 1),
+(31, 29, '방정식을 이해하려면 다항식이 필요합니다', 1),
+
+-- 미적분의 선수관계
+(32, 31, '극한을 이해하려면 함수의 개념이 필요합니다', 1),
+(33, 32, '연속성을 이해하려면 극한의 개념이 필요합니다', 1),
+(34, 32, '미분을 이해하려면 극한의 개념이 필요합니다', 1),
+(34, 31, '미분을 이해하려면 함수의 개념이 필요합니다', 2),
+(35, 34, '적분을 이해하려면 미분을 먼저 알아야 합니다', 1),
+
+-- 물리의 선수관계
+(38, 37, '속도를 이해하려면 속력의 개념이 필요합니다', 1),
+(39, 38, '가속도를 이해하려면 속도의 개념이 필요합니다', 1),
+(40, 39, '힘을 이해하려면 가속도의 개념이 필요합니다', 1),
+(42, 38, '운동량을 이해하려면 속도의 개념이 필요합니다', 1),
+(42, 41, '운동량을 이해하려면 질량의 개념이 필요합니다', 2),
+(44, 40, '일을 이해하려면 힘의 개념이 필요합니다', 1),
+(43, 44, '에너지를 이해하려면 일의 개념이 필요합니다', 1),
+
+-- 코딩의 선수관계
+(45, 42, '연산자를 사용하려면 변수를 알아야 합니다', 1),
+(46, 45, '조건문을 사용하려면 연산자를 알아야 합니다', 1),
+(47, 46, '반복문을 사용하려면 조건문을 알아야 합니다', 1),
+(48, 42, '함수를 만들려면 변수의 개념이 필요합니다', 1),
+(49, 48, '배열을 다루려면 함수의 개념이 필요합니다', 1),
+(53, 42, '스코프를 이해하려면 변수의 개념이 필요합니다', 1),
+
+-- 뇌과학의 선수관계
+(56, 55, '시냅스를 이해하려면 뉴런의 구조를 알아야 합니다', 1),
+(57, 56, '신경전달물질을 이해하려면 시냅스를 알아야 합니다', 1),
+(58, 57, '도파민을 이해하려면 신경전달물질의 개념이 필요합니다', 1),
+(59, 57, '세로토닌을 이해하려면 신경전달물질의 개념이 필요합니다', 1),
+(62, 60, '장기기억을 이해하려면 신경가소성을 알아야 합니다', 1),
+(63, 62, '작업기억을 이해하려면 장기기억을 먼저 알아야 합니다', 1);
+
+-- 14. supportives 테이블 데이터 (보조 개념) - 확장
+INSERT INTO supportives (concept_id, supportive_id, description, sort_order) VALUES
+-- 덧셈과 관련된 보조 개념들
+(1, 3, '곱셈은 덧셈의 확장 개념입니다', 1),
+(1, 42, '프로그래밍에서 변수를 사용한 덧셈 연산', 2),
+(1, 8, '10진법에서의 덧셈 원리', 3),
+
+-- 뺄셈과 관련된 보조 개념들
+(2, 4, '나눗셈은 뺄셈의 확장 개념입니다', 1),
+(2, 20, '음수 개념과의 연관성', 2),
+
+-- 소수와 관련된 보조 개념들
+(22, 51, '소수 판별 알고리즘', 1),
+(22, 24, '소수는 소인수분해의 기본 요소입니다', 2),
+(22, 75, '암호학에서의 소수 활용', 3),
+
+-- 다항식과 관련된 보조 개념들
+(28, 30, '다항식의 인수분해', 1),
+(28, 31, '다항식 함수', 2),
+(28, 34, '다항식의 미분', 3),
+
+-- 함수와 관련된 보조 개념들
+(31, 32, '함수의 극한', 1),
+(31, 33, '함수의 연속성', 2),
+(31, 34, '함수의 미분가능성', 3),
+
+-- 극한과 관련된 보조 개념들
+(32, 33, '연속성은 극한의 특수한 경우입니다', 1),
+(32, 34, '미분은 극한의 응용입니다', 2),
+(32, 35, '적분은 극한의 확장 개념입니다', 3),
+
+-- 알고리즘과 관련된 보조 개념들
+(51, 53, '재귀는 알고리즘 설계의 중요한 기법입니다', 1),
+(51, 48, '함수는 알고리즘을 구현하는 기본 단위입니다', 2),
+(51, 52, '자료구조는 알고리즘의 효율성에 영향을 줍니다', 3),
+
+-- 뉴런과 관련된 보조 개념들
+(55, 56, '시냅스는 뉴런 간 소통의 핵심입니다', 1),
+(55, 61, '활동전위는 뉴런의 신호전달 방식입니다', 2),
+(55, 60, '신경가소성은 뉴런 연결의 변화를 의미합니다', 3),
+
+-- 학습과 관련된 보조 개념들
+(66, 60, '학습은 신경가소성의 결과입니다', 1),
+(66, 62, '학습은 장기기억 형성 과정입니다', 2),
+(66, 64, '효과적 학습을 위해서는 인지부하 관리가 필요합니다', 3),
+
+-- 논리와 관련된 보조 개념들
+(70, 74, '비판적 사고는 논리적 추론의 실제 적용입니다', 1),
+(70, 51, '프로그래밍 논리와 수학 논리의 유사성', 2),
+(70, 72, '논리학은 인식론의 도구입니다', 3),
+
+-- 경제학과 관련된 보조 개념들
+(75, 77, '수요와 공급의 상호작용으로 가격이 결정됩니다', 1),
+(76, 77, '공급과 수요의 상호작용으로 가격이 결정됩니다', 2),
+(78, 79, '게임이론은 효용 극대화 문제를 다룹니다', 1);
