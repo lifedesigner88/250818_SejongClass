@@ -1,9 +1,11 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { themesTable } from "~/feature/themes/schema";
-import { subjectsTable } from "~/feature/subjects/schema";
-
 import { Pool } from 'pg';
+
+// 모든 스키마 import
+import { themesTable, themesRelations } from "~/feature/themes/schema";
+import { subjectsTable, subjectsRelations } from "~/feature/subjects/schema";
+
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL!,
@@ -15,10 +17,18 @@ const pool = new Pool({
     }
 });
 
-const db = drizzle({ client: pool });
+// 스키마를 포함하여 drizzle 초기화
+const db = drizzle({
+    client: pool,
+    schema: {
 
-export {
-    db,
-    themesTable,
-    subjectsTable,
-};
+        themesTable,
+        themesRelations,
+
+        subjectsTable,
+        subjectsRelations,
+
+    }
+});
+
+export default db;

@@ -1,5 +1,6 @@
 import { boolean, pgTable, serial, smallint, varchar, check } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
+import { subjectsTable } from "~/feature/subjects/schema";
 
 export const themesTable = pgTable("themes", {
         themes_id: serial().primaryKey(),
@@ -15,4 +16,8 @@ export const themesTable = pgTable("themes", {
     ]
 );
 
-
+export const themesRelations = relations(themesTable, ({ many }) => (
+    {
+        subjects: many(subjectsTable),
+    }
+))
