@@ -1,6 +1,6 @@
 import { check, integer, pgTable, primaryKey, varchar } from "drizzle-orm/pg-core";
 import { conceptsTable } from "~/feature/concepts/schema";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 export const supportivesTable = pgTable("supportives", {
         concept_id: integer().references(() => conceptsTable.concept_id, {
@@ -23,3 +23,21 @@ export const supportivesTable = pgTable("supportives", {
 
     ]
 );
+
+export const supportivesRelations = relations(supportivesTable, ({ one }) => ({
+
+    // 메인 개념 (concept_id) - 보조개념이 필요한 개념
+    mainConcept: one(conceptsTable, {
+        fields: [supportivesTable.concept_id],
+        references: [conceptsTable.concept_id],
+        relationName: "mainConceptSupportive"
+    }),
+    // 보조 개념 (supportive_id) - 실제 보조개념이 되는 개념
+    supportiveConcept: one(conceptsTable, {
+        fields: [supportivesTable.supportive_id],
+        references: [conceptsTable.concept_id],
+        relationName: "supportiveConceptRef"
+    }),
+
+
+}));

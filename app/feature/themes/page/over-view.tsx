@@ -1,11 +1,16 @@
-import { getThemesWithSubjects } from "~/feature/themes/quries";
+import { conceptWithDependents, conceptWithPrerequisites, getThemesWithSubjects } from "~/feature/themes/quries";
 import type { Route } from "./+types/over-view";
 import { useEffect } from "react";
 
 export const loader = async () => {
 
     const themeWithSubjects = await getThemesWithSubjects();
+    const getconceptWithPrerequisites = conceptWithPrerequisites;
 
+
+    console.dir(getconceptWithPrerequisites, { depth: null });
+
+    console.dir(conceptWithDependents, { depth: null });
     return { themeWithSubjects }
 }
 

@@ -1,4 +1,7 @@
 import db from "~/db";
+import { prerequisitesTable } from "~/feature/prerequisites/schema";
+import { conceptsTable } from "~/feature/concepts/schema";
+import { eq } from "drizzle-orm";
 
 export async function getThemesWithSubjects() {
     const startTime = performance.now();
@@ -68,7 +71,7 @@ export async function getThemesWithSubjects() {
                                                                     slug: true,
                                                                     definition: true,
                                                                     name_eng: true,
-                                                                }
+                                                                },
                                                             }
                                                         }
                                                     }
@@ -89,18 +92,34 @@ export async function getThemesWithSubjects() {
     const duration = endTime - startTime;
 
     console.log(`🚀 Query execution time: ${duration.toFixed(2)}ms`);
-    console.log(`📊 Total themes: ${result.length}`);
-
-    // 더 자세한 통계
-    const totalSubjects = result.reduce((acc, theme) => acc + theme.subjects.length, 0);
-    const totalTextbooks = result.reduce((acc, theme) =>
-        acc + theme.subjects.reduce((subAcc, subject) => subAcc + subject.textbooks.length, 0), 0);
-
-    console.log(`📚 Total subjects: ${totalSubjects}`);
-    console.log(`📖 Total textbooks: ${totalTextbooks}`);
 
     return result;
 }
 
+
+export const conceptWithPrerequisites = await db.query.conceptsTable.findFirst({
+    where: eq(conceptsTable.concept_id, 2),
+    with: {
+        prerequisites: {
+            with: {
+                prerequisiteConcept: true, // 선행조건이 되는 개념 정보도 함께 조회
+            },
+            orderBy: prerequisitesTable.sort_order,
+        },
+    },
+});
+
+// 특정 개념을 선행조건으로 갖는 모든 개념들 조회
+export const conceptWithDependents = await db.query.conceptsTable.findFirst({
+    where: eq(conceptsTable.concept_id, 1),
+    with: {
+        dependentConcepts: {
+            with: {
+                mainConcept: true, // 이 개념을 선행조건으로 갖는 개념 정보도 함께 조회
+            },
+            orderBy: prerequisitesTable.sort_order,
+        },
+    },
+});
 
 
