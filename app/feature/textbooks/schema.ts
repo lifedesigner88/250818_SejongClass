@@ -2,6 +2,7 @@ import { boolean, integer, pgTable, serial, varchar, check } from "drizzle-orm/p
 import { subjectsTable } from "~/feature/subjects/schema";
 import { relations, sql } from "drizzle-orm";
 import { majorsTable } from "~/feature/majors/schema";
+import { enrollmentsTable } from "~/feature/enrollments/schema";
 
 export const textbooksTable = pgTable("textbooks", {
     textbook_id: serial().primaryKey(),
@@ -25,10 +26,11 @@ export const textbooksTable = pgTable("textbooks", {
 ]);
 
 
-export const textbooksRelations = relations(textbooksTable, ({ one , many}) => ({
+export const textbooksRelations = relations(textbooksTable, ({ one, many }) => ({
     subjects: one(subjectsTable, {
         fields: [textbooksTable.subjects_id],
         references: [subjectsTable.subject_id],
     }),
     majors: many(majorsTable),
+    enrollments: many(enrollmentsTable),
 }))

@@ -1,7 +1,7 @@
 import { check, integer, pgTable, primaryKey, smallint, uuid } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { conceptsTable } from "~/feature/concepts/schema";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 export const mastersTable = pgTable("masters", {
         user_id: uuid().references(() => usersTable.user_id, {
@@ -21,3 +21,14 @@ export const mastersTable = pgTable("masters", {
         check("master_rate_positive", sql`master_rate BETWEEN 0 AND 5`),
     ]
 );
+
+export const mastersRelations = relations(mastersTable, ({ one }) => ({
+    user: one(usersTable, {
+        fields: [mastersTable.user_id],
+        references: [usersTable.user_id],
+    }),
+    concept: one(conceptsTable, {
+        fields: [mastersTable.concept_id],
+        references: [conceptsTable.concept_id],
+    }),
+}));

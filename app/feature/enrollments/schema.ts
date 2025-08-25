@@ -1,9 +1,9 @@
 import { boolean, pgTable, primaryKey, smallint, timestamp, uuid, integer, check, varchar } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { textbooksTable } from "~/feature/textbooks/schema";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
-export const enrollments = pgTable("enrollments", {
+export const enrollmentsTable = pgTable("enrollments", {
         user_id: uuid().references(() => usersTable.user_id,{
             onDelete: "cascade",
         }).notNull(),
@@ -28,3 +28,17 @@ export const enrollments = pgTable("enrollments", {
         check("rating_range", sql`rating >= 1 and rating <= 10`)
     ]
 );
+
+export const enrollmentsRelations = relations(enrollmentsTable, ({ one }) => ({
+    // 수강한 사용자
+    user: one(usersTable, {
+        fields: [enrollmentsTable.user_id],
+        references: [usersTable.user_id],
+    }),
+
+    // 수강한 교재
+    textbook: one(textbooksTable, {
+        fields: [enrollmentsTable.textbook_id],
+        references: [textbooksTable.textbook_id],
+    }),
+}));

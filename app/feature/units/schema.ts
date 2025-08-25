@@ -2,6 +2,7 @@ import { boolean, check, integer, pgTable, serial, timestamp, varchar } from "dr
 import { middlesTable } from "~/feature/middles/schema";
 import { relations, sql } from "drizzle-orm";
 import { dealingsTable } from "~/feature/dealings/schema";
+import { progressTable } from "~/feature/progress/schema";
 
 export const unitsTable = pgTable("units", {
     unit_id: serial().primaryKey(),
@@ -25,9 +26,14 @@ export const unitsTable = pgTable("units", {
 
 
 export const unitsRelations = relations(unitsTable, ({ one, many }) => ({
+
     middle: one(middlesTable, {
         fields: [unitsTable.middle_chapter_id],
         references: [middlesTable.middle_id],
     }),
     dealings: many(dealingsTable),
+
+    // 이 단원의 학습 진도를 가진 사용자들
+    progress: many(progressTable),
+
 }));

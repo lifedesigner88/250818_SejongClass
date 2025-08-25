@@ -13,6 +13,10 @@ import { dealingsRelations, dealingsTable } from "~/feature/dealings/schema";
 import { conceptsRelations, conceptsTable } from "~/feature/concepts/schema";
 import { prerequisitesTable, prerequisitesRelations } from "~/feature/prerequisites/schema";
 import { supportivesTable, supportivesRelations } from "~/feature/supportives/schema";
+import { mastersRelations, mastersTable } from "~/feature/masters/schema";
+import { enrollmentsRelations, enrollmentsTable } from "~/feature/enrollments/schema";
+import { progressRelations, progressTable, } from '~/feature/progress/schema';
+import { usersRelations, usersTable, } from '~/feature/users/schema';
 
 
 const pool = new Pool({
@@ -59,6 +63,18 @@ const db = drizzle({
 
         supportivesTable,
         supportivesRelations,
+
+        mastersTable,
+        mastersRelations,
+
+        enrollmentsTable,
+        enrollmentsRelations,
+
+        progressTable,
+        progressRelations,
+
+        usersTable,
+        usersRelations,
     }
 });
 
