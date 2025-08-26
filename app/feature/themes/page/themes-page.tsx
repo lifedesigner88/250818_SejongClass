@@ -3,9 +3,7 @@ import { Link } from "react-router";
 import type { Route } from "./+types/themes-page";
 
 export const loader = async () => {
-
     const themes = await getThemes()
-
     return { themes }
 }
 
