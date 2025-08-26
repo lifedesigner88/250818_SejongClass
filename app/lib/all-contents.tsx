@@ -1,6 +1,6 @@
 import {
     getThemesWithSubjectsANDTextbooksANDMajorsANDMiddlesANDUnitsANDDealings
-} from "~/feature/themes/quries";
+} from "~/feature/themes/queries";
 import type { Route } from "./+types/all-contents";
 
 

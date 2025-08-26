@@ -1,4 +1,4 @@
-import { getThemes } from "~/feature/themes/quries";
+import { getThemes } from "~/feature/themes/queries";
 import { Link } from "react-router";
 import type { Route } from "./+types/themes-page";
 
