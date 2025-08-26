@@ -20,11 +20,11 @@ export default function AllContents({ loaderData }: Route.ComponentProps) {
                     <div>
                         {theme.subjects.map((subject) => (
                             <div key={subject.subject_id}>
-                                <h1 className={"text-blue-900"}>{`...... `}{subject.name} - subject</h1>
+                                <h1 className={"text-blue-900"}>{`......(id: ${subject.subject_id}) `}{subject.name} - subject</h1>
                                 <div>
                                     {subject.textbooks.map((textbook) => (
                                         <div key={textbook.textbook_id}>
-                                            <h1 className={"text-green-500"}>{`............ `}{textbook.title} -
+                                            <h1 className={"text-green-500"}>{`............ (id: ${textbook.textbook_id}) `}{textbook.title} -
                                                                                                                textbook</h1>
                                             <div>
                                                 {textbook.majors.map((major) => (

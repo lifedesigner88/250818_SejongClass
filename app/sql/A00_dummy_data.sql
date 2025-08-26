@@ -49,52 +49,43 @@ INSERT INTO subjects (name, slug, is_active, sort_order, emoji, themes_id) VALUE
 
 -- 3. textbooks 테이블 데이터
 INSERT INTO textbooks (title, slug, price, is_published, sort_order, description, cover_image_url, subjects_id) VALUES
--- 수학 교재들
-('초등수학 3~6학년 완전정복', 'elementary-math-complete', 0, true, 1, '덧셈부터 분수까지, 코드로 배우는 초등수학', '/covers/elem-math.jpg', 1),
-('초등수학 심화과정', 'elementary-math-advanced', 0, true, 2, '영재교육원 수준의 초등수학 심화 문제', '/covers/elem-math-adv.jpg', 1),
-('중등수학 1~3학년 개념완성', 'middle-math-concepts', 0, true, 3, '정수부터 함수까지, 시각화로 이해하는 중등수학', '/covers/middle-math.jpg', 2),
-('중등수학 실전 문제해결', 'middle-math-problem-solving', 0, true, 4, '창의적 사고력을 기르는 중등수학 문제집', '/covers/middle-math-prob.jpg', 2),
-('고등수학 수능완성', 'high-math-complete', 100000, true, 5, '수학(상)(하)부터 미적분까지, 실전 코딩으로 정복', '/covers/high-math.jpg', 3),
-('고등수학 심화과정', 'high-math-advanced', 120000, true, 6, 'KMO와 올림피아드 대비 심화 수학', '/covers/high-math-adv.jpg', 3),
-('대학수학 미적분학', 'calculus-course', 100000, true, 7, '극한부터 다중적분까지 완전 마스터', '/covers/calculus.jpg', 4),
-('대학수학 선형대수학', 'linear-algebra-course', 100000, true, 8, '벡터공간부터 고유값까지 시각화로 이해', '/covers/linear-algebra.jpg', 4),
-('대학수학 확률통계학', 'statistics-course', 100000, true, 9, '확률론부터 통계적 추론까지', '/covers/statistics.jpg', 4),
-('대학수학 이산수학', 'discrete-math-course', 100000, true, 10, '논리와 집합부터 그래프 이론까지', '/covers/discrete-math.jpg', 4),
 
--- 물리 교재들
-('물리학 첫걸음', 'physics-first-step', 0, true, 11, '힘과 운동부터 시작하는 물리학 기초', '/covers/basic-physics.jpg', 5),
-('일상속 물리법칙', 'everyday-physics', 0, true, 12, '생활 속에서 발견하는 흥미로운 물리', '/covers/everyday-physics.jpg', 5),
-('일반물리학 I (역학)', 'general-physics-1', 100000, true, 13, '뉴턴역학부터 회전운동까지', '/covers/mechanics.jpg', 6),
-('일반물리학 II (전자기학)', 'general-physics-2', 100000, true, 14, '쿨롱법칙부터 맥스웰 방정식까지', '/covers/electromagnetism.jpg', 6),
-('일반물리학 III (파동과 열)', 'general-physics-3', 100000, true, 15, '파동현상과 열역학 법칙', '/covers/waves-thermo.jpg', 6),
-('현대물리학 입문', 'modern-physics-intro', 150000, true, 16, '상대성이론과 양자역학 기초', '/covers/modern-physics.jpg', 7),
-('양자역학과 통계물리', 'quantum-statistical', 180000, true, 17, '양자세계의 신비로운 법칙들', '/covers/quantum.jpg', 7),
-('물리학과 예술의 만남', 'physics-meets-art', 80000, true, 18, '아름다운 물리학 법칙들의 예술적 해석', '/covers/artistic-physics.jpg', 8),
-('디지털 아트와 물리시뮬레이션', 'digital-art-physics', 90000, true, 19, 'Processing과 p5.js로 만드는 물리 예술', '/covers/digital-art.jpg', 8),
+-- 초등 수학 (subject_id: 1)
+('초등 1-1', 'elementary-1-1', 0, true, 1, '덧셈과 뺄셈의 기초를 Python으로 배우며 수학적 사고력을 기릅니다.', null, 1),
+('초등 1-2', 'elementary-1-2', 0, true, 2, '도형과 시간 개념을 시각화를 통해 직관적으로 이해합니다.', null, 1),
+('초등 2-1', 'elementary-2-1', 0, true, 3, '곱셈의 원리를 코드로 구현하며 수학적 패턴을 발견합니다.', null, 1),
+('초등 2-2', 'elementary-2-2', 0, true, 4, '분수와 소수의 개념을 시각적 표현으로 완전히 마스터합니다.', null, 1),
+('초등 3-1', 'elementary-3-1', 0, true, 5, '나눗셈과 측정 단위를 실제 예제를 통해 체험합니다.', null, 1),
+('초등 3-2', 'elementary-3-2', 0, true, 6, '원과 삼각형의 성질을 GeoGebra로 탐구합니다.', null, 1),
+('초등 4-1', 'elementary-4-1', 0, true, 7, '각도와 평면도형의 이동을 애니메이션으로 학습합니다.', null, 1),
+('초등 4-2', 'elementary-4-2', 0, true, 8, '막대그래프와 꺾은선그래프로 데이터 분석 기초를 익힙니다.', null, 1),
+('초등 5-1', 'elementary-5-1', 0, true, 9, '약수와 배수의 규칙을 코딩으로 찾아내는 수학 탐정이 되어보세요.', null, 1),
+('초등 5-2', 'elementary-5-2', 0, true, 10, '분수의 덧셈과 뺄셈을 시각적 모델로 완벽하게 이해합니다.', null, 1),
+('초등 6-1', 'elementary-6-1', 0, true, 11, '비와 비율을 활용한 실생활 문제해결 능력을 기릅니다.', null, 1),
+('초등 6-2', 'elementary-6-2', 0, true, 12, '원의 넓이와 부피 계산을 3D 시각화로 체험합니다.', null, 1),
 
--- 코딩 교재들
-('HTML/CSS 기초부터 반응형까지', 'html-css-fundamentals', 80000, true, 20, '웹의 기초를 탄탄히 다지는 첫걸음', '/covers/html-css.jpg', 9),
-('JavaScript 완전정복', 'javascript-mastery', 120000, true, 21, 'ES6+부터 최신 문법까지 완전 마스터', '/covers/javascript.jpg', 9),
-('React 실전 프로젝트', 'react-real-projects', 150000, true, 22, 'Hook부터 Next.js까지 실전 개발', '/covers/react.jpg', 9),
-('Node.js 백엔드 개발', 'nodejs-backend', 130000, true, 23, 'Express부터 데이터베이스 연동까지', '/covers/nodejs.jpg', 9),
-('자료구조와 알고리즘', 'data-structures-algorithms', 100000, true, 24, '배열부터 그래프까지 필수 자료구조', '/covers/algorithms.jpg', 10),
-('코딩테스트 완전정복', 'coding-test-master', 120000, true, 25, '삼성, 카카오, 네이버 기출문제 완전분석', '/covers/coding-test.jpg', 10),
-('동적계획법과 그리디', 'dp-greedy-algorithms', 110000, true, 26, '어려운 알고리즘 패턴 완전 이해', '/covers/dp-greedy.jpg', 10),
-('Python 데이터 분석', 'python-data-analysis', 130000, true, 27, 'Pandas부터 시각화까지', '/covers/data-analysis.jpg', 11),
-('머신러닝 실전 프로젝트', 'machine-learning-projects', 150000, true, 28, 'Scikit-learn으로 실무 프로젝트 구현', '/covers/ml-projects.jpg', 11),
-('딥러닝과 AI 개발', 'deep-learning-ai', 180000, true, 29, 'TensorFlow로 구현하는 인공지능 모델', '/covers/ai-dev.jpg', 12),
-('컴퓨터 비전과 NLP', 'computer-vision-nlp', 200000, true, 30, '이미지 처리와 자연어 처리 마스터', '/covers/cv-nlp.jpg', 12),
+-- 중등 수학 (subject_id: 2)
+('중등 1-1', 'middle-1-1', 0, true, 1, '소인수분해와 유리수를 Python으로 계산하며 수의 체계를 완성합니다.', null, 2),
+('중등 1-2', 'middle-1-2', 0, true, 2, '일차방정식과 좌표평면을 그래프로 시각화하여 대수의 기초를 다집니다.', null, 2),
+('중등 2-1', 'middle-2-1', 0, true, 3, '다항식의 계산과 연립일차방정식을 체계적으로 해결합니다.', null, 2),
+('중등 2-2', 'middle-2-2', 0, true, 4, '일차함수의 그래프를 실시간으로 조작하며 함수의 개념을 체득합니다.', null, 2),
+('중등 3-1', 'middle-3-1', 0, true, 5, '이차방정식의 해를 다양한 방법으로 구하고 시각화합니다.', null, 2),
+('중등 3-2', 'middle-3-2', 0, true, 6, '삼각비와 원의 성질을 활용한 기하 문제를 해결합니다.', null, 2),
 
--- 인생 교재들 (뇌과학으로 변경)
-('뇌과학으로 이해하는 학습법', 'neuroscience-learning', 60000, true, 31, '뇌가 어떻게 학습하는지 과학적으로 분석', '/covers/neuro-learning.jpg', 13),
-('기억과 인지의 과학', 'memory-cognition-science', 70000, true, 32, '기억형성부터 인지편향까지', '/covers/memory-science.jpg', 13),
-('뇌과학 기반 습관형성', 'neuroscience-habits', 65000, true, 33, '도파민과 신경가소성을 활용한 습관 만들기', '/covers/neuro-habits.jpg', 13),
-('철학자들과 함께하는 사고 여행', 'philosophy-journey', 60000, true, 34, '소크라테스부터 현대 철학까지', '/covers/philosophy.jpg', 14),
-('논리학과 비판적 사고', 'logic-critical-thinking', 55000, true, 35, '올바른 추론과 논증의 기술', '/covers/logic.jpg', 14),
-('인간의 마음을 이해하는 심리학', 'understanding-psychology', 70000, true, 36, '행동경제학부터 인지심리학까지', '/covers/psychology.jpg', 15),
-('발달심리학과 교육심리학', 'developmental-educational-psych', 75000, true, 37, '인간 발달과 학습의 심리적 메커니즘', '/covers/dev-psych.jpg', 15),
-('경제학으로 보는 세상', 'economics-world', 80000, true, 38, '미시경제학부터 행동경제학까지', '/covers/economics.jpg', 16),
-('게임이론과 의사결정', 'game-theory-decision', 85000, true, 39, '전략적 사고와 합리적 선택의 과학', '/covers/game-theory.jpg', 16);
+-- 고등 수학 (subject_id: 3)
+('고등 1-1 공통수학 1', 'high-common-math-1', 0, true, 1, '다항식과 방정식을 깊이 있게 탐구하며 고등수학의 토대를 구축합니다.', null, 3),
+('고등 1-2 공통수학 2', 'high-common-math-2', 0, true, 2, '함수와 그래프의 성질을 Python으로 분석하며 수학적 사고를 확장합니다.', null, 3),
+('고등 2-1 대수', 'high-algebra', 0, true, 3, '복소수와 고차방정식을 통해 수의 세계를 완성합니다.', null, 3),
+('고등 2-2 미적분 1', 'high-calculus-1', 0, true, 4, '극한과 연속의 개념을 시각화로 직관적으로 이해합니다.', null, 3),
+('고등 3-1 확률과 통계', 'high-probability-statistics', 0, true, 5, '확률 분포와 통계적 추론을 실데이터로 체험합니다.', null, 3),
+('고등 3-2 미적분 2', 'high-calculus-2', 0, true, 6, '도함수와 적분의 활용을 통해 변화율의 세계를 탐험합니다.', null, 3),
+('고등 3-2 기하', 'high-geometry', 0, true, 7, '벡터와 공간도형을 3D 시각화로 완벽하게 마스터합니다.', null, 3),
+
+-- 대학 수학 (subject_id: 4)
+('대학 미적분', 'college-calculus', 0, true, 1, '다변수 미적분과 벡터해석학으로 고급 수학의 세계에 입문합니다.', null, 4),
+('대학 선형대수', 'college-linear-algebra', 0, true, 2, '벡터공간과 선형변환을 NumPy로 구현하며 현대수학의 핵심을 이해합니다.', null, 4),
+('대학 확률과 통계', 'college-probability-statistics', 0, true, 3, '확률론과 수리통계학을 데이터과학 관점에서 학습합니다.', null, 4),
+('대학 이산수학', 'college-discrete-math', 0, true, 4, '논리와 집합, 그래프 이론을 프로그래밍과 연결하여 컴퓨터과학의 기초를 다집니다.', null, 4);
 
 -- 4. majors 테이블 데이터 (대단원) - 대폭 확장
 INSERT INTO majors (title, sort_order, is_published, textbook_id) VALUES

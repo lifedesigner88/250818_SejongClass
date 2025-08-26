@@ -9,8 +9,6 @@ export const loader = async () => {
 
 export default function ThemesPage({ loaderData }: Route.ComponentProps) {
     const { themes } = loaderData;
-    console.log(themes)
-
     const baseSize = "size-50 text-5xl";
     const baseStyle = "text-white font-medium rounded-2xl shadow-lg flex items-center justify-center transition-all duration-300";
 
