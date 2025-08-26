@@ -32,19 +32,20 @@ INSERT INTO themes (name, slug, is_active, sort_order, hover, class_name) VALUES
                                                                       'bg-gradient-to-br from-purple-400 via-violet-500 to-pink-600');
 
 -- 2. subjects 테이블 데이터
-INSERT INTO subjects (name, slug, is_active, sort_order, icon_url, themes_id) VALUES
+INSERT INTO subjects (name, slug, is_active, sort_order, emoji, themes_id) VALUES
 
 -- 수학 subjects (theme_id = 1)
-('초등', 'elementary-math', true, 1, '/icons/elementary.svg', 1),
-('중등', 'middle-math', true, 2, '/icons/middle.svg', 1),
-('고등', 'high-math', true, 3, '/icons/high.svg', 1),
-('대학', 'college-math', true, 4, '/icons/college.svg', 1),
+('초등', 'elementary', true, 1, '🔢', 1),  -- 숫자들
+('중등', 'middle', true, 2, '📐', 1),      -- 삼각자
+('고등', 'high', true, 3, '📊', 1),       -- 차트
+('대학', 'college', true, 4, '🎓', 1),    -- 졸업모자
 
 -- 물리 subjects (theme_id = 2)
-('기초', 'basic-physics', true, 1, '/icons/basic.svg', 2),
-('일반', 'general-physics', true, 2, '/icons/general.svg', 2),
-('고급', 'advanced-physics', true, 3, '/icons/advanced.svg', 2),
-('예술', 'artistic-physics', true, 4, '/icons/art.svg', 2);
+('기초', 'basic', true, 1, '⚽', 2),       -- 공
+('일반', 'general', true, 2, '⚡', 2),     -- 번개
+('고급', 'advanced', true, 3, '🔬', 2),   -- 현미경
+('예술', 'artistic', true, 4, '🎨', 2);    -- 팔레트
+
 
 -- 3. textbooks 테이블 데이터
 INSERT INTO textbooks (title, slug, price, is_published, sort_order, description, cover_image_url, subjects_id) VALUES

@@ -13,14 +13,14 @@ export const loader = async () => {
 export default function AllContents({ loaderData }: Route.ComponentProps) {
     const { themeWithSubjects: themes } = loaderData;
     return (
-        <div className={"flex"}>
+        <div className={"m-20 flex gap-40"}>
             {themes.map((theme) => (
                 <div key={theme.themes_id}>
                     <h1 className={"text-red-500"}> {theme.name} - theme </h1>
                     <div>
                         {theme.subjects.map((subject) => (
                             <div key={subject.subject_id}>
-                                <h1 className={"text-blue-900"}>{`...... `}{subject.name} - suject</h1>
+                                <h1 className={"text-blue-900"}>{`...... `}{subject.name} - subject</h1>
                                 <div>
                                     {subject.textbooks.map((textbook) => (
                                         <div key={textbook.textbook_id}>

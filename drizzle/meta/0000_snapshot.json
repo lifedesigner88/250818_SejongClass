@@ -1,5 +1,5 @@
 {
-  "id": "0364bbd4-27ba-4cc9-9afe-23a5b45547d9",
+  "id": "1c4ba725-9e02-4916-8b7a-e7a15bca6042",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -650,11 +650,11 @@
           "notNull": true,
           "default": 1
         },
-        "icon_url": {
-          "name": "icon_url",
-          "type": "varchar(200)",
+        "emoji": {
+          "name": "emoji",
+          "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "themes_id": {
           "name": "themes_id",
@@ -680,7 +680,22 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "subjects_name_unique": {
+          "name": "subjects_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        },
+        "subjects_slug_unique": {
+          "name": "subjects_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {
         "sort_order_positive": {
@@ -916,11 +931,17 @@
           "notNull": true,
           "default": 1
         },
-        "icon_url": {
-          "name": "icon_url",
+        "class_name": {
+          "name": "class_name",
           "type": "varchar(200)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "hover": {
+          "name": "hover",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},

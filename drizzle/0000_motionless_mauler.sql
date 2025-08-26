@@ -83,8 +83,10 @@ CREATE TABLE "subjects" (
 	"slug" varchar(100) NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"sort_order" smallint DEFAULT 1 NOT NULL,
-	"icon_url" varchar(200),
+	"emoji" varchar(100) NOT NULL,
 	"themes_id" integer NOT NULL,
+	CONSTRAINT "subjects_name_unique" UNIQUE("name"),
+	CONSTRAINT "subjects_slug_unique" UNIQUE("slug"),
 	CONSTRAINT "sort_order_positive" CHECK (sort_order > 0)
 );
 --> statement-breakpoint
@@ -120,7 +122,8 @@ CREATE TABLE "themes" (
 	"slug" varchar(100) NOT NULL,
 	"is_active" boolean DEFAULT true NOT NULL,
 	"sort_order" smallint DEFAULT 1 NOT NULL,
-	"icon_url" varchar(200),
+	"class_name" varchar(200) NOT NULL,
+	"hover" varchar(200) NOT NULL,
 	CONSTRAINT "themes_name_unique" UNIQUE("name"),
 	CONSTRAINT "themes_slug_unique" UNIQUE("slug"),
 	CONSTRAINT "sort_order_positive" CHECK (sort_order > 0)

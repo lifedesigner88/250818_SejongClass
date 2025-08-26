@@ -6,11 +6,11 @@ import { textbooksTable } from "~/feature/textbooks/schema";
 export const subjectsTable = pgTable("subjects", {
         subject_id: serial().primaryKey(),
 
-        name: varchar({ length: 100 }).notNull(),
-        slug: varchar({ length: 100 }).notNull(),
+        name: varchar({ length: 100 }).notNull().unique(),
+        slug: varchar({ length: 100 }).notNull().unique(),
         is_active: boolean().default(true).notNull(),
         sort_order: smallint().default(1).notNull(),
-        icon_url: varchar({ length: 200 }),
+        emoji: varchar({ length: 100 }).notNull(),
 
         // foreign key
         themes_id: integer().references(() => themesTable.themes_id, {
