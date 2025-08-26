@@ -9,7 +9,8 @@ export const themesTable = pgTable("themes", {
         slug: varchar({ length: 100 }).notNull().unique(),
         is_active: boolean().default(true).notNull(),
         sort_order: smallint().default(1).notNull(),
-        icon_url: varchar({ length: 200 }),
+        class_name: varchar({ length: 200 }).notNull(),
+        hover: varchar({ length: 200 }).notNull(),
 
     }, () => [
         check("sort_order_positive", sql`sort_order > 0`),

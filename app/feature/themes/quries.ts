@@ -1,9 +1,26 @@
 import db from "~/db";
-import { prerequisitesTable } from "~/feature/prerequisites/schema";
-import { conceptsTable } from "~/feature/concepts/schema";
-import { eq } from "drizzle-orm";
+import { themesTable } from "~/feature/themes/schema";
 
-export async function getThemesWithSubjects() {
+export async function getThemes() {
+    return db.select()
+        .from(themesTable)
+        .orderBy(themesTable.sort_order);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export async function getThemesWithSubjectsANDTextbooksANDMajorsANDMiddlesANDUnitsANDDealings() {
     const startTime = performance.now();
 
     const result = await db.query.themesTable.findMany({
@@ -96,30 +113,5 @@ export async function getThemesWithSubjects() {
     return result;
 }
 
-
-export const conceptWithPrerequisites = await db.query.conceptsTable.findFirst({
-    where: eq(conceptsTable.concept_id, 2),
-    with: {
-        prerequisites: {
-            with: {
-                prerequisiteConcept: true, // 선행조건이 되는 개념 정보도 함께 조회
-            },
-            orderBy: prerequisitesTable.sort_order,
-        },
-    },
-});
-
-// 특정 개념을 선행조건으로 갖는 모든 개념들 조회
-export const conceptWithDependents = await db.query.conceptsTable.findFirst({
-    where: eq(conceptsTable.concept_id, 1),
-    with: {
-        dependentConcepts: {
-            with: {
-                mainConcept: true, // 이 개념을 선행조건으로 갖는 개념 정보도 함께 조회
-            },
-            orderBy: prerequisitesTable.sort_order,
-        },
-    },
-});
 
 

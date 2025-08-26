@@ -17,14 +17,23 @@ TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 
 
 -- 1. themes 테이블 데이터
-INSERT INTO themes (name, slug, is_active, sort_order, icon_url) VALUES
-                                                                     ('수학', 'mathematics', true, 1, '/icons/math.svg'),
-                                                                     ('물리', 'physics', true, 2, '/icons/physics.svg'),
-                                                                     ('코딩', 'coding', true, 3, '/icons/code.svg'),
-                                                                     ('인생', 'life', true, 4, '/icons/life.svg');
+INSERT INTO themes (name, slug, is_active, sort_order, hover, class_name) VALUES
+                                                                     ('수학', 'math', true, 1,
+                                                                      'hover:scale-110 hover:rotate-3 hover:shadow-2xl hover:brightness-110',
+                                                                      'bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500'),
+                                                                     ('물리', 'physics', true, 2,
+                                                                      'hover:scale-110 hover:-rotate-3 hover:shadow-2xl hover:brightness-110 hover:backdrop-blur-sm transform-gpu',
+                                                                      'bg-gradient-to-br from-cyan-400 via-blue-500 to-indigo-600'),
+                                                                     ('코딩', 'coding', false, 3,
+                                                                      'hover:scale-110 hover:rotate-2 hover:shadow-2xl hover:brightness-115',
+                                                                      'bg-gradient-to-br from-green-400 via-emerald-500 to-teal-600'),
+                                                                     ('인생', 'life', false, 4,
+                                                                      'hover:scale-110 hover:-rotate-2 hover:shadow-2xl hover:brightness-105',
+                                                                      'bg-gradient-to-br from-purple-400 via-violet-500 to-pink-600');
 
 -- 2. subjects 테이블 데이터
 INSERT INTO subjects (name, slug, is_active, sort_order, icon_url, themes_id) VALUES
+
 -- 수학 subjects (theme_id = 1)
 ('초등', 'elementary-math', true, 1, '/icons/elementary.svg', 1),
 ('중등', 'middle-math', true, 2, '/icons/middle.svg', 1),
@@ -35,19 +44,7 @@ INSERT INTO subjects (name, slug, is_active, sort_order, icon_url, themes_id) VA
 ('기초', 'basic-physics', true, 1, '/icons/basic.svg', 2),
 ('일반', 'general-physics', true, 2, '/icons/general.svg', 2),
 ('고급', 'advanced-physics', true, 3, '/icons/advanced.svg', 2),
-('예술', 'artistic-physics', true, 4, '/icons/art.svg', 2),
-
--- 코딩 subjects (theme_id = 3)
-('웹개발', 'web-development', true, 1, '/icons/web.svg', 3),
-('알고리즘', 'algorithms', true, 2, '/icons/algorithm.svg', 3),
-('데이터과학', 'data-science', true, 3, '/icons/data.svg', 3),
-('인공지능', 'artificial-intelligence', true, 4, '/icons/ai.svg', 3),
-
--- 인생 subjects (theme_id = 4)
-('뇌과학', 'neuroscience', true, 1, '/icons/brain.svg', 4),
-('철학', 'philosophy', true, 2, '/icons/philosophy.svg', 4),
-('심리학', 'psychology', true, 3, '/icons/psychology.svg', 4),
-('경제학', 'economics', true, 4, '/icons/economics.svg', 4);
+('예술', 'artistic-physics', true, 4, '/icons/art.svg', 2);
 
 -- 3. textbooks 테이블 데이터
 INSERT INTO textbooks (title, slug, price, is_published, sort_order, description, cover_image_url, subjects_id) VALUES

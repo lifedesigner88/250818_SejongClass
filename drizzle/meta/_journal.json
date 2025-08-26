@@ -8,6 +8,20 @@
       "when": 1756112598965,
       "tag": "0000_old_morg",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1756175441195,
+      "tag": "0001_exotic_swordsman",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1756175784879,
+      "tag": "0002_left_the_santerians",
+      "breakpoints": true
     }
   ]
 }

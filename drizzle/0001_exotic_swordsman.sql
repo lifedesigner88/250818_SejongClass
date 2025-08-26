@@ -1,0 +1,1 @@
+ALTER TABLE "themes" RENAME COLUMN "icon_url" TO "class_name";
