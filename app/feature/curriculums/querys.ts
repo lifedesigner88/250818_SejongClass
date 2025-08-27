@@ -1,5 +1,5 @@
 import db from "~/db";
-import { eq, and, asc, desc } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { curriculumsTable } from "./schema";
 
 // 모든 성취기준 조회

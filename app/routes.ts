@@ -7,6 +7,7 @@ export default [
     route("/theme/:theme-slug/:subject-slug/:textbook-id", "feature/textbooks/pages/textbook-page.tsx"),
 
 
+    route("/curriculums", "feature/curriculums/pages/curriculums-page.tsx"),
     route("/monaco-demo", "common/components/pages/monaco-demo.tsx"),
     route("/numpy-demo", "common/components/pages/numpy-demo.tsx"),
 
