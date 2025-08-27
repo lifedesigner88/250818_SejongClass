@@ -1,6 +1,5 @@
 import type { Route } from "./+types/textbook-page"
 
-
 export async function loader({ params }: Route.LoaderArgs) {
     const themeSlug = params["theme-slug"];
     const subjectSlug = params["subject-slug"];
