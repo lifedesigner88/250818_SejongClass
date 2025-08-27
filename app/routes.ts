@@ -11,5 +11,6 @@ export default [
 
     route("/hover-demo", "lib/hover-demo.tsx"),
     route("/allcontents", "lib/all-contents.tsx"),
+
     route("*", "common/pages/not-found.tsx")
 ] satisfies RouteConfig;
