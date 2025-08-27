@@ -101,7 +101,6 @@ function TextbookCard({
     // 상태 분류
     const isPublished = textbook.is_published;
     const isPaid = textbook.price > 0;
-    const isFree = textbook.price === 0;
 
     // 클릭 가능 여부 및 링크 결정
     const isClickable = isPublished;

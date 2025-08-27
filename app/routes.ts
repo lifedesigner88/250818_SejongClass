@@ -4,6 +4,7 @@ export default [
     index("common/pages/home-page.tsx"),
     route("/themes", "feature/themes/pages/themes-page.tsx"),
     route("/theme/:theme-slug", "feature/subjects/pages/subjects-page.tsx"),
+    route("/theme/:theme-slug/:subject-slug/:textbook-id", "feature/textbooks/pages/textbook-page.tsx"),
 
 
     route("/monaco-demo", "common/components/pages/monaco-demo.tsx"),
