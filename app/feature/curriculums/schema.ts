@@ -1,5 +1,5 @@
 import { boolean, pgTable, serial, smallint, varchar, text, integer, timestamp, check, index } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 
 export const curriculumsTable = pgTable("curriculums", {
@@ -43,3 +43,7 @@ export const curriculumsTable = pgTable("curriculums", {
     index("idx_curriculum_code").on(table.code),
     index("idx_curriculum_sort_order").on(table.sort_order),
 ]);
+
+export const curriculumsRealations = relations(curriculumsTable, ({}) => ({
+    // 예: 성취기준과 개념을 연결하는 매핑 테이블
+}));
