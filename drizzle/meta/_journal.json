@@ -8,6 +8,13 @@
       "when": 1756186152348,
       "tag": "0000_motionless_mauler",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1756276679215,
+      "tag": "0001_normal_tusk",
+      "breakpoints": true
     }
   ]
 }
