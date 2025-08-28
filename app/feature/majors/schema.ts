@@ -5,7 +5,7 @@ import { middlesTable } from "~/feature/middles/schema";
 
 export const majorsTable = pgTable("majors", {
     major_id: serial().primaryKey(),
-    title: varchar({ length: 200 }).notNull().unique(),
+    title: varchar({ length: 200 }).notNull(),
     sort_order: integer().default(1).notNull(),
     is_published: boolean().default(false).notNull(),
 

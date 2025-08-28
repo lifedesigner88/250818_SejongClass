@@ -8,18 +8,6 @@ export async function getThemes() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 export async function getThemesWithSubjectsANDTextbooksANDMajorsANDMiddlesANDUnitsANDDealings() {
     const startTime = performance.now();
 
@@ -73,7 +61,6 @@ export async function getThemesWithSubjectsANDTextbooksANDMajorsANDMiddlesANDUni
                                                     unit_id: true,
                                                     title: true,
                                                     youtube_video_id: true,
-                                                    estimated_duration: true,
                                                     is_published: true,
                                                     sort_order: true,
                                                 },
@@ -91,7 +78,8 @@ export async function getThemesWithSubjectsANDTextbooksANDMajorsANDMiddlesANDUni
                                                                 },
                                                             }
                                                         }
-                                                    }
+                                                    },
+                                                    curriculums: true
                                                 }
                                             }
                                         }

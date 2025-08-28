@@ -4,7 +4,7 @@ import { unitsTable } from "~/feature/units/schema";
 
 
 export const curriculumsTable = pgTable("curriculums", {
-    standard_id: serial().primaryKey(),
+    curriculum_id: serial().primaryKey(),
 
     // 성취기준 코드 (예: "2수01-01", "9수02-14")
     code: varchar({ length: 20 }).notNull().unique(),
@@ -29,7 +29,7 @@ export const curriculumsTable = pgTable("curriculums", {
     sort_order: integer().default(1).notNull(),
 
     // 외래키
-    units_id: integer().references(() => unitsTable.unit_id, {
+    unit_id: integer().references(() => unitsTable.unit_id, {
         onDelete: "cascade"
     })
 
@@ -49,7 +49,7 @@ export const curriculumsTable = pgTable("curriculums", {
 
 export const curriculumsRealations = relations(curriculumsTable, ({ one }) => ({
     units: one(unitsTable, {
-        fields: [curriculumsTable.units_id],
+        fields: [curriculumsTable.unit_id],
         references: [unitsTable.unit_id],
     }),
 }));

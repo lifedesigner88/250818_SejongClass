@@ -1,8 +1,9 @@
-import { boolean, check, integer, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, check, integer, pgTable, serial, smallint, timestamp, varchar } from "drizzle-orm/pg-core";
 import { middlesTable } from "~/feature/middles/schema";
 import { relations, sql } from "drizzle-orm";
 import { dealingsTable } from "~/feature/dealings/schema";
 import { progressTable } from "~/feature/progress/schema";
+import { curriculumsTable } from "~/feature/curriculums/schema";
 
 export const unitsTable = pgTable("units", {
     unit_id: serial().primaryKey(),
@@ -10,7 +11,7 @@ export const unitsTable = pgTable("units", {
     title: varchar({ length: 100 }).notNull(),
     youtube_video_id: varchar({ length: 20 }),
     readme_content: varchar({ length: 4000 }),
-    estimated_duration: integer(),
+    estimated_seconds: smallint().default(0).notNull(),
     sort_order: integer().default(1).notNull(),
     is_published: boolean().default(false).notNull(),
     updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
@@ -35,5 +36,7 @@ export const unitsRelations = relations(unitsTable, ({ one, many }) => ({
 
     // 이 단원의 학습 진도를 가진 사용자들
     progress: many(progressTable),
+
+    curriculums: many(curriculumsTable),
 
 }));

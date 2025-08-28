@@ -20,12 +20,13 @@ export default function AllContents({ loaderData }: Route.ComponentProps) {
                     <div>
                         {theme.subjects.map((subject) => (
                             <div key={subject.subject_id}>
-                                <h1 className={"text-blue-900"}>{`......(id: ${subject.subject_id}) `}{subject.name} - subject</h1>
+                                <h1 className={"text-blue-900"}>{`......(id: ${subject.subject_id}) `}{subject.name} -
+                                                                                                                     subject</h1>
                                 <div>
                                     {subject.textbooks.map((textbook) => (
                                         <div key={textbook.textbook_id}>
                                             <h1 className={"text-green-500"}>{`............ (id: ${textbook.textbook_id}) `}{textbook.title} -
-                                                                                                               textbook</h1>
+                                                                                                                                             textbook</h1>
                                             <div>
                                                 {textbook.majors.map((major) => (
                                                     <div key={major.major_id}>
@@ -47,6 +48,12 @@ export default function AllContents({ loaderData }: Route.ComponentProps) {
                                                                                             key={unitConcept.concept.concept_id}>
                                                                                             <h1 className={"text-cyan-500"}>{`................................... `}({unitConcept.concept.concept_id}) {unitConcept.concept.name} -
                                                                                                                                                                     concept</h1>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                    {unit.curriculums.map((curriculum) => (
+                                                                                        <div
+                                                                                            key={curriculum.curriculum_id}>
+                                                                                            <h1 className={"text-yellow-500"}>{`................................... `}({curriculum.curriculum_id}) {curriculum.code}</h1>
                                                                                         </div>
                                                                                     ))}
                                                                                 </div>

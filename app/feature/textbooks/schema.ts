@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, serial, varchar, check } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, serial, varchar, check, smallint } from "drizzle-orm/pg-core";
 import { subjectsTable } from "~/feature/subjects/schema";
 import { relations, sql } from "drizzle-orm";
 import { majorsTable } from "~/feature/majors/schema";
@@ -13,6 +13,7 @@ export const textbooksTable = pgTable("textbooks", {
     is_published: boolean().default(false).notNull(),
     sort_order: integer().default(1).notNull(),
     cover_image_url: varchar({ length: 500 }),
+    estimated_hours: smallint().default(0).notNull(),
 
     // foreign key
     subjects_id: integer().references(() => subjectsTable.subject_id, {
