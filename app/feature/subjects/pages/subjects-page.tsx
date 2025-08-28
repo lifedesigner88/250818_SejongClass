@@ -54,7 +54,7 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                                     {subject.textbooks.map((textbook) => (
                                         <CarouselItem
                                             key={textbook.textbook_id}
-                                            className="pl-2 md:pl-4 basis-1/3 sm:basis-1/4 md:basis-1/5 lg:basis-1/6"
+                                            className="basis-1/1 md:basis-1/2 lg:basis-1/3"
                                         >
                                             <TextbookCard
                                                 textbook={textbook}
@@ -66,8 +66,8 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                                 </CarouselContent>
 
                                 {/* 네비게이션 버튼 */}
-                                <CarouselPrevious className="hidden sm:flex"/>
-                                <CarouselNext className="hidden sm:flex"/>
+                                <CarouselPrevious variant={"default"} />
+                                <CarouselNext variant={"default"} />
                             </Carousel>
                         ) : (
                             <div className="text-center py-12 text-muted-foreground">
@@ -127,11 +127,11 @@ function TextbookCard({
 
     return (
         <CardContainer>
-            {/* 도서 비율 카드 (3:4) - 모든 정보를 오버레이로 표시 */}
+            {/* 황금비율 가로형 카드 (1.618:1) - 가로가 긴 비율 */}
             <Card
-                className={`relative aspect-[3/4] transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden ${
+                className={`relative aspect-[1.618/1] transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden ${
                     isClickable
-                        ? 'group-hover:shadow-lg group-hover:scale-[0.90] cursor-pointer'
+                        ? 'group-hover:shadow-lg group-hover:scale-[0.98] cursor-pointer'
                         : 'opacity-75 cursor-not-allowed'
                 }`}>
                 {/* 메인 커버 이미지 */}
@@ -146,13 +146,13 @@ function TextbookCard({
                         />
                     ) : (
                         <div className="flex items-center justify-center h-full text-white">
-                            <BookOpen className="w-12 h-12 opacity-80"/>
+                            <BookOpen className="w-16 h-16 opacity-80"/>
                         </div>
                     )}
                 </div>
 
                 {/* 상단 배지들 */}
-                <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
+                <div className="absolute top-3 right-3 flex flex-col gap-1 z-10">
                     {/* 발행 상태 배지 */}
                     {!isPublished && (
                         <Badge variant="secondary" className="text-xs bg-red-500/90 text-white backdrop-blur-sm">
@@ -163,17 +163,17 @@ function TextbookCard({
                     {/* 완료 상태 배지 */}
                     {isCompleted && isPublished && (
                         <Badge className="text-xs bg-yellow-500/90 hover:bg-yellow-600 backdrop-blur-sm">
-                            <Star className="w-2 h-2 mr-1 fill-white"/>
+                            <Star className="w-3 h-3 mr-1 fill-white"/>
                             완료
                         </Badge>
                     )}
                 </div>
 
                 {/* 가격/무료 배지 */}
-                <div className="absolute top-2 left-2 z-10">
+                <div className="absolute top-3 left-3 z-10">
                     {isPaid ? (
                         <Badge variant="default" className="text-xs bg-green-600/90 text-white backdrop-blur-sm">
-                            <DollarSign className="w-2 h-2 mr-1"/>
+                            <DollarSign className="w-3 h-3 mr-1"/>
                             {(textbook.price / 10000).toFixed(0)}만원
                         </Badge>
                     ) : isPublished ? (
@@ -185,8 +185,8 @@ function TextbookCard({
 
                 {/* 제목 오버레이 (하단) */}
                 <div
-                    className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-3 z-10">
-                    <h3 className={`text-sm font-bold leading-tight line-clamp-2 text-white transition-colors ${
+                    className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 z-10">
+                    <h3 className={`text-base font-bold leading-tight line-clamp-2 text-white transition-colors ${
                         isClickable ? 'group-hover:text-blue-200' : ''
                     }`}>
                         {textbook.title}
@@ -194,7 +194,7 @@ function TextbookCard({
 
                     {/* 진도 표시 (발행된 교재만) */}
                     {isPublished && isStarted && (
-                        <div className="mt-2 space-y-1">
+                        <div className="mt-3 space-y-2">
                             <div className="flex items-center justify-between text-xs text-white/90">
                                 <div className="flex items-center gap-1">
                                     <TrendingUp className="w-3 h-3"/>
@@ -202,7 +202,7 @@ function TextbookCard({
                                 </div>
                                 <span className="font-medium">{progressValue}%</span>
                             </div>
-                            <Progress value={progressValue} className="h-1 bg-white/20"/>
+                            <Progress value={progressValue} className="h-1.5 bg-white/20"/>
                             {isCompleted && (
                                 <div className="text-xs text-yellow-300 font-medium">
                                     🎉 완료!
@@ -213,12 +213,12 @@ function TextbookCard({
 
                     {/* 상태별 정보 표시 */}
                     {!isPublished ? (
-                        <div className="flex items-center gap-1 text-xs text-white/80 mt-1">
+                        <div className="flex items-center gap-1 text-xs text-white/80 mt-2">
                             <Lock className="w-3 h-3"/>
                             <span>출시 예정</span>
                         </div>
                     ) : !isStarted ? (
-                        <div className="flex items-center gap-1 text-xs text-white/80 mt-1">
+                        <div className="flex items-center gap-1 text-xs text-white/80 mt-2">
                             {isPaid ? (
                                 <>
                                     <ShoppingCart className="w-3 h-3"/>
@@ -235,7 +235,7 @@ function TextbookCard({
 
                     {/* 간단한 메타 정보 */}
                     <div
-                        className="flex items-center justify-between text-xs text-white/70 mt-2 pt-2 border-t border-white/20">
+                        className="flex items-center justify-between text-xs text-white/70 mt-3 pt-2 border-t border-white/20">
                         <div className="flex items-center gap-1">
                             <Clock className="w-3 h-3"/>
                             <span>4주</span>
@@ -255,14 +255,14 @@ function TextbookCard({
                     {!isPublished ? (
                         /* 잠금 아이콘 (준비중일 때) */
                         <div
-                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/70 rounded-full p-3 backdrop-blur-sm">
-                            <Lock className="w-8 h-8 text-white"/>
+                            className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/70 rounded-full p-4 backdrop-blur-sm">
+                            <Lock className="w-10 h-10 text-white"/>
                         </div>
                     ) : (
                         /* 액션 버튼 (호버 시 표시) */
                         <Button
                             size="sm"
-                            className={`opacity-0 group-hover:opacity-100 transition-all duration-300 text-xs px-4 py-2 backdrop-blur-sm ${
+                            className={`opacity-0 group-hover:opacity-100 transition-all duration-300 text-sm px-6 py-3 backdrop-blur-sm ${
                                 isPaid
                                     ? 'bg-green-600/90 hover:bg-green-700 text-white'
                                     : 'bg-blue-600/90 hover:bg-blue-700 text-white'
@@ -271,7 +271,7 @@ function TextbookCard({
                         >
                             {isPaid ? (
                                 <>
-                                    <ShoppingCart className="w-3 h-3 mr-1"/>
+                                    <ShoppingCart className="w-4 h-4 mr-2"/>
                                     구매하기
                                 </>
                             ) : isCompleted ? (
@@ -280,7 +280,7 @@ function TextbookCard({
                                 "계속하기"
                             ) : (
                                 <>
-                                    <PlayCircle className="w-3 h-3 mr-1"/>
+                                    <PlayCircle className="w-4 h-4 mr-2"/>
                                     시작하기
                                 </>
                             )}

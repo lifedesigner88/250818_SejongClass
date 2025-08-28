@@ -48,44 +48,34 @@ INSERT INTO subjects (name, slug, is_active, sort_order, emoji, themes_id) VALUE
 
 
 -- 3. textbooks 테이블 데이터
-INSERT INTO textbooks (title, slug, price, is_published, sort_order, description, cover_image_url, subjects_id) VALUES
+INSERT INTO textbooks (title, slug, subjects_id, sort_order, is_published, price) VALUES
+-- 초등 수학 교재들 (subjects_id: 1)
+('초등 1-2학년', 'elementary-1-2', 1, 1, true, 0),
+('초등 3-4학년', 'elementary-3-4', 1, 2, true, 0),
+('초등 4-5학년', 'elementary-4-5', 1, 3, true, 0),
 
--- 초등 수학 (subject_id: 1)
-('초등 1-1', 'elementary-1-1', 0, true, 1, '덧셈과 뺄셈의 기초를 Python으로 배우며 수학적 사고력을 기릅니다.', null, 1),
-('초등 1-2', 'elementary-1-2', 0, true, 2, '도형과 시간 개념을 시각화를 통해 직관적으로 이해합니다.', null, 1),
-('초등 2-1', 'elementary-2-1', 0, true, 3, '곱셈의 원리를 코드로 구현하며 수학적 패턴을 발견합니다.', null, 1),
-('초등 2-2', 'elementary-2-2', 0, true, 4, '분수와 소수의 개념을 시각적 표현으로 완전히 마스터합니다.', null, 1),
-('초등 3-1', 'elementary-3-1', 0, true, 5, '나눗셈과 측정 단위를 실제 예제를 통해 체험합니다.', null, 1),
-('초등 3-2', 'elementary-3-2', 0, true, 6, '원과 삼각형의 성질을 GeoGebra로 탐구합니다.', null, 1),
-('초등 4-1', 'elementary-4-1', 0, true, 7, '각도와 평면도형의 이동을 애니메이션으로 학습합니다.', null, 1),
-('초등 4-2', 'elementary-4-2', 0, true, 8, '막대그래프와 꺾은선그래프로 데이터 분석 기초를 익힙니다.', null, 1),
-('초등 5-1', 'elementary-5-1', 0, true, 9, '약수와 배수의 규칙을 코딩으로 찾아내는 수학 탐정이 되어보세요.', null, 1),
-('초등 5-2', 'elementary-5-2', 0, true, 10, '분수의 덧셈과 뺄셈을 시각적 모델로 완벽하게 이해합니다.', null, 1),
-('초등 6-1', 'elementary-6-1', 0, true, 11, '비와 비율을 활용한 실생활 문제해결 능력을 기릅니다.', null, 1),
-('초등 6-2', 'elementary-6-2', 0, true, 12, '원의 넓이와 부피 계산을 3D 시각화로 체험합니다.', null, 1),
+-- 중등 수학 교재들 (subjects_id: 2)
+('중등 1학년', 'middle-school-1', 2, 1, true, 0),
+('중등 2학년', 'middle-school-2', 2, 2, true, 0),
+('중등 3학년', 'middle-school-3', 2, 3, true, 0),
 
--- 중등 수학 (subject_id: 2)
-('중등 1-1', 'middle-1-1', 0, true, 1, '소인수분해와 유리수를 Python으로 계산하며 수의 체계를 완성합니다.', null, 2),
-('중등 1-2', 'middle-1-2', 0, true, 2, '일차방정식과 좌표평면을 그래프로 시각화하여 대수의 기초를 다집니다.', null, 2),
-('중등 2-1', 'middle-2-1', 0, true, 3, '다항식의 계산과 연립일차방정식을 체계적으로 해결합니다.', null, 2),
-('중등 2-2', 'middle-2-2', 0, true, 4, '일차함수의 그래프를 실시간으로 조작하며 함수의 개념을 체득합니다.', null, 2),
-('중등 3-1', 'middle-3-1', 0, true, 5, '이차방정식의 해를 다양한 방법으로 구하고 시각화합니다.', null, 2),
-('중등 3-2', 'middle-3-2', 0, true, 6, '삼각비와 원의 성질을 활용한 기하 문제를 해결합니다.', null, 2),
+-- 고등 수학 교재들 (subjects_id: 3)
+('고등 1-1 공통수학 1', 'high-school-1-1-common-math-1', 3, 1, true, 0),
+('고등 1-2 공통수학 2', 'high-school-1-2-common-math-2', 3, 2, true, 0),
+('고등 2-1 대수', 'high-school-2-1-algebra', 3, 3, true, 0),
+('고등 2-2 미적분 1', 'high-school-2-2-calculus-1', 3, 4, true, 0),
+('고등 3-1 확률과 통계', 'high-school-3-1-probability-statistics', 3, 5, true, 0),
+('고등 3-2 미적분 2', 'high-school-3-2-calculus-2', 3, 6, true, 0),
+('고등 3-2 기하', 'high-school-3-2-geometry', 3, 7, true, 0),
 
--- 고등 수학 (subject_id: 3)
-('고등 1-1 공통수학 1', 'high-common-math-1', 0, true, 1, '다항식과 방정식을 깊이 있게 탐구하며 고등수학의 토대를 구축합니다.', null, 3),
-('고등 1-2 공통수학 2', 'high-common-math-2', 0, true, 2, '함수와 그래프의 성질을 Python으로 분석하며 수학적 사고를 확장합니다.', null, 3),
-('고등 2-1 대수', 'high-algebra', 0, true, 3, '복소수와 고차방정식을 통해 수의 세계를 완성합니다.', null, 3),
-('고등 2-2 미적분 1', 'high-calculus-1', 0, true, 4, '극한과 연속의 개념을 시각화로 직관적으로 이해합니다.', null, 3),
-('고등 3-1 확률과 통계', 'high-probability-statistics', 0, true, 5, '확률 분포와 통계적 추론을 실데이터로 체험합니다.', null, 3),
-('고등 3-2 미적분 2', 'high-calculus-2', 0, true, 6, '도함수와 적분의 활용을 통해 변화율의 세계를 탐험합니다.', null, 3),
-('고등 3-2 기하', 'high-geometry', 0, true, 7, '벡터와 공간도형을 3D 시각화로 완벽하게 마스터합니다.', null, 3),
+-- 대학 수학 교재들 (subjects_id: 4)
+('대학 미적분', 'university-calculus', 4, 1, true, 100000),
+('대학 선형대수', 'university-linear-algebra', 4, 2, true, 100000),
+('대학 확률과 통계', 'university-probability-statistics', 4, 3, true, 100000),
+('대학 이산수학', 'university-discrete-math', 4, 4, true, 100000);
 
--- 대학 수학 (subject_id: 4)
-('대학 미적분', 'college-calculus', 0, true, 1, '다변수 미적분과 벡터해석학으로 고급 수학의 세계에 입문합니다.', null, 4),
-('대학 선형대수', 'college-linear-algebra', 0, true, 2, '벡터공간과 선형변환을 NumPy로 구현하며 현대수학의 핵심을 이해합니다.', null, 4),
-('대학 확률과 통계', 'college-probability-statistics', 0, true, 3, '확률론과 수리통계학을 데이터과학 관점에서 학습합니다.', null, 4),
-('대학 이산수학', 'college-discrete-math', 0, true, 4, '논리와 집합, 그래프 이론을 프로그래밍과 연결하여 컴퓨터과학의 기초를 다집니다.', null, 4);
+
+
 
 -- 4. majors 테이블 데이터 (대단원) - 대폭 확장
 INSERT INTO majors (title, sort_order, is_published, textbook_id) VALUES

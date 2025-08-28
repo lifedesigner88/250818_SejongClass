@@ -1,5 +1,6 @@
-import { boolean, pgTable, serial, smallint, varchar, text, integer, timestamp, check, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, smallint, varchar, text, integer, check, index } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
+import { unitsTable } from "~/feature/units/schema";
 
 
 export const curriculumsTable = pgTable("curriculums", {
@@ -26,9 +27,11 @@ export const curriculumsTable = pgTable("curriculums", {
 
     // 메타데이터
     sort_order: integer().default(1).notNull(),
-    is_active: boolean().default(true).notNull(),
-    created_at: timestamp().defaultNow(),
-    updated_at: timestamp().defaultNow(),
+
+    // 외래키
+    units_id: integer().references(() => unitsTable.unit_id, {
+        onDelete: "cascade"
+    })
 
 }, (table) => [
     // 제약 조건
@@ -44,6 +47,9 @@ export const curriculumsTable = pgTable("curriculums", {
     index("idx_curriculum_sort_order").on(table.sort_order),
 ]);
 
-export const curriculumsRealations = relations(curriculumsTable, ({}) => ({
-    // 예: 성취기준과 개념을 연결하는 매핑 테이블
+export const curriculumsRealations = relations(curriculumsTable, ({ one }) => ({
+    units: one(unitsTable, {
+        fields: [curriculumsTable.units_id],
+        references: [unitsTable.unit_id],
+    }),
 }));

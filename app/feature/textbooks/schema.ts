@@ -12,7 +12,6 @@ export const textbooksTable = pgTable("textbooks", {
     price: integer().default(0).notNull(),
     is_published: boolean().default(false).notNull(),
     sort_order: integer().default(1).notNull(),
-    description: varchar({ length: 500 }),
     cover_image_url: varchar({ length: 500 }),
 
     // foreign key

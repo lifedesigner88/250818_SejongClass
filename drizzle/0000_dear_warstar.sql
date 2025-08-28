@@ -9,6 +9,26 @@ CREATE TABLE "concepts" (
 	CONSTRAINT "concepts_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
+CREATE TABLE "curriculums" (
+	"standard_id" serial PRIMARY KEY NOT NULL,
+	"code" varchar(20) NOT NULL,
+	"school_level" varchar(30) NOT NULL,
+	"grade_group" smallint NOT NULL,
+	"domain_number" smallint NOT NULL,
+	"domain_name" varchar(50) NOT NULL,
+	"sub_domain_number" smallint,
+	"sub_domain_name" varchar(100),
+	"achievement_number" smallint NOT NULL,
+	"achievement_text" text NOT NULL,
+	"sort_order" integer DEFAULT 1 NOT NULL,
+	"units_id" integer,
+	CONSTRAINT "curriculums_code_unique" UNIQUE("code"),
+	CONSTRAINT "grade_group_valid" CHECK ("curriculums"."grade_group" IN (2, 4, 6, 9, 10, 12)),
+	CONSTRAINT "domain_number_valid" CHECK ("curriculums"."domain_number" BETWEEN 1 AND 4),
+	CONSTRAINT "achievement_number_positive" CHECK ("curriculums"."achievement_number" > 0),
+	CONSTRAINT "sort_order_positive" CHECK ("curriculums"."sort_order" > 0)
+);
+--> statement-breakpoint
 CREATE TABLE "dealings" (
 	"unit_id" integer NOT NULL,
 	"concept_id" integer NOT NULL,
@@ -107,7 +127,6 @@ CREATE TABLE "textbooks" (
 	"price" integer DEFAULT 0 NOT NULL,
 	"is_published" boolean DEFAULT false NOT NULL,
 	"sort_order" integer DEFAULT 1 NOT NULL,
-	"description" varchar(500),
 	"cover_image_url" varchar(500),
 	"subjects_id" integer NOT NULL,
 	CONSTRAINT "textbooks_title_unique" UNIQUE("title"),
@@ -153,6 +172,7 @@ CREATE TABLE "users" (
 	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
+ALTER TABLE "curriculums" ADD CONSTRAINT "curriculums_units_id_units_unit_id_fk" FOREIGN KEY ("units_id") REFERENCES "public"."units"("unit_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "dealings" ADD CONSTRAINT "dealings_unit_id_units_unit_id_fk" FOREIGN KEY ("unit_id") REFERENCES "public"."units"("unit_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "dealings" ADD CONSTRAINT "dealings_concept_id_concepts_concept_id_fk" FOREIGN KEY ("concept_id") REFERENCES "public"."concepts"("concept_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_user_id_users_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("user_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -169,4 +189,8 @@ ALTER TABLE "subjects" ADD CONSTRAINT "subjects_themes_id_themes_themes_id_fk" F
 ALTER TABLE "supportives" ADD CONSTRAINT "supportives_concept_id_concepts_concept_id_fk" FOREIGN KEY ("concept_id") REFERENCES "public"."concepts"("concept_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "supportives" ADD CONSTRAINT "supportives_supportive_id_concepts_concept_id_fk" FOREIGN KEY ("supportive_id") REFERENCES "public"."concepts"("concept_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "textbooks" ADD CONSTRAINT "textbooks_subjects_id_subjects_subject_id_fk" FOREIGN KEY ("subjects_id") REFERENCES "public"."subjects"("subject_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "units" ADD CONSTRAINT "units_middle_chapter_id_middles_middle_id_fk" FOREIGN KEY ("middle_chapter_id") REFERENCES "public"."middles"("middle_id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "units" ADD CONSTRAINT "units_middle_chapter_id_middles_middle_id_fk" FOREIGN KEY ("middle_chapter_id") REFERENCES "public"."middles"("middle_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "idx_curriculum_school_level" ON "curriculums" USING btree ("school_level");--> statement-breakpoint
+CREATE INDEX "idx_curriculum_grade_domain" ON "curriculums" USING btree ("grade_group","domain_number");--> statement-breakpoint
+CREATE INDEX "idx_curriculum_code" ON "curriculums" USING btree ("code");--> statement-breakpoint
+CREATE INDEX "idx_curriculum_sort_order" ON "curriculums" USING btree ("sort_order");

@@ -1,5 +1,5 @@
 {
-  "id": "1c4ba725-9e02-4916-8b7a-e7a15bca6042",
+  "id": "b8a2ad30-bde3-4253-a16f-92c02838cf88",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -60,6 +60,198 @@
       },
       "policies": {},
       "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.curriculums": {
+      "name": "curriculums",
+      "schema": "",
+      "columns": {
+        "standard_id": {
+          "name": "standard_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "school_level": {
+          "name": "school_level",
+          "type": "varchar(30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "grade_group": {
+          "name": "grade_group",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "domain_number": {
+          "name": "domain_number",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "domain_name": {
+          "name": "domain_name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sub_domain_number": {
+          "name": "sub_domain_number",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sub_domain_name": {
+          "name": "sub_domain_name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "achievement_number": {
+          "name": "achievement_number",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "achievement_text": {
+          "name": "achievement_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "units_id": {
+          "name": "units_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "idx_curriculum_school_level": {
+          "name": "idx_curriculum_school_level",
+          "columns": [
+            {
+              "expression": "school_level",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_curriculum_grade_domain": {
+          "name": "idx_curriculum_grade_domain",
+          "columns": [
+            {
+              "expression": "grade_group",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "domain_number",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_curriculum_code": {
+          "name": "idx_curriculum_code",
+          "columns": [
+            {
+              "expression": "code",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "idx_curriculum_sort_order": {
+          "name": "idx_curriculum_sort_order",
+          "columns": [
+            {
+              "expression": "sort_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "curriculums_units_id_units_unit_id_fk": {
+          "name": "curriculums_units_id_units_unit_id_fk",
+          "tableFrom": "curriculums",
+          "tableTo": "units",
+          "columnsFrom": [
+            "units_id"
+          ],
+          "columnsTo": [
+            "unit_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "curriculums_code_unique": {
+          "name": "curriculums_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "grade_group_valid": {
+          "name": "grade_group_valid",
+          "value": "\"curriculums\".\"grade_group\" IN (2, 4, 6, 9, 10, 12)"
+        },
+        "domain_number_valid": {
+          "name": "domain_number_valid",
+          "value": "\"curriculums\".\"domain_number\" BETWEEN 1 AND 4"
+        },
+        "achievement_number_positive": {
+          "name": "achievement_number_positive",
+          "value": "\"curriculums\".\"achievement_number\" > 0"
+        },
+        "sort_order_positive": {
+          "name": "sort_order_positive",
+          "value": "\"curriculums\".\"sort_order\" > 0"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.dealings": {
@@ -829,12 +1021,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": 1
-        },
-        "description": {
-          "name": "description",
-          "type": "varchar(500)",
-          "primaryKey": false,
-          "notNull": false
         },
         "cover_image_url": {
           "name": "cover_image_url",
