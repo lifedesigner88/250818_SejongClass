@@ -6,7 +6,6 @@ import { curriculumsTable } from "./schema";
 export async function getAllcurriculumsTable() {
     return db.select()
         .from(curriculumsTable)
-        .where(eq(curriculumsTable.is_active, true))
         .orderBy(asc(curriculumsTable.sort_order));
 }
 
@@ -17,7 +16,6 @@ export async function getcurriculumsTableBySchoolLevel(schoolLevel: string) {
         .where(
             and(
                 eq(curriculumsTable.school_level, schoolLevel),
-                eq(curriculumsTable.is_active, true)
             )
         )
         .orderBy(
@@ -38,7 +36,6 @@ export async function getcurriculumsTableByGradeAndDomain(
             and(
                 eq(curriculumsTable.grade_group, gradeGroup),
                 eq(curriculumsTable.domain_number, domainNumber),
-                eq(curriculumsTable.is_active, true)
             )
         )
         .orderBy(
@@ -64,7 +61,6 @@ export async function getDomainsBySchoolLevel(schoolLevel: string) {
         .where(
             and(
                 eq(curriculumsTable.school_level, schoolLevel),
-                eq(curriculumsTable.is_active, true)
             )
         )
         .orderBy(asc(curriculumsTable.domain_number));
@@ -84,30 +80,8 @@ export async function getSubDomainsByDomain(
             and(
                 eq(curriculumsTable.grade_group, gradeGroup),
                 eq(curriculumsTable.domain_number, domainNumber),
-                eq(curriculumsTable.is_active, true)
             )
         )
         .orderBy(asc(curriculumsTable.sub_domain_number));
 }
 
-// 성취기준과 연결된 개념들 조회 (관계 테이블 사용)
-export async function getcurriculumsTableWithConcepts() {
-    return db.query.curriculumsTable.findMany({
-        where: eq(curriculumsTable.is_active, true),
-        with: {
-            conceptMappings: {
-                with: {
-                    concept: {
-                        columns: {
-                            concept_id: true,
-                            name: true,
-                            slug: true,
-                            definition: true,
-                        }
-                    }
-                }
-            }
-        },
-        orderBy: [asc(curriculumsTable.sort_order)],
-    });
-}

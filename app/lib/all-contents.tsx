@@ -13,11 +13,11 @@ export const loader = async () => {
 export default function AllContents({ loaderData }: Route.ComponentProps) {
     const { themeWithSubjects: themes } = loaderData;
     return (
-        <div className={"m-20 flex gap-40"}>
+        <div>
             {themes.map((theme) => (
-                <div key={theme.themes_id}>
+                <div key={theme.themes_id} >
                     <h1 className={"text-red-500"}> {theme.name} - theme </h1>
-                    <div>
+                    <div className={"m-20 flex"}>
                         {theme.subjects.map((subject) => (
                             <div key={subject.subject_id}>
                                 <h1 className={"text-blue-900"}>{`......(id: ${subject.subject_id}) `}{subject.name} -
