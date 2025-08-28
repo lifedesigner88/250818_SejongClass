@@ -127,3 +127,83 @@ WHERE curriculums.code = cum.achievement_code;
 
 -- 트랜잭션 커밋
 COMMIT;
+
+
+
+-- 트랜잭션 시작
+BEGIN;
+
+-- 1. 대단원(majors) 삽입 및 ID 반환
+WITH major_inserts AS (
+    INSERT INTO majors (title, sort_order, is_published, textbook_id)
+        VALUES
+            ('자료와 가능성', 4, true, 6)
+        RETURNING major_id, title
+),
+
+-- 2. 중단원(middles) 삽입 및 ID 반환
+     middle_inserts AS (
+         INSERT INTO middles (title, sort_order, is_published, major_id)
+             SELECT
+                 m.title as middle_title,
+                 m.sort_order,
+                 true,
+                 maj.major_id
+             FROM (VALUES
+
+                       -- 자료와 가능성의 중단원들
+                       ('통계와 데이터 분석', 1, '자료와 가능성')
+                  ) AS m(title, sort_order, major_title)
+                      JOIN major_inserts maj ON maj.title = m.major_title
+             RETURNING middle_id, title, major_id
+     )
+
+-- 3. 소단원(units) 삽입
+INSERT INTO units (title, sort_order, is_published, middle_chapter_id, readme_content)
+SELECT
+    u.title,
+    u.sort_order,
+    true,
+    mid.middle_id,
+    u.readme_content
+FROM (VALUES
+
+          -- 통계와 데이터 분석 - 소단원들
+          ('통계적 탐구와 산포도', 1, '통계와 데이터 분석', '성취기준: [9수04-04], [9수04-07] - 통계적 탐구와 분산, 표준편차'),
+          ('상자그림과 산점도', 2, '통계와 데이터 분석', '성취기준: [9수04-08], [9수04-09] - 상자그림과 산점도를 통한 데이터 분석')
+
+     ) AS u(title, sort_order, middle_title, readme_content)
+         JOIN middle_inserts mid ON mid.title = u.middle_title;
+
+-- 트랜잭션 커밋
+COMMIT;
+
+-- 트랜잭션 시작
+BEGIN;
+
+-- 성취기준 코드와 유닛 매핑을 통한 curriculums 업데이트
+WITH curriculum_unit_mapping AS (
+    SELECT
+        unit_id,
+        UNNEST(achievement_codes) AS achievement_code
+    FROM (
+             VALUES
+
+                 -- 통계적 탐구와 산포도
+                 ((SELECT unit_id FROM units WHERE title = '통계적 탐구와 산포도'), ARRAY['9수04-04', '9수04-07']),
+
+                 -- 상자그림과 산점도
+                 ((SELECT unit_id FROM units WHERE title = '상자그림과 산점도'), ARRAY['9수04-08', '9수04-09'])
+
+         ) AS mapping(unit_id, achievement_codes)
+)
+
+-- curriculums 테이블 업데이트
+UPDATE curriculums
+SET
+    unit_id = cum.unit_id
+FROM curriculum_unit_mapping cum
+WHERE curriculums.code = cum.achievement_code;
+
+-- 트랜잭션 커밋
+COMMIT;
