@@ -22,7 +22,6 @@ export async function getTextbookInfobyTextBookId(textbook_id: number) {
                 columns: {
                     title: true,
                     is_published: true,
-                    sort_order: true,
                 },
                 orderBy: (majors, { asc }) => [asc(majors.sort_order)],
                 with: {
@@ -30,7 +29,6 @@ export async function getTextbookInfobyTextBookId(textbook_id: number) {
                         columns: {
                             title: true,
                             is_published: true,
-                            sort_order: true,
                         },
                         orderBy: (middles, { asc }) => [asc(middles.sort_order)],
                         with: {
@@ -39,7 +37,6 @@ export async function getTextbookInfobyTextBookId(textbook_id: number) {
                                     unit_id: true,
                                     title: true,
                                     is_published: true,
-                                    sort_order: true,
                                     estimated_seconds: true,
                                 }
                             }
