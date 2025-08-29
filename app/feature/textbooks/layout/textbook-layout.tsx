@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDown, ChevronRight, Menu } from "lucide-react";
+import colors from "~/feature/textbooks/major-color";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params["theme-slug"];
@@ -77,71 +78,75 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
 
             <ScrollArea className="h-[calc(100vh-80px)]">
                 <div className="p-2">
-                    {textbookInfo?.majors.map((major, majorIndex) => (
-                        <Collapsible
-                            key={majorIndex}
-                            open={!openMajors.has(majorIndex)}
-                            onOpenChange={() => toggleMajor(majorIndex)}>
-                            <CollapsibleTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="w-full justify-start p-2 h-auto text-left">
-                                    {!openMajors.has(majorIndex) ? (
-                                        <ChevronDown className="h-4 w-4 mr-2 flex-shrink-0"/>
-                                    ) : (
-                                        <ChevronRight className="h-4 w-4 mr-2 flex-shrink-0"/>
-                                    )}
-                                    <span className="font-medium truncate">{major.title}</span>
-                                </Button>
-                            </CollapsibleTrigger>
+                    {textbookInfo?.majors.map((major, majorIndex) => {
+                        const colorSet = colors[majorIndex + 1 % colors.length];
+                        
+                        return (
+                            <Collapsible
+                                key={majorIndex}
+                                open={!openMajors.has(majorIndex)}
+                                onOpenChange={() => toggleMajor(majorIndex)}>
+                                <CollapsibleTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className={`w-full justify-start p-2 h-auto text-left`}>
+                                        {!openMajors.has(majorIndex) ? (
+                                            <ChevronDown className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
+                                        ) : (
+                                            <ChevronRight className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
+                                        )}
+                                        <span className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>{major.title}</span>
+                                    </Button>
+                                </CollapsibleTrigger>
 
-                            <CollapsibleContent className="ml-6">
-                                {major.middles.map((middle, middleIndex) => (
-                                    <Collapsible
-                                        key={`${majorIndex}-${middleIndex}`}
-                                        open={!openMiddles.has(`${majorIndex}-${middleIndex}`)}
-                                        onOpenChange={() => toggleMiddle(majorIndex, middleIndex)}>
-                                        <CollapsibleTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                className="w-full justify-start p-2 h-auto text-left text-sm">
-                                                {!openMiddles.has(`${majorIndex}-${middleIndex}`) ? (
-                                                    <ChevronDown className="h-3 w-3 mr-2 flex-shrink-0"/>
-                                                ) : (
-                                                    <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0"/>
-                                                )}
-                                                <span
-                                                    className="text-muted-foreground truncate">{middle.title}</span>
-                                            </Button>
-                                        </CollapsibleTrigger>
+                                <CollapsibleContent className="ml-6">
+                                    {major.middles.map((middle, middleIndex) => (
+                                        <Collapsible
+                                            key={`${majorIndex}-${middleIndex}`}
+                                            open={!openMiddles.has(`${majorIndex}-${middleIndex}`)}
+                                            onOpenChange={() => toggleMiddle(majorIndex, middleIndex)}>
+                                            <CollapsibleTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-full justify-start p-2 h-auto text-left text-sm">
+                                                    {!openMiddles.has(`${majorIndex}-${middleIndex}`) ? (
+                                                        <ChevronDown className="h-3 w-3 mr-2 flex-shrink-0"/>
+                                                    ) : (
+                                                        <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0"/>
+                                                    )}
+                                                    <span
+                                                        className="text-muted-foreground truncate">{middle.title}</span>
+                                                </Button>
+                                            </CollapsibleTrigger>
 
-                                        <CollapsibleContent className="ml-4">
-                                            {middle.units.map((unit) => (
-                                                <div className="flex items-center relative" key={unit.unit_id}>
-                                                    <Checkbox
-                                                        // checked={isChecked}
-                                                        className={"absolute left-4"}
-                                                        // onClick={() => handleUnitClick(unit.unit_id)}
-                                                    />
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="w-full justify-start p-2 h-auto text-left text-sm"
-                                                        onClick={() => handleUnitClick(unit.unit_id)}>
-                                                        <div className="truncate w-full pl-10">{unit.title}</div>
-                                                        <div
-                                                            className="text-xs text-muted-foreground flex-shrink-0 pr-2 opacity-35">
-                                                            {Math.ceil(unit.estimated_seconds / 60)}분
-                                                        </div>
-                                                    </Button>
-                                                </div>
+                                            <CollapsibleContent className="ml-4">
+                                                {middle.units.map((unit) => (
+                                                    <div className="flex items-center relative" key={unit.unit_id}>
+                                                        <Checkbox
+                                                            // checked={isChecked}
+                                                            className={"absolute left-4"}
+                                                            // onClick={() => handleUnitClick(unit.unit_id)}
+                                                        />
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="w-full justify-start p-2 h-auto text-left text-sm"
+                                                            onClick={() => handleUnitClick(unit.unit_id)}>
+                                                            <div className="truncate w-full pl-10">{unit.title}</div>
+                                                            <div
+                                                                className="text-xs text-muted-foreground flex-shrink-0 pr-2 opacity-35">
+                                                                {Math.ceil(unit.estimated_seconds / 60)}분
+                                                            </div>
+                                                        </Button>
+                                                    </div>
 
-                                            ))}
-                                        </CollapsibleContent>
-                                    </Collapsible>
-                                ))}
-                            </CollapsibleContent>
-                        </Collapsible>
-                    ))}
+                                                ))}
+                                            </CollapsibleContent>
+                                        </Collapsible>
+                                    ))}
+                                </CollapsibleContent>
+                            </Collapsible>
+                        );
+                    })}
                 </div>
             </ScrollArea>
         </>
