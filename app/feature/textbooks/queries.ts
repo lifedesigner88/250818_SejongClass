@@ -5,6 +5,13 @@ import { eq } from "drizzle-orm";
 export async function getTextbookInfobyTextBookId(textbook_id: number) {
     return db.query.textbooksTable.findFirst({
         where: eq(textbooksTable.textbook_id, textbook_id),
+        columns: {
+            title: true,
+            readme_content : true,
+            cover_image_url: true,
+            youtube_video_id: true,
+            price: true,
+        },
         with: {
             subject: {
                 columns: {
@@ -38,6 +45,26 @@ export async function getTextbookInfobyTextBookId(textbook_id: number) {
                                     title: true,
                                     is_published: true,
                                     estimated_seconds: true,
+                                }                                ,
+                                orderBy: (units, { asc }) => [asc(units.sort_order)],
+                                with: {
+                                    dealings: {
+                                        with: {
+                                            concept: {
+                                                columns: {
+                                                    concept_id: true,
+                                                    name: true,
+                                                    slug: true,
+                                                }
+                                            }
+                                        }
+                                    },
+                                    curriculums:{
+                                        columns: {
+                                            code: true,
+                                            achievement_text: true,
+                                        }
+                                    }
                                 }
                             }
                         }

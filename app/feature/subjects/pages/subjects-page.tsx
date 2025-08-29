@@ -66,8 +66,8 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                                 </CarouselContent>
 
                                 {/* 네비게이션 버튼 */}
-                                <CarouselPrevious variant={"default"} />
-                                <CarouselNext variant={"default"} />
+                                <CarouselPrevious variant={"default"}/>
+                                <CarouselNext variant={"default"}/>
                             </Carousel>
                         ) : (
                             <div className="text-center py-12 text-muted-foreground">
@@ -104,9 +104,6 @@ function TextbookCard({
 
     // 클릭 가능 여부 및 링크 결정
     const isClickable = isPublished;
-    const linkTo = isPaid
-        ? `/payment/textbook/${textbook.textbook_id}`
-        : `/${themeSlug}/${subjectSlug}/${textbook.textbook_id}`;
 
     // 카드 컨테이너
     const CardContainer = ({ children }: { children: React.ReactNode }) => {
@@ -119,7 +116,7 @@ function TextbookCard({
         }
 
         return (
-            <Link to={linkTo} className="block group">
+            <Link to={`/${themeSlug}/${subjectSlug}/${textbook.textbook_id}`} className="block group">
                 {children}
             </Link>
         );
@@ -127,9 +124,9 @@ function TextbookCard({
 
     return (
         <CardContainer>
-            {/* 황금비율 가로형 카드 (1.618:1) - 가로가 긴 비율 */}
+            {/* 황금비율 가로형 카드 (1.778:1) - 가로가 긴 비율 */}
             <Card
-                className={`relative aspect-[1.618/1] transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden ${
+                className={`relative aspect-[1.778/1] transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden ${
                     isClickable
                         ? 'group-hover:shadow-lg group-hover:scale-[0.98] cursor-pointer'
                         : 'opacity-75 cursor-not-allowed'

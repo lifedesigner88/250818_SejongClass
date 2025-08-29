@@ -22,18 +22,16 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 
     const textbookInfo = await getTextbookInfobyTextBookId(data.textbookId);
 
-    console.dir(textbookInfo, { depth: null });
-    // 정확한 경로인지 체크
     if (!(textbookInfo
         && textbookInfo.subject.slug === subjectSlug
         && textbookInfo.subject.theme.slug === themeSlug)
     ) throw redirect("/404");
 
-    return { themeSlug, subjectSlug, textbookInfo };
+    return { themeSlug, subjectSlug, textbookId, textbookInfo };
 }
 
 export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
-    const { textbookInfo } = loaderData;
+    const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
     const [openMajors, setOpenMajors] = useState<Set<number>>(new Set()); // 첫 번째 대단원은 기본 열림
     const [openMiddles, setOpenMiddles] = useState<Set<string>>(new Set());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -69,7 +67,7 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
         <>
-            <Link to={"/themes"}>
+            <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} >
                 <div className="p-4 border-b">
                     <h2 className="font-semibold text-lg flex items-center justify-center gap-2">
                         <span className="truncate">{textbookInfo?.title}</span>
@@ -161,7 +159,8 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
                     </ResizablePanel>
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
-                        <Outlet/>
+                        <Outlet
+                            context={textbookInfo}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
@@ -188,7 +187,8 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
 
                 {/* 메인 콘텐츠가 전체 화면 사용 */}
                 <div className="flex-1 w-full">
-                    <Outlet/>
+                    <Outlet
+                        context={textbookInfo}/>
                 </div>
             </div>
         </div>
