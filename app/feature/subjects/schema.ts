@@ -22,7 +22,7 @@ export const subjectsTable = pgTable("subjects", {
     ]);
 
 export const subjectsRelations = relations(subjectsTable, ({ one, many }) => ({
-    themes: one(themesTable, {
+    theme: one(themesTable, {
         fields: [subjectsTable.themes_id],
         references: [themesTable.themes_id],
     }),

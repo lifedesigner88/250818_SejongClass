@@ -106,7 +106,7 @@ function TextbookCard({
     const isClickable = isPublished;
     const linkTo = isPaid
         ? `/payment/textbook/${textbook.textbook_id}`
-        : `/theme/${themeSlug}/${subjectSlug}/${textbook.textbook_id}`;
+        : `/${themeSlug}/${subjectSlug}/${textbook.textbook_id}`;
 
     // 카드 컨테이너
     const CardContainer = ({ children }: { children: React.ReactNode }) => {

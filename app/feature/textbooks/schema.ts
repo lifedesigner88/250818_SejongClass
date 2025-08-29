@@ -27,7 +27,7 @@ export const textbooksTable = pgTable("textbooks", {
 
 
 export const textbooksRelations = relations(textbooksTable, ({ one, many }) => ({
-    subjects: one(subjectsTable, {
+    subject: one(subjectsTable, {
         fields: [textbooksTable.subjects_id],
         references: [subjectsTable.subject_id],
     }),

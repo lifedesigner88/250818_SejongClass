@@ -25,7 +25,7 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
                 {themes.map((t) => (
                     t.is_active ? (
-                        <Link key={t.themes_id} to={`/theme/${t.slug}`}>
+                        <Link key={t.themes_id} to={`/${t.slug}`}>
                             <div
                                 className={`
                                     ${baseSize} 
