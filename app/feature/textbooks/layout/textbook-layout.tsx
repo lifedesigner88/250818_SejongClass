@@ -242,7 +242,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                         {middle.units.map((unit) => {
                                                                 const isActive = currentUnitId === unit.unit_id;
                                                                 return (
-                                                                    <div 
+                                                                    <div
                                                                         className="flex items-center relative"
                                                                         key={unit.unit_id}
                                                                         data-unit-id={unit.unit_id}>
