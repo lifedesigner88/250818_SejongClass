@@ -68,7 +68,7 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
         <>
-            <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} >
+            <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`}>
                 <div className="p-4 border-b">
                     <h2 className="font-semibold text-lg flex items-center justify-center gap-2">
                         <span className="truncate">{textbookInfo?.title}</span>
@@ -80,7 +80,7 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
                 <div className="p-2">
                     {textbookInfo?.majors.map((major, majorIndex) => {
                         const colorSet = colors[majorIndex + 1 % colors.length];
-                        
+
                         return (
                             <Collapsible
                                 key={majorIndex}
@@ -95,7 +95,8 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
                                         ) : (
                                             <ChevronRight className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
                                         )}
-                                        <span className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>{major.title}</span>
+                                        <span
+                                            className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>{major.title}</span>
                                     </Button>
                                 </CollapsibleTrigger>
 
@@ -165,7 +166,7 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
                         <Outlet
-                            context={textbookInfo}/>
+                            context={{ textbookInfo, handleUnitClick }}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
@@ -184,7 +185,7 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
                                 <Menu className="h-4 w-4"/>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-80 p-0">
+                        <SheetContent side="left" className="w-100 p-0">
                             <SidebarContent/>
                         </SheetContent>
                     </Sheet>
@@ -193,7 +194,7 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
                 {/* 메인 콘텐츠가 전체 화면 사용 */}
                 <div className="flex-1 w-full">
                     <Outlet
-                        context={textbookInfo}/>
+                        context={{ textbookInfo, handleUnitClick }}/>
                 </div>
             </div>
         </div>

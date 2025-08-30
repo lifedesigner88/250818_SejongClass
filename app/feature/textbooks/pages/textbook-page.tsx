@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router";
 import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,10 +8,45 @@ import { BookOpen, Target, Hash, TrendingUp, BarChart } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
+type OutletContextType = {
+    textbookInfo: TextbookInfo;
+    handleUnitClick: (unitId: number) => void;
+};
+
+
+// 통계 카드 타입 정의
+interface StatCardProps {
+    icon: React.ElementType;
+    value: string | number;
+    label: string;
+    colorClass: {
+        bg: string;
+        text: string;
+    };
+    className?: string;
+}
+
+// 통계 카드 컴포넌트
+function StatCard({ icon: Icon, value, label, colorClass, className }: StatCardProps) {
+    return (
+        <Card className={`hover:shadow-md transition-shadow duration-300 ${className || ''}`}>
+            <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
+                <div
+                    className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 ${colorClass.bg} rounded-full mb-2 md:mb-3`}>
+                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${colorClass.text}`}/>
+                </div>
+                <div
+                    className={`text-xl md:text-2xl font-bold ${colorClass.text} mb-1 truncate max-w-full`}>{value}</div>
+                <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">{label}</div>
+            </CardContent>
+        </Card>
+    );
+}
 
 export default function TextbookPage() {
 
-    const textbookInfo = useOutletContext<TextbookInfo>()
+    const { textbookInfo, handleUnitClick } = useOutletContext<OutletContextType>();
+
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
 
     if (!textbookInfo) return (<div> TextbookInfo 가 없습니다. </div>)
@@ -68,6 +103,41 @@ export default function TextbookPage() {
         });
     });
 
+    // 통계 데이터 배열
+    const statsData: StatCardProps[] = [
+        {
+            icon: BookOpen,
+            value: majorCount,
+            label: '대단원',
+            colorClass: { bg: 'bg-blue-100', text: 'text-blue-600' }
+        },
+        {
+            icon: Hash,
+            value: middleCount,
+            label: '중단원',
+            colorClass: { bg: 'bg-green-100', text: 'text-green-600' }
+        },
+        {
+            icon: Target,
+            value: unitCount,
+            label: '소단원',
+            colorClass: { bg: 'bg-purple-100', text: 'text-purple-600' }
+        },
+        {
+            icon: BarChart,
+            value: curriculumList.length,
+            label: '성취기준',
+            colorClass: { bg: 'bg-yellow-100', text: 'text-yellow-600' }
+        },
+        {
+            icon: TrendingUp,
+            value: formatTime(totalEstimatedSeconds),
+            label: '소요시간',
+            colorClass: { bg: 'bg-orange-100', text: 'text-orange-600' },
+            className: 'col-span-2 sm:col-span-2 lg:col-span-1'
+
+        }
+    ];
 
     // 🔍 필터링된 curriculum 목록 - 대단원명으로 필터링
     const filteredCurriculumList = selectedFilter === 'all'
@@ -84,69 +154,15 @@ export default function TextbookPage() {
         }, {} as Record<string, number>)
     };
 
+
     return (
         <div className="p-4 space-y-6">
 
-
             {/* 📊 통계 정보 카드들 */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
-                <Card className="hover:shadow-md transition-shadow">
-                    <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                        <div
-                            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-full mb-2 md:mb-3">
-                            <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-blue-600"/>
-                        </div>
-                        <div className="text-xl md:text-2xl font-bold text-blue-600 mb-1">{majorCount}</div>
-                        <div className="text-xs md:text-sm text-gray-600 text-center">대단원</div>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-shadow">
-                    <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                        <div
-                            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
-                            <Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/>
-                        </div>
-                        <div className="text-xl md:text-2xl font-bold text-green-600 mb-1">{middleCount}</div>
-                        <div className="text-xs md:text-sm text-gray-600 text-center">중단원</div>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-shadow">
-                    <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                        <div
-                            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full mb-2 md:mb-3">
-                            <Target className="w-5 h-5 md:w-6 md:h-6 text-purple-600"/>
-                        </div>
-                        <div className="text-xl md:text-2xl font-bold text-purple-600 mb-1">{unitCount}</div>
-                        <div className="text-xs md:text-sm text-gray-600 text-center">소단원</div>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-shadow">
-                    <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                        <div
-                            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-yellow-100 rounded-full mb-2 md:mb-3">
-                            <BarChart className="w-5 h-5 md:w-6 md:h-6 text-yellow-600"/>
-                        </div>
-                        <div
-                            className="text-xl md:text-2xl font-bold text-yellow-600 mb-1">{curriculumList.length}</div>
-                        <div className="text-xs md:text-sm text-gray-600 text-center">성취기준</div>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-md transition-shadow col-span-2 sm:col-span-1">
-                    <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                        <div
-                            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full mb-2 md:mb-3">
-                            <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600"/>
-                        </div>
-                        <div className="text-lg md:text-xl font-bold text-orange-600 mb-1 text-center leading-tight">
-                            {formatTime(totalEstimatedSeconds)}
-                        </div>
-                        <div className="text-xs md:text-sm text-gray-600 text-center">소요시간</div>
-                    </CardContent>
-                </Card>
+                {statsData.map((stat, index) => (
+                    <StatCard key={index} {...stat} />
+                ))}
             </div>
 
             {/* 🎯 필터링 컨트롤 */}
@@ -160,13 +176,13 @@ export default function TextbookPage() {
                                     className="inline-flex h-12 items-center justify-start rounded-lg bg-muted/50 p-1 text-muted-foreground min-w-full">
                                     <TabsTrigger
                                         value="all"
+                                        className="cursor-pointer"
                                     >
                                         <div className="flex items-center gap-2">
                                             <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                                             <span>전체</span>
                                             <div
-                                                className="flex items-center justify-center min-w-[20px] h-5 bg-blue-100 dark:bg-gray-800 rounded-full text-xs font-semibold px-1.5"
-                                            >
+                                                className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100 dark:bg-gray-800 rounded-full text-xs font-semibold px-1.5">
                                                 {majorCounts.all}
                                             </div>
                                         </div>
@@ -176,7 +192,8 @@ export default function TextbookPage() {
                                         return (
                                             <TabsTrigger
                                                 key={majorName}
-                                                value={majorName}>
+                                                value={majorName}
+                                                className="cursor-pointer">
                                                 <div className="flex items-center gap-2">
                                                     <div className={`w-2 h-2 ${colorSet.bg} rounded-full`}></div>
                                                     <div
@@ -207,8 +224,8 @@ export default function TextbookPage() {
                         return (
                             <Card
                                 key={`${curriculum.unit_id}-${curriculum.code}-${index}`}
-                                className="group relative hover:shadow-lg transition-all duration-300 hover:border-primary/20"
-                            >
+                                onClick={() => handleUnitClick(curriculum.unit_id)}
+                                className="group relative hover:shadow-lg transition-all duration-500 hover:border-primary cursor-pointer hover:scale-[0.97] [transform-origin:center]">
                                 <CardHeader className="space-y-3">
                                     {/* 상단 메타 정보 */}
                                     <div className="flex items-center justify-between">

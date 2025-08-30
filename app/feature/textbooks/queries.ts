@@ -48,17 +48,6 @@ export async function getTextbookInfobyTextBookId(textbook_id: number) {
                                 }                                ,
                                 orderBy: (units, { asc }) => [asc(units.sort_order)],
                                 with: {
-                                    dealings: {
-                                        with: {
-                                            concept: {
-                                                columns: {
-                                                    concept_id: true,
-                                                    name: true,
-                                                    slug: true,
-                                                }
-                                            }
-                                        }
-                                    },
                                     curriculums:{
                                         columns: {
                                             code: true,
