@@ -1,17 +1,20 @@
-import { Link, Outlet, redirect, useNavigate } from "react-router";
 import type { Route } from "./+types/textbook-layout";
-import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, Outlet, redirect, useNavigate } from "react-router";
+import { Book, ChevronDown, ChevronRight, Home, Menu } from "lucide-react";
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Book,  ChevronDown,  ChevronRight,  Home, Menu } from "lucide-react";
-import colors from "~/feature/textbooks/major-color";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+
+import colors from "~/feature/textbooks/major-color";
+import { z } from "zod";
+
+import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params["theme-slug"];
@@ -32,7 +35,9 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     return { themeSlug, subjectSlug, textbookId, textbookInfo };
 }
 
-export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
+export default function TextbookLayout({ loaderData, params }: Route.ComponentProps) {
+
+    const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
     const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
     const [openMiddles, setOpenMiddles] = useState<Set<string>>(new Set());
@@ -58,6 +63,49 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
             return newSet;
         });
     };
+
+    // unit 의 대단원 중단원 정보 저장.
+    const unitSectionMap = useMemo(() => {
+        const map = new Map<number, { majorIndex: number; middleIndex: number }>();
+        textbookInfo.majors.forEach((major) => {
+            major.middles.forEach((middle) => {
+                middle.units.forEach(unit => {
+                    map.set(unit.unit_id, { majorIndex: major.major_id, middleIndex: middle.middle_id });
+                });
+            });
+        });
+        return map;
+    }, []); // 빈 배열: 한 번만 생성
+
+    // 현재 단원이 포함된 섹션들을 자동으로 열기
+    useEffect(() => {
+        if (!currentUnitId) return;
+
+        const sectionInfo = unitSectionMap.get(currentUnitId);
+        if (!sectionInfo) return;
+
+        const { majorIndex, middleIndex } = sectionInfo;
+        const middleKey = `${majorIndex}-${middleIndex}`;
+
+        setOpenMajors(prev => {
+            if (prev.has(majorIndex)) {
+                const newSet = new Set(prev);
+                newSet.delete(majorIndex);
+                return newSet;
+            }
+            return prev;
+        });
+
+        setOpenMiddles(prev => {
+            if (prev.has(middleKey)) {
+                const newSet = new Set(prev);
+                newSet.delete(middleKey);
+                return newSet;
+            }
+            return prev;
+        });
+    }, [currentUnitId]);
+
 
     const handleUnitClick = (unitId: number) => {
         // 모바일에서 단원 클릭 시 메뉴 닫기
@@ -118,70 +166,85 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
                 <div className="p-2">
                     {textbookInfo?.majors.map((major, majorIndex) => {
                         const colorSet = colors[majorIndex + 1 % colors.length];
-
+                        const majorActive = currentUnitId && unitSectionMap.get(currentUnitId)?.majorIndex === major.major_id;
                         return (
                             <Collapsible
-                                key={majorIndex}
-                                open={!openMajors.has(majorIndex)}
-                                onOpenChange={() => toggleMajor(majorIndex)}>
+                                key={major.major_id}
+                                open={!openMajors.has(major.major_id)}
+                                onOpenChange={() => toggleMajor(major.major_id)}>
                                 <CollapsibleTrigger asChild>
                                     <Button
                                         variant="ghost"
                                         className={`w-full justify-start p-2 h-auto text-left`}>
-                                        {!openMajors.has(majorIndex) ? (
+                                        {!openMajors.has(major.major_id) ? (
                                             <ChevronDown className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
                                         ) : (
                                             <ChevronRight className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
                                         )}
-                                        <span
-                                            className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>{major.title}</span>
+                                        <div
+                                            className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>{major.title}</div>
+                                        {majorActive ? "🔥 " : null}
                                     </Button>
                                 </CollapsibleTrigger>
 
                                 <CollapsibleContent className="ml-6">
-                                    {major.middles.map((middle, middleIndex) => (
-                                        <Collapsible
-                                            key={`${majorIndex}-${middleIndex}`}
-                                            open={!openMiddles.has(`${majorIndex}-${middleIndex}`)}
-                                            onOpenChange={() => toggleMiddle(majorIndex, middleIndex)}>
-                                            <CollapsibleTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    className="w-full justify-start p-2 h-auto text-left text-sm">
-                                                    {!openMiddles.has(`${majorIndex}-${middleIndex}`) ? (
-                                                        <ChevronDown className="h-3 w-3 mr-2 flex-shrink-0"/>
-                                                    ) : (
-                                                        <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0"/>
-                                                    )}
-                                                    <span
-                                                        className="text-muted-foreground truncate">{middle.title}</span>
-                                                </Button>
-                                            </CollapsibleTrigger>
-
-                                            <CollapsibleContent className="ml-4">
-                                                {middle.units.map((unit) => (
-                                                    <div className="flex items-center relative" key={unit.unit_id}>
-                                                        <Checkbox
-                                                            // checked={isChecked}
-                                                            className={"absolute left-4"}
-                                                            // onClick={() => handleUnitClick(unit.unit_id)}
-                                                        />
+                                    {major.middles.map((middle) => {
+                                            const middleActive = currentUnitId && unitSectionMap.get(currentUnitId)?.middleIndex === middle.middle_id;
+                                            return (
+                                                <Collapsible
+                                                    key={`${middle.middle_id}`}
+                                                    open={!openMiddles.has(`${major.major_id}-${middle.middle_id}`)}
+                                                    onOpenChange={() => toggleMiddle(major.major_id, middle.middle_id)}>
+                                                    <CollapsibleTrigger asChild>
                                                         <Button
                                                             variant="ghost"
-                                                            className="w-full justify-start p-2 h-auto text-left text-sm"
-                                                            onClick={() => handleUnitClick(unit.unit_id)}>
-                                                            <div className="truncate w-full pl-10">{unit.title}</div>
+                                                            className="w-full justify-start p-2 h-auto text-left text-sm">
+                                                            {!openMiddles.has(`${major.major_id}-${middle.middle_id}`) ? (
+                                                                <ChevronDown className="h-3 w-3 mr-2 flex-shrink-0"/>
+                                                            ) : (
+                                                                <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0"/>
+                                                            )}
                                                             <div
-                                                                className="text-xs text-muted-foreground flex-shrink-0 pr-2 opacity-35">
-                                                                {Math.ceil(unit.estimated_seconds / 60)}분
-                                                            </div>
+                                                                className="text-muted-foreground truncate">{middle.title}</div>
+                                                            {middleActive ? "🔥 " : null}
                                                         </Button>
-                                                    </div>
+                                                    </CollapsibleTrigger>
 
-                                                ))}
-                                            </CollapsibleContent>
-                                        </Collapsible>
-                                    ))}
+                                                    <CollapsibleContent className="ml-4">
+                                                        {middle.units.map((unit) => {
+                                                                const isActive = currentUnitId === unit.unit_id;
+                                                                return (
+                                                                    <div className="flex items-center relative"
+                                                                         key={unit.unit_id}>
+                                                                        <Checkbox
+                                                                            // checked={isChecked}
+                                                                            className={"absolute left-4"}
+                                                                            // onClick={() => handleUnitClick(unit.unit_id)}
+                                                                        />
+                                                                        <Button
+                                                                            variant="ghost"
+                                                                            className={`w-full justify-start p-2 h-auto text-left text-sm ${
+                                                                                isActive ? 'bg-accent text-accent-foreground' : ''
+                                                                            }`}
+                                                                            onClick={() => handleUnitClick(unit.unit_id)}>
+                                                                            <div
+                                                                                className="truncate w-full pl-10">{unit.title}</div>
+                                                                            <div
+                                                                                className={`text-xs text-muted-foreground flex-shrink-0 pr-2 ${isActive ? "" : "opacity-35"}`}>
+                                                                                {isActive ? "🔥 " : null}
+                                                                                {Math.ceil(unit.estimated_seconds / 60)}분
+                                                                            </div>
+                                                                        </Button>
+                                                                    </div>
+
+                                                                )
+                                                            }
+                                                        )}
+                                                    </CollapsibleContent>
+                                                </Collapsible>
+                                            )
+                                        }
+                                    )}
                                 </CollapsibleContent>
                             </Collapsible>
                         );

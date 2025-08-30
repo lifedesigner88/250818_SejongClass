@@ -225,10 +225,9 @@ export default function TextbookPage() {
                         const colorSet = colors[colorIndex + 1 % colors.length];
 
                         return (
-                            <Tooltip>
+                            <Tooltip key={`${curriculum.unit_id}-${curriculum.code}-${index}`}>
                                 <TooltipTrigger>
                                     <Card
-                                        key={`${curriculum.unit_id}-${curriculum.code}-${index}`}
                                         onClick={() => handleUnitClick(curriculum.unit_id)}
                                         className="group relative hover:shadow-lg transition-all duration-500 hover:border-primary cursor-pointer hover:scale-[0.97] [transform-origin:center] min-h-[160px]">
                                         <CardHeader className="space-y-3">

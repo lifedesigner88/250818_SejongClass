@@ -27,6 +27,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number) {
             },
             majors: {
                 columns: {
+                    major_id: true,
                     title: true,
                     is_published: true,
                 },
@@ -34,6 +35,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number) {
                 with: {
                     middles: {
                         columns: {
+                            middle_id: true,
                             title: true,
                             is_published: true,
                         },
