@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ChevronDown, ChevronRight, Menu } from "lucide-react";
+import { Book,  ChevronDown,  ChevronRight,  Home, Menu } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params["theme-slug"];
@@ -68,13 +69,51 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
         <>
-            <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`}>
-                <div className="p-4 border-b">
-                    <h2 className="font-semibold text-lg flex items-center justify-center gap-2">
-                        <span className="truncate">{textbookInfo?.title}</span>
-                    </h2>
+            <div className="p-4 border-b space-y-4">
+
+                {/* 네비게이션 버튼들 - 카드 스타일 */}
+                <div className="grid grid-cols-2 gap-2">
+
+                    <Link to="/themes">
+                        <div
+                            className={`${colors[0].badge} rounded-lg p-3 text-center hover:scale-105 transition-transform cursor-pointer`}>
+                            <Home className="h-4 w-4 mx-auto"/>
+                        </div>
+                    </Link>
+
+                    <Tooltip>
+                        <TooltipTrigger className={"w-full"}>
+                            <Link to={`/${themeSlug}`}>
+                                <div
+                                    className={`${colors[3].badge} rounded-lg p-3 text-center hover:scale-105 transition-transform cursor-pointer`}>
+                                    <Book className="h-4 w-4 mx-auto "/>
+                                </div>
+                            </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side={"right"}>
+                            <p>다른 과목</p>
+                        </TooltipContent>
+                    </Tooltip>
+
                 </div>
-            </Link>
+
+                {/* 제목 */}
+                <Tooltip>
+                    <TooltipTrigger className={"w-full"}>
+                        <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} className={"w-full"}>
+                            <h2 className="font-semibold text-lg text-center w-full truncate mt-3">
+                                {textbookInfo?.title}
+                            </h2>
+                        </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side={"right"}>
+                        <p>개요</p>
+                    </TooltipContent>
+                </Tooltip>
+
+
+            </div>
+
 
             <ScrollArea className="h-[calc(100vh-80px)]">
                 <div className="p-2">
