@@ -1,5 +1,5 @@
 import type { Route } from "./+types/textbook-layout";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { Link, Outlet, redirect, useNavigate } from "react-router";
 import { Book, ChevronDown, ChevronRight, Home, Menu } from "lucide-react";
 
@@ -43,7 +43,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     const [openMiddles, setOpenMiddles] = useState<Set<string>>(new Set());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
-
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const toggleMajor = (majorIndex: number) => {
         setOpenMajors(prev => {
@@ -104,6 +104,25 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             }
             return prev;
         });
+
+        // 현재 unit으로 스크롤하기 (약간의 지연을 주어 DOM이 업데이트된 후 실행)
+        setTimeout(() => {
+            const unitElement = document.querySelector(`[data-unit-id="${currentUnitId}"]`);
+            if (unitElement && scrollAreaRef.current) {
+                const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+                if (scrollContainer) {
+                    const elementTop = unitElement.getBoundingClientRect().top;
+                    const containerTop = scrollContainer.getBoundingClientRect().top;
+                    const currentScrollTop = scrollContainer.scrollTop;
+                    const targetScrollTop = currentScrollTop + elementTop - containerTop - 100; // 100px 여유 공간
+
+                    scrollContainer.scrollTo({
+                        top: Math.max(0, targetScrollTop),
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        }, 100);
     }, [currentUnitId]);
 
 
@@ -162,12 +181,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                         <p>개요</p>
                     </TooltipContent>
                 </Tooltip>
-
-
             </div>
 
 
-            <ScrollArea className="h-[calc(100vh-80px)]">
+            <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-140px)] overflow-auto">
                 <div className="p-2">
                     {textbookInfo?.majors.map((major, majorIndex) => {
                         const colorSet = colors[majorIndex + 1 % colors.length];
@@ -190,7 +207,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                             className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>{major.title}</div>
                                         <div
                                             className={`${majorActive ? "opacity-35" : ""}`}>
-                                        {majorActive ? "🔥 " : null}
+                                            {majorActive ? "🔥 " : null}
                                         </div>
                                     </Button>
                                 </CollapsibleTrigger>
@@ -225,8 +242,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                         {middle.units.map((unit) => {
                                                                 const isActive = currentUnitId === unit.unit_id;
                                                                 return (
-                                                                    <div className="flex items-center relative"
-                                                                         key={unit.unit_id}>
+                                                                    <div 
+                                                                        className="flex items-center relative"
+                                                                        key={unit.unit_id}
+                                                                        data-unit-id={unit.unit_id}>
                                                                         <Checkbox
                                                                             // checked={isChecked}
                                                                             className={"absolute left-4"}
@@ -247,7 +266,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                             </div>
                                                                         </Button>
                                                                     </div>
-
                                                                 )
                                                             }
                                                         )}
@@ -271,14 +289,16 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             <div className="hidden md:flex flex-1">
                 <ResizablePanelGroup direction="horizontal" className="min-h-screen">
                     <ResizablePanel defaultSize={20} minSize={15} maxSize={35}>
-                        <div className="h-full border-r bg-background">
+                        <div className="h-screen border-r bg-background flex flex-col">
                             <SidebarContent/>
                         </div>
                     </ResizablePanel>
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
-                        <Outlet
-                            context={{ textbookInfo, handleUnitClick }}/>
+                        <div className="h-screen overflow-auto">
+                            <Outlet
+                                context={{ textbookInfo, handleUnitClick }}/>
+                        </div>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
@@ -303,7 +323,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 </div>
 
                 {/* 메인 콘텐츠가 전체 화면 사용 */}
-                <div className="flex-1 w-full">
+                <div className="flex-1 w-full h-full overflow-auto">
                     <Outlet
                         context={{ textbookInfo, handleUnitClick }}/>
                 </div>
