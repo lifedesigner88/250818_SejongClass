@@ -34,7 +34,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 
 export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
-    const [openMajors, setOpenMajors] = useState<Set<number>>(new Set()); // 첫 번째 대단원은 기본 열림
+    const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
     const [openMiddles, setOpenMiddles] = useState<Set<string>>(new Set());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
@@ -63,7 +63,6 @@ export default function TextbookLayout({ loaderData }: Route.ComponentProps) {
         // 모바일에서 단원 클릭 시 메뉴 닫기
         if (window.innerWidth < 768) setIsMobileMenuOpen(false);
         navigate(`${unitId}`);
-        console.log(unitId)
     };
 
     // 사이드바 콘텐츠 컴포넌트

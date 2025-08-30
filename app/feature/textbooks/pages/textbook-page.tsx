@@ -9,7 +9,7 @@ import colors from "~/feature/textbooks/major-color";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
-type OutletContextType = {
+export type OutletContextType = {
     textbookInfo: TextbookInfo;
     handleUnitClick: (unitId: number) => void;
 };
