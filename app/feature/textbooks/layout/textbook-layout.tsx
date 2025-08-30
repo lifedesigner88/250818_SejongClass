@@ -146,7 +146,12 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
                 {/* 제목 */}
                 <Tooltip>
-                    <TooltipTrigger className={"w-full"}>
+                    <TooltipTrigger
+                        className={"w-full"}
+                        onClick={() => {
+                            if (window.innerWidth < 768) setIsMobileMenuOpen(false)
+                        }}
+                    >
                         <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} className={"w-full"}>
                             <h2 className="font-semibold text-lg text-center w-full truncate mt-3">
                                 {textbookInfo?.title}
@@ -183,7 +188,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                         )}
                                         <div
                                             className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>{major.title}</div>
+                                        <div
+                                            className={`${majorActive ? "opacity-35" : ""}`}>
                                         {majorActive ? "🔥 " : null}
+                                        </div>
                                     </Button>
                                 </CollapsibleTrigger>
 
@@ -206,7 +214,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                             )}
                                                             <div
                                                                 className="text-muted-foreground truncate">{middle.title}</div>
-                                                            {middleActive ? "🔥 " : null}
+                                                            <div
+                                                                className={`${middleActive ? "opacity-35" : ""}`}>
+                                                                {middleActive ? "🔥 " : null}
+                                                            </div>
                                                         </Button>
                                                     </CollapsibleTrigger>
 
@@ -275,18 +286,17 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             {/* 모바일 - Sheet 레이아웃 */}
             <div className="md:hidden flex flex-col w-full relative">
                 {/* 플로팅 메뉴 버튼 */}
-                <div className="fixed top-4 right-4 z-50">
+                <div className="fixed bottom-15 right-16 z-50">
                     <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                         <SheetTrigger asChild>
                             <Button
                                 variant="outline"
                                 size="icon"
-                                className="flex-shrink-0 shadow-lg bg-background border-2 hover:bg-accent"
-                            >
-                                <Menu className="h-4 w-4"/>
+                                className="size-12 flex-shrink-0 shadow-lg bg-background border-2 hover:bg-accent">
+                                <Menu className="size-7"/>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-100 p-0">
+                        <SheetContent side="left" className="w-100 p-0 [&>button]:hidden">
                             <SidebarContent/>
                         </SheetContent>
                     </Sheet>
