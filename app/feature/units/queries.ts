@@ -44,3 +44,11 @@ export async function getUnitAndConceptsByUnitId(unit_id: number) {
         }
     });
 }
+
+export async function updateUnitReadmeContent(unit_id: number, readme_content: string) {
+    return db.update(unitsTable)
+        .set({ readme_content })
+        .where(eq(unitsTable.unit_id, unit_id));
+}
+
+
