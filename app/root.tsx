@@ -1,15 +1,26 @@
 import {
+    Form,
     isRouteErrorResponse,
     Links,
     Meta,
     Outlet,
     Scripts,
-    ScrollRestoration,
+    ScrollRestoration, useFetcher,
 } from "react-router";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import React from "react";
+
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,6 +36,7 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+
     return (
         <html lang="en">
         <head>
@@ -45,7 +57,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-    return <Outlet/>;
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    return (
+        <>
+            <Outlet context={{
+                isLoggedIn,
+                setIsLoggedIn,
+            }}/>
+        </>
+    );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

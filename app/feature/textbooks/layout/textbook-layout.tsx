@@ -1,7 +1,7 @@
 import type { Route } from "./+types/textbook-layout";
-import { useEffect, useMemo, useState, useRef } from "react";
-import { Link, Outlet, redirect, useNavigate } from "react-router";
-import { Book, ChevronDown, ChevronRight, Home, Menu } from "lucide-react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import { Link, Outlet, redirect, useFetcher, useNavigate, useOutletContext } from "react-router";
+import { Book, ChevronDown, ChevronRight, Home, LogIn, LogOut, Menu, User } from "lucide-react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -10,11 +10,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import colors from "~/feature/textbooks/major-color";
 import { z } from "zod";
 
 import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { UserStatus } from "@/components/user-status";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params["theme-slug"];
@@ -35,16 +39,40 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     return { themeSlug, subjectSlug, textbookId, textbookInfo };
 }
 
-export default function TextbookLayout({ loaderData, params }: Route.ComponentProps) {
+export const action = async ({ request }: Route.ActionArgs) => {
+    const formData = await request.formData();
+
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    // Here you can implement actual login logic
+    console.log('Login attempt:', { email, password });
+
+    // 실제 로그인 로직을 여기에 구현
+    // 예: API 호출, 데이터베이스 검증 등
+
+    try {
+        // 로그인 성공 시
+        console.log("Login Success ✅")
+        return { success: true };
+    } catch (error) {
+        // 로그인 실패 시
+        return { success: false, error: "Invalid credentials" };
+    }
+};
+
+
+export default function TextbookLayout({ loaderData, params, actionData }: Route.ComponentProps) {
 
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
+
+    // 좌측 네비게이션 토글 관련 변수
     const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
     const [openMiddles, setOpenMiddles] = useState<Set<string>>(new Set());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const scrollAreaRef = useRef<HTMLDivElement>(null);
-
     const toggleMajor = (majorIndex: number) => {
         setOpenMajors(prev => {
             const newSet = new Set(prev);
@@ -53,7 +81,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             return newSet;
         });
     };
-
     const toggleMiddle = (majorIndex: number, middleIndex: number) => {
         const key = `${majorIndex}-${middleIndex}`;
         setOpenMiddles(prev => {
@@ -125,21 +152,58 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         }, 100);
     }, [currentUnitId]);
 
+    // for Login
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+    const [pendingUnitId, setPendingUnitId] = useState<number | null>(null);
+    const loginFetcher = useFetcher();
+
+    const {
+        isLoggedIn,
+        setIsLoggedIn,
+    } = useOutletContext<{
+        isLoggedIn: boolean;
+        setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+    }>();
+
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        navigate("/themes")
+    }
+
+    // 로그인 성공 후 처리
+    useEffect(() => {
+        if (loginFetcher.data?.success) {
+            setIsLoggedIn(true);
+            setShowLoginDialog(false);
+            if (pendingUnitId) {
+                navigate(`${pendingUnitId}`);
+                setPendingUnitId(null);
+            }
+            loginFetcher.data.success = false;
+        }
+    }, [loginFetcher.data, pendingUnitId, isLoggedIn, navigate]);
+
 
     const handleUnitClick = (unitId: number) => {
-        // 모바일에서 단원 클릭 시 메뉴 닫기
+        // 로그인 되고, 과목을 등록한 유저만 오픈 가능.
+        if (!isLoggedIn) {
+            setPendingUnitId(unitId); // 로그인 후 이동할 unit 저장
+            setShowLoginDialog(true);
+        } else navigate(`${unitId}`);
+
         if (window.innerWidth < 768) setIsMobileMenuOpen(false);
-        navigate(`${unitId}`);
     };
+
 
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
         <>
+
+            {/*상단 고정 버튼 */}
             <div className="p-4 border-b space-y-4">
 
-                {/* 네비게이션 버튼들 - 카드 스타일 */}
+                {/* 홈버튼과 과목 이동 버튼 */}
                 <div className="grid grid-cols-2 gap-2">
-
                     <Link to="/themes">
                         <div
                             className={`${colors[0].badge} rounded-lg p-3 text-center hover:scale-105 transition-transform cursor-pointer`}>
@@ -163,7 +227,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
                 </div>
 
-                {/* 제목 */}
+                {/* 텍스트 북 제목 제목 */}
                 <Tooltip>
                     <TooltipTrigger
                         className={"w-full"}
@@ -183,7 +247,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 </Tooltip>
             </div>
 
-
+            {/* 실제 네비 게이션*/}
             <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-140px)] overflow-auto">
                 <div className="p-2">
                     {textbookInfo?.majors.map((major, majorIndex) => {
@@ -280,11 +344,53 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     })}
                 </div>
             </ScrollArea>
+
+            {/*하단에 로그인 관련 정보*/}
+            <UserStatus
+                isLoggedIn={isLoggedIn}
+                onLoginClick={() => setShowLoginDialog(true)}
+                onLogoutClick={handleLogout}
+                position="bottom-left"
+                side="right"
+            />
         </>
     );
 
     return (
         <div className="flex min-h-screen">
+
+            <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Login Required</DialogTitle>
+                    </DialogHeader>
+                    <loginFetcher.Form method="post" className="space-y-4">
+                        <div className="space-y-2">
+                            <label htmlFor="email">Email</label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="password">Password</label>
+                            <Input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                            />
+                        </div>
+                        <Button type="submit" className="w-full">
+                            Login
+                        </Button>
+                    </loginFetcher.Form>
+                </DialogContent>
+            </Dialog>
+
+
             {/* 데스크톱 - Resizable 레이아웃 */}
             <div className="hidden md:flex flex-1">
                 <ResizablePanelGroup direction="horizontal" className="min-h-screen">
