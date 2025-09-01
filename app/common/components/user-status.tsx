@@ -7,34 +7,24 @@ interface UserStatusProps {
     isLoggedIn: boolean;
     onLoginClick: () => void;
     onLogoutClick: () => void;
-    position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
-    side?: 'left' | 'right' | 'top' | 'bottom';
 }
 
-const POSITION_CLASSES = {
-    'bottom-left': 'absolute bottom-4 left-4',
-    'bottom-right': 'absolute bottom-4 right-4',
-    'top-left': 'absolute top-4 left-4',
-    'top-right': 'absolute top-4 right-4',
-};
 
 export function UserStatus({
                                isLoggedIn,
                                onLoginClick,
                                onLogoutClick,
-                               position = 'bottom-left',
-                               side = 'right'
                            }: UserStatusProps) {
     return (
         <Popover>
             <PopoverTrigger asChild>
                 <div className={`
-                    ${POSITION_CLASSES[position]}
                     size-12 rounded-full
                     cursor-pointer
                     shadow-lg
                     transition-all duration-300
                     hover:scale-110 hover:shadow-xl
+                    fixed bottom-4 left-4
                     ${isLoggedIn
                     ? 'bg-gradient-to-br from-green-400 to-green-600'
                     : 'bg-gradient-to-br from-gray-300 to-gray-500'
@@ -49,7 +39,7 @@ export function UserStatus({
                     )}
                 </div>
             </PopoverTrigger>
-            <PopoverContent className="w-56 p-0" side={side}>
+            <PopoverContent className="w-60 ml-1 mb-15 p-0" side={"right"}>
                 <div className="p-4">
                     {isLoggedIn ? (
                         <div className="space-y-4">

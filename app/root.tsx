@@ -1,20 +1,13 @@
 import {
-    Form,
+
     isRouteErrorResponse,
     Links,
     Meta,
     Outlet,
     Scripts,
-    ScrollRestoration, useFetcher,
+    ScrollRestoration,
 } from "react-router";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { useState } from "react";
 
 import type { Route } from "./+types/root";
@@ -50,7 +43,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration/>
         <Scripts/>
-        <script src="https://cdn.jsdelivr.net/pyodide/v0.28.2/full/pyodide.js"/>
         </body>
         </html>
     );

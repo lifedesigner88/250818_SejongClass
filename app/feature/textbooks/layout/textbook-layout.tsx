@@ -1,7 +1,7 @@
 import type { Route } from "./+types/textbook-layout";
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Link, Outlet, redirect, useFetcher, useNavigate, useOutletContext } from "react-router";
-import { Book, ChevronDown, ChevronRight, Home, LogIn, LogOut, Menu, User } from "lucide-react";
+import { Book, ChevronDown, ChevronRight, Home, Menu, } from "lucide-react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -10,7 +10,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import colors from "~/feature/textbooks/major-color";
 import { z } from "zod";
@@ -62,7 +61,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 };
 
 
-export default function TextbookLayout({ loaderData, params, actionData }: Route.ComponentProps) {
+export default function TextbookLayout({ loaderData, params }: Route.ComponentProps) {
 
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
@@ -350,8 +349,6 @@ export default function TextbookLayout({ loaderData, params, actionData }: Route
                 isLoggedIn={isLoggedIn}
                 onLoginClick={() => setShowLoginDialog(true)}
                 onLogoutClick={handleLogout}
-                position="bottom-left"
-                side="right"
             />
         </>
     );
