@@ -11,6 +11,13 @@ export default [
     ]),
 
 
+    route("/login", "feature/auth/pages/login-page.tsx"),
+    route("/logout", "feature/auth/pages/logout-page.tsx"),
+    route("/logintest", "feature/auth/pages/login-test-page.tsx"),
+    route("/callback", "feature/auth/pages/callback-page.tsx"),
+
+
+    // - 임시 -
     route("/curriculums", "feature/curriculums/pages/curriculums-page.tsx"),
     route("/monaco-demo", "common/components/pages/monaco-demo.tsx"),
     route("/numpy-demo", "common/components/pages/numpy-demo.tsx"),
