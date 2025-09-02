@@ -22,7 +22,6 @@ import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { Loader2 } from "lucide-react";
 
-
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
     {
@@ -96,16 +95,23 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 export default function App({ loaderData }: Route.ComponentProps) {
 
-    const isLoggedIn = loaderData.supabaseAuthData.user !== null;
+
+    const { supabaseAuthData } = loaderData;
+
+    const isLoggedIn = supabaseAuthData.user !== null;
+
     const [showLoginDialog, setShowLoginDialog] = useState(false);
     const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/");
+    const provider = supabaseAuthData.user?.app_metadata.provider;
     const navigate = useNavigate();
-
 
     // 로딩 상태 확인
     const navigation = useNavigation();
     const isSubmitting = navigation.state === "submitting";
     const isLoading = navigation.state === "loading";
+
+    // 어떤 provider가 클릭되었는지 감지
+    const submittedProvider = navigation.formData?.get("provider");
 
     return (
         <>
@@ -114,6 +120,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 isLoading={isLoading || isSubmitting}
                 onLoginClick={() => setShowLoginDialog(true)}
                 onLogoutClick={() => navigate("/logout")}
+                provider={provider as 'github' | 'google' | 'kakao'}
             />
 
             <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
@@ -123,14 +130,18 @@ export default function App({ loaderData }: Route.ComponentProps) {
                     </DialogHeader>
                     <Form method="post" className="space-y-4">
                         <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''}/>
+
+                        {/* Kakao 버튼 */}
                         <Button
                             type="submit"
                             name="provider"
                             value="kakao"
-                            className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl">
-                            {isSubmitting ? (
+                            disabled={isSubmitting && submittedProvider !== "kakao"}
+                            className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] disabled:bg-gray-300 disabled:cursor-not-allowed text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                        >
+                            {isSubmitting && submittedProvider === "kakao" ? (
                                 <>
-                                    <Loader2 className="size-6 mr-3 animate-spin"/>
+                                    <Loader2 className="size-12 mr-3 animate-spin"/>
                                     <div className="font-medium text-base">연결 중...</div>
                                 </>
                             ) : (
@@ -140,14 +151,18 @@ export default function App({ loaderData }: Route.ComponentProps) {
                                 </>
                             )}
                         </Button>
+
+                        {/* Google 버튼 */}
                         <Button
                             type="submit"
                             name="provider"
                             value="google"
-                            className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl">
-                            {isSubmitting ? (
+                            disabled={isSubmitting && submittedProvider !== "google"}
+                            className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                        >
+                            {isSubmitting && submittedProvider === "google" ? (
                                 <>
-                                    <Loader2 className="size-6 mr-3 animate-spin"/>
+                                    <Loader2 className="size-12 mr-3 animate-spin"/>
                                     <div className="font-medium text-base">연결 중...</div>
                                 </>
                             ) : (
@@ -157,14 +172,18 @@ export default function App({ loaderData }: Route.ComponentProps) {
                                 </>
                             )}
                         </Button>
+
+                        {/* GitHub 버튼 */}
                         <Button
                             type="submit"
                             name="provider"
                             value="github"
-                            className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] text-white border-0 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl">
-                            {isSubmitting ? (
+                            disabled={isSubmitting && submittedProvider !== "github"}
+                            className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] disabled:bg-gray-500 disabled:cursor-not-allowed text-white border-0 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                        >
+                            {isSubmitting && submittedProvider === "github" ? (
                                 <>
-                                    <Loader2 className="size-6 mr-3 animate-spin"/>
+                                    <Loader2 className="size-12 mr-3 animate-spin"/>
                                     <div className="font-medium text-base">연결 중...</div>
                                 </>
                             ) : (

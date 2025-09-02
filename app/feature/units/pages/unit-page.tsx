@@ -35,7 +35,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
     if (!success) throw new Error('Invalid form data');
 
     await updateUnitReadmeContent(1, testReadme);
-    console.log('Content to save:', data.content);
 
     return { success: true };
 };

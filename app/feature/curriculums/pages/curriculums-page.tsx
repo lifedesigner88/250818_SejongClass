@@ -64,7 +64,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
             }
         };
     } catch (error) {
-        console.error("Query error:", error);
         return {
             data: [],
             domains: [],

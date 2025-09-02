@@ -2,19 +2,24 @@ import React, { useState } from 'react';
 import { User, LogIn, LogOut, Loader2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { RiKakaoTalkFill } from "react-icons/ri";
 
 interface UserStatusProps {
     isLoggedIn: boolean;
     onLoginClick: () => void;
     onLogoutClick: () => void;
-    isLoading?: boolean;  // 새로 추가
+    isLoading?: boolean;
+    provider?: 'github' | 'google' | 'kakao';
 }
 
 export function UserStatus({
                                isLoggedIn,
                                onLoginClick,
                                onLogoutClick,
-                               isLoading = false,  // 기본값
+                               isLoading = false,
+                               provider,
                            }: UserStatusProps) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -28,6 +33,34 @@ export function UserStatus({
         onLogoutClick();
     };
 
+    // Provider별 아이콘과 색상 정의
+    const getProviderConfig = (providerType?: string) => {
+        switch (providerType) {
+            case 'github':
+                return {
+                    icon: <FaGithub className="size-6 text-white" />,
+                    bgClass: 'bg-gradient-to-br from-gray-800 to-gray-900'
+                };
+            case 'google':
+                return {
+                    icon: <FcGoogle className="size-6" />,
+                    bgClass: 'bg-gradient-to-br from-white to-gray-100 border border-gray-200'
+                };
+            case 'kakao':
+                return {
+                    icon: <RiKakaoTalkFill className="size-6 text-[#3A1D1D]" />,
+                    bgClass: 'bg-gradient-to-br from-[#FEE500] to-[#FDD000]'
+                };
+            default:
+                return {
+                    icon: <User className="size-6 text-white group-hover:scale-110 transition-transform"/>,
+                    bgClass: 'bg-gradient-to-br from-gray-300 to-gray-500'
+                };
+        }
+    };
+
+    const providerConfig = getProviderConfig(provider);
+
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
@@ -39,19 +72,14 @@ export function UserStatus({
                     hover:scale-110 hover:shadow-xl
                     fixed bottom-4 left-4
                     z-50
-                    ${isLoggedIn
-                    ? 'bg-gradient-to-br from-green-400 to-green-600'
-                    : isLoading
-                        ? 'bg-gradient-to-br from-blue-400 to-blue-600'
-                        : 'bg-gradient-to-br from-gray-300 to-gray-500'
-                }
+                    ${providerConfig.bgClass}
                     flex items-center justify-center
                     group
                 `}>
                     {isLoading ? (
                         <Loader2 className="size-6 text-white animate-spin"/>
-                    ) : isLoggedIn ? (
-                        <div className="text-white font-bold text-lg">✓</div>
+                    ) : isLoggedIn && provider ? (
+                        providerConfig.icon
                     ) : (
                         <User className="size-6 text-white group-hover:scale-110 transition-transform"/>
                     )}
