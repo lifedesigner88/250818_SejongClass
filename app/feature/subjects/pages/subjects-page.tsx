@@ -26,8 +26,6 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 
 export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
     const { textbooks } = loaderData;
-
-
     return (
         <div className="container mx-auto py-10 px-2">
 

@@ -1,7 +1,7 @@
 import { getThemes } from "~/feature/themes/queries";
 import type { Route } from "./+types/themes-page";
 import React from "react";
-import { useNavigate, useLocation, useOutletContext } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 
 export const loader = async () => {
     const themes = await getThemes()
@@ -19,9 +19,6 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
     };
 
     const navigate = useNavigate();
-    const location = useLocation();
-    console.log('Current path:', location.pathname);
-
 
     interface AuthOutletContext {
         isLoggedIn: boolean;
@@ -32,10 +29,11 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
     const { isLoggedIn, setShowLoginDialog, setPendingUrlAfterLogin } = useOutletContext<AuthOutletContext>()
 
 
+
     const handleThemeClick = (themesSlug: string) => {
         // 로그인 되고, 과목을 등록한 유저만 오픈 가능.
         if (!isLoggedIn) {
-            setPendingUrlAfterLogin(location.pathname); // 로그인 후 이동할 unit 저장
+            setPendingUrlAfterLogin(`/${themesSlug}`); // 로그인 후 이동할 unit 저장
             setShowLoginDialog(true);
         } else navigate(`/${themesSlug}`);
     }

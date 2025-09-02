@@ -5,10 +5,10 @@ import {
     Meta,
     Outlet, redirect,
     Scripts,
-    ScrollRestoration, useFetcher, useNavigate,
+    ScrollRestoration, useNavigate, useNavigation,
 } from "react-router";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -17,7 +17,10 @@ import { makeSSRClient } from "~/supa-clents";
 import { UserStatus } from "@/components/user-status";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { RiKakaoTalkFill } from "react-icons/ri";
+import { Loader2 } from "lucide-react";
 
 
 export const links: Route.LinksFunction = () => [
@@ -67,17 +70,23 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 export const action = async ({ request }: Route.ActionArgs) => {
 
     const BASE_URL = process.env.BASE_URL;
-
     const formData = await request.formData();
-    const password = formData.get('password') as string;
 
+    const pendingUrlAfterLogin = formData.get('pendingUrlAfterLogin') as string;
+    const provider = formData.get('provider') as string;
 
-    const redirectTo = `${BASE_URL}/callback`;
+    const redirectTo = new URL(`${BASE_URL}/callback`);
+
+    // 로그인 이후 이동할 경로
+    if (pendingUrlAfterLogin)
+        redirectTo.searchParams.set('pendingUrl', pendingUrlAfterLogin);
+
     const { client, headers } = makeSSRClient(request);
 
+    // 로그인
     const { data, error } = await client.auth.signInWithOAuth({
-        provider: "github",
-        options: { redirectTo },
+        provider: provider as 'github' | 'google' | 'kakao',
+        options: { redirectTo: redirectTo.toString() },
     });
 
     if (data.url) return redirect(data.url, { headers });
@@ -89,29 +98,20 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
     const isLoggedIn = loaderData.supabaseAuthData.user !== null;
     const [showLoginDialog, setShowLoginDialog] = useState(false);
-    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>(null);
+    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/");
     const navigate = useNavigate();
 
-    //
-    // // 로그인 성공 후 처리
-    // useEffect(() => {
-    //     if (loginFetcher.data?.success) {
-    //         setIsLoggedIn(true);
-    //         setShowLoginDialog(false);
-    //         if (pendingthemsSlug) {
-    //             navigate(`/${pendingthemsSlug}`);
-    //             setPendingthemsSlug(null);
-    //         }
-    //         loginFetcher.data.success = false;
-    //     }
-    // }, [loginFetcher.data, pendingthemsSlug, isLoggedIn, navigate]);
-    //
 
+    // 로딩 상태 확인
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === "submitting";
+    const isLoading = navigation.state === "loading";
 
     return (
         <>
             <UserStatus
                 isLoggedIn={isLoggedIn}
+                isLoading={isLoading || isSubmitting}
                 onLoginClick={() => setShowLoginDialog(true)}
                 onLogoutClick={() => navigate("/logout")}
             />
@@ -119,29 +119,60 @@ export default function App({ loaderData }: Route.ComponentProps) {
             <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Login Required</DialogTitle>
+                        <DialogTitle>로그인이 필요합니다</DialogTitle>
                     </DialogHeader>
                     <Form method="post" className="space-y-4">
-                        <div className="space-y-2">
-                            <label htmlFor="email">Email</label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="password">Password</label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                            />
-                        </div>
-                        <Button type="submit" className="w-full">
-                            Login
+                        <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''}/>
+                        <Button
+                            type="submit"
+                            name="provider"
+                            value="kakao"
+                            className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl">
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="size-6 mr-3 animate-spin"/>
+                                    <div className="font-medium text-base">연결 중...</div>
+                                </>
+                            ) : (
+                                <>
+                                    <RiKakaoTalkFill className="size-13 mr-3"/>
+                                    <div className="font-medium text-base">KakaoTalk</div>
+                                </>
+                            )}
+                        </Button>
+                        <Button
+                            type="submit"
+                            name="provider"
+                            value="google"
+                            className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl">
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="size-6 mr-3 animate-spin"/>
+                                    <div className="font-medium text-base">연결 중...</div>
+                                </>
+                            ) : (
+                                <>
+                                    <FcGoogle className="size-13 mr-3"/>
+                                    <div className="font-medium text-base">Google</div>
+                                </>
+                            )}
+                        </Button>
+                        <Button
+                            type="submit"
+                            name="provider"
+                            value="github"
+                            className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] text-white border-0 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl">
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="size-6 mr-3 animate-spin"/>
+                                    <div className="font-medium text-base">연결 중...</div>
+                                </>
+                            ) : (
+                                <>
+                                    <FaGithub className="size-13 mr-3"/>
+                                    <div className="font-medium text-base">GitHub</div>
+                                </>
+                            )}
                         </Button>
                     </Form>
                 </DialogContent>

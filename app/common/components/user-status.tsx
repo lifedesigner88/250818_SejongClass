@@ -1,5 +1,5 @@
-import React from 'react';
-import { User, LogIn, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, LogIn, LogOut, Loader2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 
@@ -7,16 +7,29 @@ interface UserStatusProps {
     isLoggedIn: boolean;
     onLoginClick: () => void;
     onLogoutClick: () => void;
+    isLoading?: boolean;  // 새로 추가
 }
-
 
 export function UserStatus({
                                isLoggedIn,
                                onLoginClick,
                                onLogoutClick,
+                               isLoading = false,  // 기본값
                            }: UserStatusProps) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleLoginClick = () => {
+        setIsOpen(false);
+        onLoginClick();
+    };
+
+    const handleLogoutClick = () => {
+        setIsOpen(false);
+        onLogoutClick();
+    };
+
     return (
-        <Popover>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
                 <div className={`
                     size-12 rounded-full
@@ -28,12 +41,16 @@ export function UserStatus({
                     z-50
                     ${isLoggedIn
                     ? 'bg-gradient-to-br from-green-400 to-green-600'
-                    : 'bg-gradient-to-br from-gray-300 to-gray-500'
+                    : isLoading
+                        ? 'bg-gradient-to-br from-blue-400 to-blue-600'
+                        : 'bg-gradient-to-br from-gray-300 to-gray-500'
                 }
                     flex items-center justify-center
                     group
                 `}>
-                    {isLoggedIn ? (
+                    {isLoading ? (
+                        <Loader2 className="size-6 text-white animate-spin"/>
+                    ) : isLoggedIn ? (
                         <div className="text-white font-bold text-lg">✓</div>
                     ) : (
                         <User className="size-6 text-white group-hover:scale-110 transition-transform"/>
@@ -58,7 +75,7 @@ export function UserStatus({
                             <Button
                                 variant="ghost"
                                 className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
-                                onClick={onLogoutClick}
+                                onClick={handleLogoutClick}
                             >
                                 <LogOut className="size-4 mr-2"/>
                                 로그아웃
@@ -79,7 +96,7 @@ export function UserStatus({
 
                             <Button
                                 className="w-full justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                                onClick={onLoginClick}
+                                onClick={handleLoginClick}
                             >
                                 <LogIn className="size-4 mr-2"/>
                                 로그인
