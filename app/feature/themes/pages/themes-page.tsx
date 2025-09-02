@@ -33,9 +33,9 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
     const handleThemeClick = (themesSlug: string) => {
         // 로그인 되고, 과목을 등록한 유저만 오픈 가능.
         if (!isLoggedIn) {
-            setPendingUrlAfterLogin(`/${themesSlug}`); // 로그인 후 이동할 unit 저장
+            setPendingUrlAfterLogin(`/theme/${themesSlug}`); // 로그인 후 이동할 unit 저장
             setShowLoginDialog(true);
-        } else navigate(`/${themesSlug}`);
+        } else navigate(`/theme/${themesSlug}`);
     }
 
     return (

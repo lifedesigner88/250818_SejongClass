@@ -14,21 +14,17 @@ import { Badge } from "~/common/components/ui/badge";
 import { Progress } from "~/common/components/ui/progress";
 import { BookOpen, Clock, DollarSign, Star, TrendingUp, PlayCircle, Lock, ShoppingCart } from "lucide-react";
 import React from "react";
-import { getUserIdFromSession } from "~/feature/auth/queries";
 
-export const loader = async ({ params, request }: Route.LoaderArgs) => {
+export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params['theme-slug'];
-    const userId = await getUserIdFromSession(request)
-    console.log(userId, "🔥🔥🔥🔥🔥🔥")
-
     const textbooks = await getTextbooksByTheamSlug(themeSlug);
     if (!textbooks) throw redirect("/404")
-
     return { textbooks };
 };
 
 export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
     const { textbooks } = loaderData;
+
     return (
         <div className="container mx-auto py-10 px-2">
 

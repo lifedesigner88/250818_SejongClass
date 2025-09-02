@@ -21,6 +21,7 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { Loader2 } from "lucide-react";
+import { createPublicUserData, getPublicUserData } from "~/feature/users/quries";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -55,17 +56,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
-
-    const { client } = makeSSRClient(request)
-    const { data: supabaseAuthData, error } = await client.auth.getUser()
-    if (error) return { supabaseAuthData }
-
-    console.log(supabaseAuthData)
-
-    return { supabaseAuthData }
-}
-
+// action
 export const action = async ({ request }: Route.ActionArgs) => {
 
     const BASE_URL = process.env.BASE_URL;
@@ -93,13 +84,35 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 };
 
+// loader
+export const loader = async ({ request }: Route.LoaderArgs) => {
+
+    const { client } = makeSSRClient(request)
+    const { data: supabaseAuthData, error } = await client.auth.getUser()
+    if (error) return { supabaseAuthData }
+
+    let publicUserData = await getPublicUserData(supabaseAuthData.user?.id)
+
+    if (!publicUserData) {
+        const user = supabaseAuthData.user;
+        publicUserData = await createPublicUserData({
+            user_id: user.id,
+            email: user.email as string,
+            username: user.user_metadata.user_name || user.user_metadata.preferred_username || null,
+            nickname: user?.user_metadata.full_name || user?.user_metadata.name || null,
+            profile_url: user?.user_metadata.avatar_url || null,
+        })
+    }
+    return { supabaseAuthData, publicUserData }
+}
+
+
 export default function App({ loaderData }: Route.ComponentProps) {
+    const { supabaseAuthData, publicUserData } = loaderData;
 
-
-    const { supabaseAuthData } = loaderData;
+    console.log(publicUserData, "publicUserData in App")
 
     const isLoggedIn = supabaseAuthData.user !== null;
-
     const [showLoginDialog, setShowLoginDialog] = useState(false);
     const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/");
     const provider = supabaseAuthData.user?.app_metadata.provider;

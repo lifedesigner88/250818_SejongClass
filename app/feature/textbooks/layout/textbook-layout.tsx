@@ -168,7 +168,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
                     <Tooltip>
                         <TooltipTrigger className={"w-full"}>
-                            <Link to={`/${themeSlug}`}>
+                            <Link to={`/theme/${themeSlug}`}>
                                 <div
                                     className={`${colors[3].badge} rounded-lg p-3 text-center hover:scale-105 transition-transform cursor-pointer`}>
                                     <Book className="h-4 w-4 mx-auto "/>
