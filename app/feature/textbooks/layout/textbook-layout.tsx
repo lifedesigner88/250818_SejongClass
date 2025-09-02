@@ -1,6 +1,6 @@
 import type { Route } from "./+types/textbook-layout";
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { Link, Outlet, redirect, useFetcher, useNavigate, useOutletContext } from "react-router";
+import { Link, Outlet, redirect, useLocation, useNavigate, useOutletContext } from "react-router";
 import { Book, ChevronDown, ChevronRight, Home, Menu, } from "lucide-react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -15,9 +15,6 @@ import colors from "~/feature/textbooks/major-color";
 import { z } from "zod";
 
 import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { UserStatus } from "@/components/user-status";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params["theme-slug"];
@@ -37,29 +34,6 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 
     return { themeSlug, subjectSlug, textbookId, textbookInfo };
 }
-
-export const action = async ({ request }: Route.ActionArgs) => {
-    const formData = await request.formData();
-
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    // Here you can implement actual login logic
-    console.log('Login attempt:', { email, password });
-
-    // 실제 로그인 로직을 여기에 구현
-    // 예: API 호출, 데이터베이스 검증 등
-
-    try {
-        // 로그인 성공 시
-        console.log("Login Success ✅")
-        return { success: true };
-    } catch (error) {
-        // 로그인 실패 시
-        return { success: false, error: "Invalid credentials" };
-    }
-};
-
 
 export default function TextbookLayout({ loaderData, params }: Route.ComponentProps) {
 
@@ -152,41 +126,23 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     }, [currentUnitId]);
 
     // for Login
-    const [showLoginDialog, setShowLoginDialog] = useState(false);
-    const [pendingUnitId, setPendingUnitId] = useState<number | null>(null);
-    const loginFetcher = useFetcher();
 
-    const {
-        isLoggedIn,
-        setIsLoggedIn,
-    } = useOutletContext<{
+
+    interface AuthOutletContext {
         isLoggedIn: boolean;
-        setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-    }>();
-
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        navigate("/themes")
+        setShowLoginDialog: (show: boolean) => void;
+        setPendingUrlAfterLogin: (url: string) => void;
     }
 
-    // 로그인 성공 후 처리
-    useEffect(() => {
-        if (loginFetcher.data?.success) {
-            setIsLoggedIn(true);
-            setShowLoginDialog(false);
-            if (pendingUnitId) {
-                navigate(`${pendingUnitId}`);
-                setPendingUnitId(null);
-            }
-            loginFetcher.data.success = false;
-        }
-    }, [loginFetcher.data, pendingUnitId, isLoggedIn, navigate]);
+    const { isLoggedIn, setShowLoginDialog, setPendingUrlAfterLogin } = useOutletContext<AuthOutletContext>()
 
+
+    const location = useLocation();
 
     const handleUnitClick = (unitId: number) => {
         // 로그인 되고, 과목을 등록한 유저만 오픈 가능.
         if (!isLoggedIn) {
-            setPendingUnitId(unitId); // 로그인 후 이동할 unit 저장
+            setPendingUrlAfterLogin(location.pathname); // 로그인 후 이동할 unit 저장
             setShowLoginDialog(true);
         } else navigate(`${unitId}`);
 
@@ -345,47 +301,11 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             </ScrollArea>
 
             {/*하단에 로그인 관련 정보*/}
-            <UserStatus
-                isLoggedIn={isLoggedIn}
-                onLoginClick={() => setShowLoginDialog(true)}
-                onLogoutClick={handleLogout}
-            />
         </>
     );
 
     return (
         <div className="flex min-h-screen">
-
-            <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Login Required</DialogTitle>
-                    </DialogHeader>
-                    <loginFetcher.Form method="post" className="space-y-4">
-                        <div className="space-y-2">
-                            <label htmlFor="email">Email</label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="password">Password</label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                            />
-                        </div>
-                        <Button type="submit" className="w-full">
-                            Login
-                        </Button>
-                    </loginFetcher.Form>
-                </DialogContent>
-            </Dialog>
 
 
             {/* 데스크톱 - Resizable 레이아웃 */}

@@ -5,5 +5,5 @@ import { makeSSRClient } from "~/supa-clents";
 export const loader = async ({ request }: Route.LoaderArgs) => {
     const { client, headers } = makeSSRClient(request);
     await client.auth.signOut();
-    return redirect("/themes", { headers });
+    return redirect("/", { headers });
 }

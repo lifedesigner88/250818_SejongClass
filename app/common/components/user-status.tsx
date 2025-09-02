@@ -25,6 +25,7 @@ export function UserStatus({
                     transition-all duration-300
                     hover:scale-110 hover:shadow-xl
                     fixed bottom-4 left-4
+                    z-50
                     ${isLoggedIn
                     ? 'bg-gradient-to-br from-green-400 to-green-600'
                     : 'bg-gradient-to-br from-gray-300 to-gray-500'

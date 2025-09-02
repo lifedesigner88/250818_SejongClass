@@ -1,6 +1,6 @@
 import type { Route } from "./+types/subjects-page";
 import { getTextbooksByTheamSlug } from "~/feature/subjects/queries";
-import { redirect, Link, useOutletContext, useNavigate, useFetcher } from "react-router";
+import { redirect, Link } from "react-router";
 import {
     Carousel,
     CarouselContent,
@@ -13,10 +13,7 @@ import { Button } from "~/common/components/ui/button";
 import { Badge } from "~/common/components/ui/badge";
 import { Progress } from "~/common/components/ui/progress";
 import { BookOpen, Clock, DollarSign, Star, TrendingUp, PlayCircle, Lock, ShoppingCart } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { UserStatus } from "@/components/user-status";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import React from "react";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params['theme-slug'];
@@ -27,95 +24,12 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     return { textbooks };
 };
 
-
-export const action = async ({ request }: Route.ActionArgs) => {
-    const formData = await request.formData();
-
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    // Here you can implement actual login logic
-    console.log('Login attempt:', { email, password });
-
-    // 실제 로그인 로직을 여기에 구현
-    // 예: API 호출, 데이터베이스 검증 등
-
-    try {
-        // 로그인 성공 시
-        console.log("Login Success ✅")
-        return { success: true };
-    } catch (error) {
-        // 로그인 실패 시
-        return { success: false, error: "Invalid credentials" };
-    }
-};
-
 export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
     const { textbooks } = loaderData;
-    const navigate = useNavigate();
 
-    const [showLoginDialog, setShowLoginDialog] = useState(false);
-    const loginFetcher = useFetcher();
-
-    const {
-        isLoggedIn,
-        setIsLoggedIn,
-    } = useOutletContext<{
-        isLoggedIn: boolean;
-        setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-    }>();
-
-    const handleLogout = () => {
-        setIsLoggedIn(false);
-        navigate("/themes")
-    }
-    // 로그인 성공 후 처리
-    useEffect(() => {
-        if (loginFetcher.data?.success) {
-            setIsLoggedIn(true);
-            setShowLoginDialog(false);
-            loginFetcher.data.success = false;
-        }
-    }, [loginFetcher.data, isLoggedIn, navigate]);
 
     return (
         <div className="container mx-auto py-10 px-2">
-            {/*하단에 로그인 관련 정보*/}
-            <UserStatus
-                isLoggedIn={isLoggedIn}
-                onLoginClick={() => setShowLoginDialog(true)}
-                onLogoutClick={handleLogout}
-            />
-            <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Login Required</DialogTitle>
-                    </DialogHeader>
-                    <loginFetcher.Form method="post" className="space-y-4">
-                        <div className="space-y-2">
-                            <label htmlFor="email">Email</label>
-                            <Input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <label htmlFor="password">Password</label>
-                            <Input
-                                id="password"
-                                name="password"
-                                type="password"
-                                required
-                            />
-                        </div>
-                        <Button type="submit" className="w-full">
-                            Login
-                        </Button>
-                    </loginFetcher.Form>
-                </DialogContent>
-            </Dialog>
 
             {/* 과목별 교재 섹션 */}
             <div className="space-y-10">

@@ -1,18 +1,23 @@
 import {
-
+    Form,
     isRouteErrorResponse,
     Links,
     Meta,
-    Outlet,
+    Outlet, redirect,
     Scripts,
-    ScrollRestoration,
+    ScrollRestoration, useFetcher, useNavigate,
 } from "react-router";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import React from "react";
+import { makeSSRClient } from "~/supa-clents";
+import { UserStatus } from "@/components/user-status";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 
 export const links: Route.LinksFunction = () => [
@@ -48,15 +53,103 @@ export function Layout({ children }: { children: React.ReactNode }) {
     );
 }
 
-export default function App() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { client } = makeSSRClient(request)
+    const { data: supabaseAuthData, error } = await client.auth.getUser()
+    if (error) return { supabaseAuthData }
+
+    console.log(supabaseAuthData)
+
+    return { supabaseAuthData }
+}
+
+export const action = async ({ request }: Route.ActionArgs) => {
+
+    const BASE_URL = process.env.BASE_URL;
+
+    const formData = await request.formData();
+    const password = formData.get('password') as string;
+
+
+    const redirectTo = `${BASE_URL}/callback`;
+    const { client, headers } = makeSSRClient(request);
+
+    const { data, error } = await client.auth.signInWithOAuth({
+        provider: "github",
+        options: { redirectTo },
+    });
+
+    if (data.url) return redirect(data.url, { headers });
+    if (error) throw error;
+
+};
+
+export default function App({ loaderData }: Route.ComponentProps) {
+
+    const isLoggedIn = loaderData.supabaseAuthData.user !== null;
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>(null);
+    const navigate = useNavigate();
+
+    //
+    // // 로그인 성공 후 처리
+    // useEffect(() => {
+    //     if (loginFetcher.data?.success) {
+    //         setIsLoggedIn(true);
+    //         setShowLoginDialog(false);
+    //         if (pendingthemsSlug) {
+    //             navigate(`/${pendingthemsSlug}`);
+    //             setPendingthemsSlug(null);
+    //         }
+    //         loginFetcher.data.success = false;
+    //     }
+    // }, [loginFetcher.data, pendingthemsSlug, isLoggedIn, navigate]);
+    //
+
 
     return (
         <>
+            <UserStatus
+                isLoggedIn={isLoggedIn}
+                onLoginClick={() => setShowLoginDialog(true)}
+                onLogoutClick={() => navigate("/logout")}
+            />
+
+            <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Login Required</DialogTitle>
+                    </DialogHeader>
+                    <Form method="post" className="space-y-4">
+                        <div className="space-y-2">
+                            <label htmlFor="email">Email</label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="password">Password</label>
+                            <Input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                            />
+                        </div>
+                        <Button type="submit" className="w-full">
+                            Login
+                        </Button>
+                    </Form>
+                </DialogContent>
+            </Dialog>
             <Outlet context={{
                 isLoggedIn,
-                setIsLoggedIn,
+                setShowLoginDialog,
+                setPendingUrlAfterLogin,
             }}/>
         </>
     );

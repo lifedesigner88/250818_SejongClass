@@ -11,9 +11,7 @@ export default [
     ]),
 
 
-    route("/login", "feature/auth/pages/login-page.tsx"),
     route("/logout", "feature/auth/pages/logout-page.tsx"),
-    route("/logintest", "feature/auth/pages/login-test-page.tsx"),
     route("/callback", "feature/auth/pages/callback-page.tsx"),
 
 
