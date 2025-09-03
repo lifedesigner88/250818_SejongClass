@@ -1,8 +1,9 @@
 import db from "~/db";
 import { textbooksTable } from "~/feature/textbooks/schema";
 import { eq } from "drizzle-orm";
+import { checklistsTable } from "~/feature/checklists/schema";
 
-export async function getTextbookInfobyTextBookId(textbook_id: number) {
+export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: string) {
     return db.query.textbooksTable.findFirst({
         where: eq(textbooksTable.textbook_id, textbook_id),
         columns: {
@@ -52,8 +53,17 @@ export async function getTextbookInfobyTextBookId(textbook_id: number) {
                                 with: {
                                     curriculums:{
                                         columns: {
+                                            curriculum_id: true,
                                             code: true,
                                             achievement_text: true,
+                                        },
+                                        with: {
+                                            checklists: {
+                                                where : eq(checklistsTable.user_id, user_id),
+                                                columns: {
+                                                    completion_status: true,
+                                                }
+                                            }
                                         }
                                     }
                                 }

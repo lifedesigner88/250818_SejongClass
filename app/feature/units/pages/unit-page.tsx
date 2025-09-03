@@ -25,7 +25,6 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     if (!success) throw redirect("/404");
 
     const unitData = await getUnitAndConceptsByUnitId(data["unit-id"]);
-    console.dir(unitData, { depth: null });
     if (!(unitData
         && data["textbook-id"] === unitData.middle.major.textbook.textbook_id))
         throw redirect("/404");

@@ -16,8 +16,9 @@ import { z } from "zod";
 
 import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
+import { getUserIdFromSession } from "~/feature/auth/queries";
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const themeSlug = params["theme-slug"];
     const subjectSlug = params["subject-slug"];
     const textbookId = params["textbook-id"];
@@ -26,7 +27,10 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     const { success, data } = paramsSchema.safeParse({ textbookId });
     if (!success) throw redirect("/404");
 
-    const textbookInfo = await getTextbookInfobyTextBookId(data.textbookId);
+    const userId = await getUserIdFromSession(request)
+    if (!userId) throw redirect("/404"); // 로그인이 필요하다는 페이지 따로 만들어야 할듯.
+
+    const textbookInfo = await getTextbookInfobyTextBookId(data.textbookId, userId);
 
     // 정확한 경로 검사
     if (!(textbookInfo
@@ -319,7 +323,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <ResizablePanel defaultSize={80}>
                         <div className="h-screen overflow-auto">
                             <Outlet
-                                context={{ textbookInfo, handleUnitClick }}/>
+                                context={{ textbookInfo, handleUnitClick, userId: auth.publicUserData.user_id  }}/>
                         </div>
                     </ResizablePanel>
                 </ResizablePanelGroup>
@@ -347,7 +351,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 {/* 메인 콘텐츠가 전체 화면 사용 */}
                 <div className="flex-1 w-full h-full overflow-auto">
                     <Outlet
-                        context={{ textbookInfo, handleUnitClick }}/>
+                        context={{ textbookInfo, handleUnitClick, userId: auth.publicUserData.user_id }}/>
                 </div>
             </div>
         </div>

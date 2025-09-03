@@ -7,11 +7,13 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Target, Hash, TrendingUp, BarChart } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
     textbookInfo: TextbookInfo;
     handleUnitClick: (unitId: number) => void;
+    userId: string;
 };
 
 
@@ -46,7 +48,7 @@ function StatCard({ icon: Icon, value, label, colorClass, className }: StatCardP
 
 export default function TextbookPage() {
 
-    const { textbookInfo, handleUnitClick } = useOutletContext<OutletContextType>();
+    const { textbookInfo, handleUnitClick, userId } = useOutletContext<OutletContextType>();
 
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
 
@@ -85,6 +87,7 @@ export default function TextbookPage() {
         unit_id: number;
         major_name: string; // number가 아니라 string으로 수정
         unit_name: string;
+        curriculum_id: number;
     }[] = [];
 
     textbookInfo.majors.forEach(major => {
@@ -98,7 +101,8 @@ export default function TextbookPage() {
                             achievement_text: curriculum.achievement_text,
                             unit_id: unit.unit_id,
                             major_name: major.title, // 대단원 이름 추가
-                            unit_name: unit.title
+                            unit_name: unit.title,
+                            curriculum_id: curriculum.curriculum_id
                         });
                     });
                 }
@@ -216,7 +220,7 @@ export default function TextbookPage() {
                 </CardContent>
             </Card>
             {/* 📋 Curriculum 카드 목록 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filteredCurriculumList.length > 0 ? (
                     filteredCurriculumList.map((curriculum, index) => {
                         // 대단원 이름을 기반으로 색상 인덱스 계산
@@ -224,46 +228,65 @@ export default function TextbookPage() {
                         const colorIndex = majorIndex !== -1 ? majorIndex : 0;
                         const colorSet = colors[colorIndex + 1 % colors.length];
 
+
+                        const handleCurriculumClick = (curriculum_id: number) => {
+                            // **file-based routing** 으로 업데이트 할 예정.
+                            console.log("userId: ",userId)
+                            console.log('curriculum_id value:', curriculum_id);
+                        }
+
                         return (
-                            <Tooltip key={`${curriculum.unit_id}-${curriculum.code}-${index}`}>
-                                <TooltipTrigger>
-                                    <Card
-                                        onClick={() => handleUnitClick(curriculum.unit_id)}
-                                        className="group relative hover:shadow-lg transition-all duration-500 hover:border-primary cursor-pointer hover:scale-[0.97] [transform-origin:center] min-h-[160px]">
-                                        <CardHeader className="space-y-3">
-                                            {/* 상단 메타 정보 */}
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="space-y-1">
-                                                        <Badge className={`font-mono text-xs ${colorSet.badge}`}>
-                                                            {curriculum.code}
+                            <div key={`${index}`} className={"relative "}>
+                                <Checkbox
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleCurriculumClick(curriculum.curriculum_id)
+                                    }}
+                                    className={"z-50 size-6 absolute right-5 bottom-5"}
+                                />
+
+                                <Tooltip>
+                                    <TooltipTrigger className={"w-full h-full"}>
+                                        <Card
+                                            onClick={() => handleUnitClick(curriculum.unit_id)}
+                                            className="hover:shadow-lg cursor-pointer min-h-[170px] w-full">
+                                            <CardHeader className="space-y-3">
+                                                {/* 상단 메타 정보 */}
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="space-y-1">
+                                                            <Badge
+                                                                className={`font-mono text-xs ${colorSet.badge}`}>
+                                                                {curriculum.code}
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex flex-col items-end gap-1">
+                                                        <Badge variant="outline" className="font-mono">
+                                                            {String(index + 1).padStart(2, '0')}
                                                         </Badge>
                                                     </div>
                                                 </div>
+                                            </CardHeader>
 
-                                                <div className="flex flex-col items-end gap-1">
-                                                    <Badge variant="outline" className="font-mono">
-                                                        {String(index + 1).padStart(2, '0')}
-                                                    </Badge>
+                                            <CardContent className="space-y-4">
+                                                {/* 성취기준 내용 */}
+                                                <div className="flex items-start gap-2">
+                                                    <CardDescription className="leading-relaxed text-left">
+                                                        {curriculum.achievement_text}
+                                                    </CardDescription>
                                                 </div>
-                                            </div>
-                                        </CardHeader>
 
-                                        <CardContent className="space-y-4">
-                                            {/* 성취기준 내용 */}
-                                            <div className="flex items-start gap-2">
-                                                <CardDescription className="leading-relaxed text-left">
-                                                    {curriculum.achievement_text}
-                                                </CardDescription>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </TooltipTrigger>
-                                <TooltipContent
-                                    className={`bg-background text-foreground shadow-lg rounded-lg border p-4 ${colorSet.badge} text-sm`}>
-                                    {curriculum.unit_name}
-                                </TooltipContent>
-                            </Tooltip>
+                                            </CardContent>
+                                        </Card>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                        className={`bg-background text-foreground shadow-lg rounded-lg border p-4 ${colorSet.badge} text-sm`}>
+                                        {curriculum.unit_name}
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
                         );
                     })
                 ) : (

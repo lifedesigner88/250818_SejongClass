@@ -1,6 +1,7 @@
 import { pgTable, serial, smallint, varchar, text, integer, check, index } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { unitsTable } from "~/feature/units/schema";
+import { checklistsTable } from "~/feature/checklists/schema";
 
 
 export const curriculumsTable = pgTable("curriculums", {
@@ -47,9 +48,13 @@ export const curriculumsTable = pgTable("curriculums", {
     index("idx_curriculum_sort_order").on(table.sort_order),
 ]);
 
-export const curriculumsRelations = relations(curriculumsTable, ({ one }) => ({
+export const curriculumsRelations = relations(curriculumsTable, ({ one, many }) => ({
     units: one(unitsTable, {
         fields: [curriculumsTable.unit_id],
         references: [unitsTable.unit_id],
     }),
+    checklists: many(checklistsTable, {
+        fields: [curriculumsTable.curriculum_id],
+        references: [checklistsTable.curriculum_id],
+    })
 }));
