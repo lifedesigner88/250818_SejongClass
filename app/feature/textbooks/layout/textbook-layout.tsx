@@ -328,7 +328,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             {/* 모바일 - Sheet 레이아웃 */}
             <div className="md:hidden flex flex-col w-full relative">
                 {/* 플로팅 메뉴 버튼 */}
-                <div className="fixed bottom-15 right-16 z-50">
+                <div className="fixed top-7 right-7 z-50">
                     <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                         <SheetTrigger asChild>
                             <Button
