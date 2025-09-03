@@ -17,7 +17,8 @@ import { mastersRelations, mastersTable } from "~/feature/masters/schema";
 import { enrollmentsRelations, enrollmentsTable } from "~/feature/enrollments/schema";
 import { progressRelations, progressTable, } from '~/feature/progress/schema';
 import { usersRelations, usersTable, } from '~/feature/users/schema';
-import { curriculumsRealations, curriculumsTable } from "~/feature/curriculums/schema";
+import { checklistsRelations, checklistsTable } from "~/feature/checklists/schema";
+import { curriculumsRelations, curriculumsTable } from "~/feature/curriculums/schema";
 
 
 const pool = new Pool({
@@ -78,7 +79,10 @@ const db = drizzle({
         usersRelations,
 
         curriculumsTable,
-        curriculumsRealations
+        curriculumsRelations,
+
+        checklistsTable,
+        checklistsRelations,
     }
 });
 

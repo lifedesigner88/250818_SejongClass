@@ -47,7 +47,7 @@ export const curriculumsTable = pgTable("curriculums", {
     index("idx_curriculum_sort_order").on(table.sort_order),
 ]);
 
-export const curriculumsRealations = relations(curriculumsTable, ({ one }) => ({
+export const curriculumsRelations = relations(curriculumsTable, ({ one }) => ({
     units: one(unitsTable, {
         fields: [curriculumsTable.unit_id],
         references: [unitsTable.unit_id],
