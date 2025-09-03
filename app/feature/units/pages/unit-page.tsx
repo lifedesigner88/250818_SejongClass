@@ -34,7 +34,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     const { success, data } = schema.safeParse(Object.fromEntries(formData));
     if (!success) throw new Error('Invalid form data');
 
-    await updateUnitReadmeContent(1, testReadme);
+    await updateUnitReadmeContent(1, data?.content);
 
     return { success: true };
 };
@@ -60,7 +60,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     <CollapsibleContent className="mt-4">
                         <div className="aspect-video rounded-lg overflow-hidden border">
                             <iframe
-                                src={`https://www.youtube.com/embed/8i_8OoBoZKA`}
+                                src={`https://www.youtube.com/embed/${unitData.youtube_video_id}`}
                                 className="w-full h-full"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
@@ -111,7 +111,9 @@ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
 $$
 
 ### 피타고라스 정리
-직각삼각각에서 $a^2 + b^2 = c^2$가 성립한다.
+$$
+a^2 + b^2 = c^2
+$$
 
 ### 오일러 공식
 $$

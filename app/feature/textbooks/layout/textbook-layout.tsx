@@ -1,6 +1,6 @@
 import type { Route } from "./+types/textbook-layout";
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { Link, Outlet, redirect, useLocation, useNavigate, useOutletContext } from "react-router";
+import { Link, Outlet, redirect, useLocation, useNavigate } from "react-router";
 import { Book, ChevronDown, ChevronRight, Home, Menu, } from "lucide-react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -15,6 +15,7 @@ import colors from "~/feature/textbooks/major-color";
 import { z } from "zod";
 
 import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
+import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params["theme-slug"];
@@ -27,6 +28,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 
     const textbookInfo = await getTextbookInfobyTextBookId(data.textbookId);
 
+    // 정확한 경로 검사
     if (!(textbookInfo
         && textbookInfo.subject.slug === subjectSlug
         && textbookInfo.subject.theme.slug === themeSlug)
@@ -39,6 +41,16 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
+
+    // 로그인 안된 유저 로그인 유도
+    const location = useLocation();
+    const auth = useAuthOutletData()
+    if (!(auth.isLoggedIn && auth.publicUserData)) {
+        auth.setPendingUrlAfterLogin(`${location.pathname}`)
+        auth.setShowLoginDialog(true)
+        return <h1></h1>
+    }
+
 
     // 좌측 네비게이션 토글 관련 변수
     const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
@@ -125,25 +137,12 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         }, 100);
     }, [currentUnitId]);
 
-    // for Login
-
-
-    interface AuthOutletContext {
-        isLoggedIn: boolean;
-        setShowLoginDialog: (show: boolean) => void;
-        setPendingUrlAfterLogin: (url: string) => void;
-    }
-
-    const { isLoggedIn, setShowLoginDialog, setPendingUrlAfterLogin } = useOutletContext<AuthOutletContext>()
-
-
-    const location = useLocation();
 
     const handleUnitClick = (unitId: number) => {
         // 로그인 되고, 과목을 등록한 유저만 오픈 가능.
-        if (!isLoggedIn) {
-            setPendingUrlAfterLogin(location.pathname); // 로그인 후 이동할 unit 저장
-            setShowLoginDialog(true);
+        if (!auth.isLoggedIn) {
+            auth.setPendingUrlAfterLogin(location.pathname); // 로그인 후 이동할 unit 저장
+            auth.setShowLoginDialog(true);
         } else navigate(`${unitId}`);
 
         if (window.innerWidth < 768) setIsMobileMenuOpen(false);

@@ -8,6 +8,7 @@ import 'katex/dist/katex.min.css';
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import components from './markdown-box';
+import { Button } from "@/components/ui/button";
 
 interface MarkdownViewerProps {
     content: string;
@@ -19,6 +20,7 @@ interface TocItem {
     text: string;
     level: number;
 }
+
 export function MarkdownViewer({ content, className = '' }: MarkdownViewerProps) {
     const [tocItems, setTocItems] = useState<TocItem[]>([]);
     const [activeId, setActiveId] = useState<string>('');
@@ -69,13 +71,13 @@ export function MarkdownViewer({ content, className = '' }: MarkdownViewerProps)
                 const visibleEntries = entries.filter(entry => entry.isIntersecting);
                 if (visibleEntries.length > 0) {
                     // 가장 위에 있는 요소를 활성화 (딜레이 적용)
-                    const topEntry = visibleEntries.reduce((prev, current) => 
+                    const topEntry = visibleEntries.reduce((prev, current) =>
                         current.boundingClientRect.top < prev.boundingClientRect.top ? current : prev
                     );
                     setActiveIdWithDelay(topEntry.target.id);
                 }
             },
-            { 
+            {
                 rootMargin: '-10% 0px -70% 0px',
                 threshold: [0, 0.25, 0.5, 0.75, 1]
             }
@@ -99,9 +101,9 @@ export function MarkdownViewer({ content, className = '' }: MarkdownViewerProps)
             // 수동 스크롤 시작
             isScrollingRef.current = true;
             setActiveId(id);
-            
-            element.scrollIntoView({ 
-                behavior: 'smooth', 
+
+            element.scrollIntoView({
+                behavior: 'smooth',
                 block: 'start'
             });
 
@@ -113,36 +115,9 @@ export function MarkdownViewer({ content, className = '' }: MarkdownViewerProps)
     };
 
     return (
-        <div className="flex gap-6 ">
-            {/* 목차 */}
-            <div className="w-64 flex-shrink-0">
-                <div className="sticky top-6">
-                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
-                        목차
-                    </h3>
-                    <nav className="space-y-1">
-                        {tocItems.map((item) => (
-                            <button
-                                key={item.id}
-                                onClick={() => scrollToHeading(item.id)}
-                                className={`
-                                      block w-full text-left text-sm hover:text-blue-600 dark:hover:text-blue-400 transition-colors
-                                      ${activeId === item.id
-                                    ? 'text-red-800 dark:text-blue-400 font-medium'
-                                    : 'text-gray-600 dark:text-gray-400'
-                                }
-                                 `}
-                                style={{ paddingLeft: `${(item.level - 1) * 16}px` }}
-                            >
-                                {`${activeId === item.id? "✅" : ""}${item.text}`}
-                            </button>
-                        ))}
-                    </nav>
-                </div>
-            </div>
-
+        <div className="grid grid-cols-10 gap-6">
             {/* 마크다운 콘텐츠 */}
-            <div className={`flex-1 min-w-0 prose prose-gray dark:prose-invert max-w-none ${className}`}>
+            <div className={`col-span-7 flex-1 min-w-0 prose prose-gray dark:prose-invert max-w-none ${className}`}>
                 <ReactMarkdown
                     remarkPlugins={[remarkGfm, remarkMath]}
                     rehypePlugins={[rehypeHighlight, rehypeSlug, rehypeKatex]}
@@ -150,6 +125,31 @@ export function MarkdownViewer({ content, className = '' }: MarkdownViewerProps)
                 >
                     {content}
                 </ReactMarkdown>
+            </div>
+            {/* 목차 */}
+            <div className="col-span-3 flex-shrink-0  w-full">
+                <div className={"sticky top-6"}>
+                    <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                        목차
+                    </h3>
+                    {tocItems.map((item) => (
+                        <Button
+                            variant="ghost"
+                            key={item.id}
+                            onClick={() => scrollToHeading(item.id)}
+                            aria-pressed={activeId === item.id}         // 접근성 보강(토글 성격이면 유용)
+                            data-active={activeId === item.id}          // data-*로 스타일링 트리거
+                            className={`block w-full text-left text-sm transition-colors 
+                            hover:text-blue-600 dark:hover:text-blue-400
+                            data-[active=true]:bg-blue-50 dark:data-[active=true]:bg-blue-950/30
+                            `}
+                            style={{ paddingLeft: `${item.level * 24}px` }}
+                        >
+                            {item.text} {activeId === item.id ? " — ✅" : ""}
+                        </Button>
+
+                    ))}
+                </div>
             </div>
         </div>
     );

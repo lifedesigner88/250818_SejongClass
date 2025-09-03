@@ -18,20 +18,14 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
     const capitalizeSlug = (slug: string) => {
         return slug.charAt(0).toUpperCase() + slug.slice(1);
     };
-
     const navigate = useNavigate();
 
-
-    const { isLoggedIn, publicUserData, setShowLoginDialog, setPendingUrlAfterLogin } = useAuthOutletData()
-
-    console.log(publicUserData , "in themes page")
-
-
+    // 로그인 안된 유저 로그인 유도
+    const auth = useAuthOutletData()
     const handleThemeClick = (themesSlug: string) => {
-        // 로그인 되고, 과목을 등록한 유저만 오픈 가능.
-        if (!isLoggedIn) {
-            setPendingUrlAfterLogin(`/theme/${themesSlug}`); // 로그인 후 이동할 unit 저장
-            setShowLoginDialog(true);
+        if (!auth.isLoggedIn) {
+            auth.setPendingUrlAfterLogin(`/theme/${themesSlug}`);
+            auth.setShowLoginDialog(true);
         } else navigate(`/theme/${themesSlug}`);
     }
 

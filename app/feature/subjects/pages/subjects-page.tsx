@@ -14,6 +14,7 @@ import { Badge } from "~/common/components/ui/badge";
 import { Progress } from "~/common/components/ui/progress";
 import { BookOpen, Clock, DollarSign, Star, TrendingUp, PlayCircle, Lock, ShoppingCart } from "lucide-react";
 import React from "react";
+import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const themeSlug = params['theme-slug'];
@@ -24,12 +25,12 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 
 export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
     const { textbooks } = loaderData;
-
-
-
-
-
-
+    const auth = useAuthOutletData()
+    if (!(auth.isLoggedIn && auth.publicUserData)) {
+        auth.setPendingUrlAfterLogin(`/theme/${textbooks.slug}`)
+        auth.setShowLoginDialog(true)
+        return <h1></h1>
+    }
 
     return (
         <div className="container mx-auto py-10 px-2">

@@ -15,24 +15,25 @@ export default {
     },
 
     h1: ({ children, ...props }: any) => (
-        <h1 className="text-4xl font-bold text-blue-900 dark:text-blue-100 mb-6 pt-6 pb-4 border-b-2 border-blue-200" {...props}>
-            {children}
+        <h1 className="text-3xl font-bold text-blue-900 dark:text-blue-100 mb-6 pt-6 pb-4 border-b-2 border-blue-200" {...props}>
+            ✅ {children}
         </h1>
     ),
     h2: ({ children, ...props }: any) => (
-        <h2 className="text-3xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4" {...props}>
-            {children}
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mt-8 mb-4 pl-8" {...props}>
+         ✔️ {children}
         </h2>
     ),
     h3: ({ children, ...props }: any) => (
-        <h3 className="text-2xl font-medium text-gray-700 dark:text-gray-300 mt-6 mb-3" {...props}>
-            {children}
+        <h3 className="text-1xl font-medium text-gray-700 dark:text-gray-300 mt-6 mb-3 pl-20" {...props}>
+        🚀 {children}
         </h3>
     ),
 
+
     p: ({ children, ...props }: any) => (
         <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4" {...props}>
-            {children}
+            🏃‍♀️‍➡️ {children}
         </p>
     ),
 
