@@ -190,7 +190,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                         }}
                     >
                         <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} className={"w-full"}>
-                            <h2 className="font-semibold text-lg text-center w-full truncate mt-3">
+                            <h2 className="font-semibold text-xl text-center w-full truncate mt-3">
                                 {textbookInfo?.title}
                             </h2>
                         </Link>
