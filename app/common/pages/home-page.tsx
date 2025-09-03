@@ -16,7 +16,7 @@ export default function HomePage() {
                 {/* Main Content */}
                 <div className="relative z-10 container mx-auto px-6 py-20 text-center text-white">
                     {/* Brand Logo */}
-                    <div className="mb-8">
+                    <div className="mb-15">
                         <h1 className="text-6xl font-bold mb-4">
                             <span className="text-white">Sejong</span>
                             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Class</span>
@@ -26,32 +26,6 @@ export default function HomePage() {
                         </p>
                     </div>
 
-                    {/* Main Tagline */}
-                    <div className="max-w-4xl mx-auto mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
-                            종이와 연필을 넘어,<br />
-                            <span className="text-blue-300">코드 · 시각화 · 시뮬레이션</span>으로<br />
-                            개념을 체험하는 온라인 러닝 플랫폼
-                        </h2>
-                        <p className="text-xl text-gray-300 leading-relaxed">
-                            수학과 물리를 배우며 동시에 <strong className="text-blue-300">코딩 리터러시</strong>와
-                            <strong className="text-purple-300"> 생각하는 힘</strong>을 기릅니다.
-                        </p>
-                    </div>
-
-                    {/* CTA Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                        <Link to="/monaco-demo">
-                            <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0">
-                                🚀 지금 시작하기 (무료)
-                            </Button>
-                        </Link>
-                        <Link to="/themes">
-                            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-blue-400 text-blue-200 hover:bg-blue-500/10">
-                                📚 강의 둘러보기
-                            </Button>
-                        </Link>
-                    </div>
 
                     {/* Demo Preview */}
                     <div className="max-w-4xl mx-auto">
@@ -77,10 +51,29 @@ export default function HomePage() {
                                     <div><span className="text-gray-400"># 결과: (3.0, 2.0)</span></div>
                                 </div>
                             </div>
-                            <p className="text-center text-blue-200 mt-4 text-sm">
-                                실시간 코드 에디터 · 즉시 결과 확인 · 시각화 그래프
-                            </p>
+
                         </div>
+                    </div>
+
+
+                    {/* Main Tagline */}
+                    <div className="max-w-4xl mx-auto mb-10">
+                        <h2 className="text-3xl md:text-4xl mt-12 font-bold mb-4 leading-tight">
+                            종이, 연필 ❌
+                        </h2>
+                        <p className="mb-3 text-2xl text-gray-300 leading-relaxed">
+                            수학과 물리를 배우며 기르는
+                        </p>
+                        <strong className="text-3xl text-blue-300 mt-3">코딩 리터러시</strong>
+                    </div>
+
+                    {/* CTA Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
+                        <Link to="/themes">
+                            <Button size="lg" className="cursor-pointer text-xl px-12 py-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0">
+                                📚 강의 둘러보기
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -156,7 +149,7 @@ export default function HomePage() {
                         준비되셨나요? 지금 바로 시작해보세요! 🚀
                     </h3>
                     <Link to="/monaco-demo">
-                        <Button size="lg" className="text-xl px-12 py-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0">
+                        <Button size="lg" className="cursor-pointer text-xl px-12 py-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0">
                             Python 에디터 체험하기
                         </Button>
                     </Link>
@@ -165,7 +158,7 @@ export default function HomePage() {
 
             {/* Footer */}
             <div className="py-8 border-t border-blue-500/20 text-center text-gray-400">
-                <p>© 2024 SejongClass — Code Your Life with Math & Physics</p>
+                <p>© 2025 SejongClass — Code Your Life with Math & Physics</p>
                 <div className="mt-2 text-2xl opacity-30">
                     ∫ Σ π dx λ ψ → F=ma · E=mc²
                 </div>
