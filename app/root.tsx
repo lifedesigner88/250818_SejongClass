@@ -22,6 +22,7 @@ import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { Loader2 } from "lucide-react";
 import { createPublicUserData, getPublicUserData } from "~/feature/users/quries";
+import type { publicUserDataType } from "~/feature/auth/useAuthUtil";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -103,19 +104,22 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
             profile_url: user?.user_metadata.avatar_url || null,
         })
     }
-    return { supabaseAuthData, publicUserData }
+
+    return {
+        publicUserData: {
+            ...publicUserData,
+            provider: supabaseAuthData.user?.app_metadata.provider,
+        },
+    }
 }
 
 
 export default function App({ loaderData }: Route.ComponentProps) {
-    const { supabaseAuthData, publicUserData } = loaderData;
-
-    console.log(publicUserData, "publicUserData in App")
-
-    const isLoggedIn = supabaseAuthData.user !== null;
+    const { publicUserData } = loaderData;
+    const isLoggedIn = !!publicUserData;
     const [showLoginDialog, setShowLoginDialog] = useState(false);
     const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/");
-    const provider = supabaseAuthData.user?.app_metadata.provider;
+    const provider = publicUserData?.provider;
     const navigate = useNavigate();
 
     // 로딩 상태 확인
@@ -134,12 +138,13 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 onLoginClick={() => setShowLoginDialog(true)}
                 onLogoutClick={() => navigate("/logout")}
                 provider={provider as 'github' | 'google' | 'kakao'}
+                publicUserData={publicUserData as publicUserDataType | undefined}
             />
 
             <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>로그인이 필요합니다</DialogTitle>
+                        <DialogTitle>로그인</DialogTitle>
                     </DialogHeader>
                     <Form method="post" className="space-y-4">
                         <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''}/>
@@ -211,6 +216,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
             </Dialog>
             <Outlet context={{
                 isLoggedIn,
+                publicUserData,
                 setShowLoginDialog,
                 setPendingUrlAfterLogin,
             }}/>

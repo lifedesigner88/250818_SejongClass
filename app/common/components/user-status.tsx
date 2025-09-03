@@ -5,14 +5,20 @@ import { Button } from '@/components/ui/button';
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import type { publicUserDataType } from "~/feature/auth/useAuthUtil";
+
+type Provider = 'kakao' | 'google' | 'github';
 
 interface UserStatusProps {
     isLoggedIn: boolean;
+    isLoading?: boolean;
     onLoginClick: () => void;
     onLogoutClick: () => void;
-    isLoading?: boolean;
-    provider?: 'github' | 'google' | 'kakao';
+    provider?: Provider;
+    publicUserData?: publicUserDataType | undefined;
 }
+
 
 export function UserStatus({
                                isLoggedIn,
@@ -20,6 +26,7 @@ export function UserStatus({
                                onLogoutClick,
                                isLoading = false,
                                provider,
+                               publicUserData
                            }: UserStatusProps) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -38,17 +45,17 @@ export function UserStatus({
         switch (providerType) {
             case 'github':
                 return {
-                    icon: <FaGithub className="size-6 text-white" />,
+                    icon: <FaGithub className="size-6 text-white"/>,
                     bgClass: 'bg-gradient-to-br from-gray-800 to-gray-900'
                 };
             case 'google':
                 return {
-                    icon: <FcGoogle className="size-6" />,
+                    icon: <FcGoogle className="size-6"/>,
                     bgClass: 'bg-gradient-to-br from-white to-gray-100 border border-gray-200'
                 };
             case 'kakao':
                 return {
-                    icon: <RiKakaoTalkFill className="size-6 text-[#3A1D1D]" />,
+                    icon: <RiKakaoTalkFill className="size-6 text-[#3A1D1D]"/>,
                     bgClass: 'bg-gradient-to-br from-[#FEE500] to-[#FDD000]'
                 };
             default:
@@ -65,17 +72,17 @@ export function UserStatus({
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
                 <div className={`
-                    size-12 rounded-full
-                    cursor-pointer
-                    shadow-lg
-                    transition-all duration-300
-                    hover:scale-110 hover:shadow-xl
-                    fixed bottom-4 left-4
-                    z-50
-                    ${providerConfig.bgClass}
-                    flex items-center justify-center
-                    group
-                `}>
+        size-12 rounded-full
+        cursor-pointer
+        shadow-lg
+        transition-all duration-300
+        hover:scale-110 hover:shadow-xl
+        fixed bottom-4 left-4
+        z-50
+        ${providerConfig.bgClass}
+        flex items-center justify-center
+        group
+      `}>
                     {isLoading ? (
                         <Loader2 className="size-6 text-white animate-spin"/>
                     ) : isLoggedIn && provider ? (
@@ -85,21 +92,51 @@ export function UserStatus({
                     )}
                 </div>
             </PopoverTrigger>
-            <PopoverContent className="w-60 ml-1 mb-15 p-0" side={"right"}>
+
+            <PopoverContent className="w-60 ml-1 mb-15 p-0" side="right">
                 <div className="p-4">
                     {isLoggedIn ? (
                         <div className="space-y-4">
-                            <div className="flex items-center space-x-3">
-                                <div
-                                    className="size-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
-                                    <div className="text-white font-bold text-sm">✓</div>
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900">Signed In</p>
-                                    <p className="text-xs text-gray-500">Ready to learn!</p>
+                            <div className="flex items-center gap-3">
+                                <Avatar className="size-9">
+                                    <AvatarImage
+                                        src={publicUserData?.profile_url || ""}
+                                        alt={
+                                            publicUserData?.nickname ||
+                                            publicUserData?.username ||
+                                            "user"
+                                        }
+                                    />
+                                    <AvatarFallback>
+                                        {(publicUserData?.nickname ||
+                                            publicUserData?.username ||
+                                            "U")
+                                            .slice(0, 2)
+                                            .toUpperCase()}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-gray-900 truncate">
+                                        {publicUserData?.nickname ||
+                                            publicUserData?.username ||
+                                            publicUserData?.email?.split("@")[0]}
+                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        {publicUserData?.email && (
+                                            <p className="text-xs text-gray-500 truncate">
+                                                {publicUserData.email}
+                                            </p>
+                                        )}
+                                        {publicUserData?.provider && (
+                                            <div
+                                                className="ml-1 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-700">
+                                                {publicUserData.provider}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-
                             <Button
                                 variant="ghost"
                                 className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
@@ -118,7 +155,9 @@ export function UserStatus({
                                 </div>
                                 <div>
                                     <p className="font-medium text-gray-900">Sign In Required</p>
-                                    <p className="text-xs text-gray-500">Access your learning progress</p>
+                                    <p className="text-xs text-gray-500">
+                                        Access your learning progress
+                                    </p>
                                 </div>
                             </div>
 
@@ -134,5 +173,5 @@ export function UserStatus({
                 </div>
             </PopoverContent>
         </Popover>
-    );
+    )
 }

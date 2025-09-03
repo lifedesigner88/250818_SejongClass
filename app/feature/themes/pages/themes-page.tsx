@@ -1,7 +1,8 @@
 import { getThemes } from "~/feature/themes/queries";
 import type { Route } from "./+types/themes-page";
 import React from "react";
-import { useNavigate, useOutletContext } from "react-router";
+import { useNavigate, } from "react-router";
+import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
 
 export const loader = async () => {
     const themes = await getThemes()
@@ -20,14 +21,10 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
 
     const navigate = useNavigate();
 
-    interface AuthOutletContext {
-        isLoggedIn: boolean;
-        setShowLoginDialog: (show: boolean) => void;
-        setPendingUrlAfterLogin: (url: string) => void;
-    }
 
-    const { isLoggedIn, setShowLoginDialog, setPendingUrlAfterLogin } = useOutletContext<AuthOutletContext>()
+    const { isLoggedIn, publicUserData, setShowLoginDialog, setPendingUrlAfterLogin } = useAuthOutletData()
 
+    console.log(publicUserData , "in themes page")
 
 
     const handleThemeClick = (themesSlug: string) => {
