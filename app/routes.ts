@@ -14,7 +14,6 @@ export default [
     route("/monaco-demo", "common/components/pages/monaco-demo.tsx"),
     route("/numpy-demo", "common/components/pages/numpy-demo.tsx"),
 
-    route("/hover-demo", "lib/hover-demo.tsx"),
     route("/allcontents", "lib/all-contents.tsx"),
 
     route("/404", "common/pages/incorrect-path.tsx"),
