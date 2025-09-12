@@ -82,7 +82,7 @@ const db = drizzle({
         curriculumsRelations,
 
         checklistsTable,
-        checklistsRelations,
+        checklistsRelations
     }
 });
 
