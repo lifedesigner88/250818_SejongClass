@@ -38,7 +38,7 @@ export default function PrivacyPolicyPage() {
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">5. 연락처</h2>
                     <p>개인정보 관련 문의사항이 있으시면 아래로 연락해 주세요:</p>
-                    <p>이메일: privacy@sejongclass.kr</p>
+                    <p>이메일:  lifedesigner88@gmail.com</p>
                 </section>
 
                 <p className="text-sm text-gray-600 mt-8">
