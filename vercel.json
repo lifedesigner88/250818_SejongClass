@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "https://www.sejongclass.kr/:path*",
+      "destination": "https://sejongclass.kr/:path*",
+      "permanent": true
+    }
+  ]
+}
