@@ -94,13 +94,13 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     if (error) return { supabaseAuthData }
 
     let publicUserData = await getPublicUserData(supabaseAuthData.user?.id)
-
     if (!publicUserData) {
         const user = supabaseAuthData.user;
+        console.log('User metadata:', user.user_metadata);
         publicUserData = await createPublicUserData({
             user_id: user.id,
             email: user.email as string,
-            username: user.user_metadata.user_name || user.user_metadata.preferred_username || null,
+            username: user.user_metadata.user_name || user.user_metadata.preferred_username || user?.user_metadata.full_name || "anon",
             nickname: user?.user_metadata.full_name || user?.user_metadata.name || null,
             profile_url: user?.user_metadata.avatar_url || null,
         })
