@@ -156,13 +156,36 @@ export default function HomePage() {
                 </div>
             </div>
 
-            {/* Footer */}
-            <div className="py-8 border-t border-blue-500/20 text-center text-gray-400">
-                <p>© 2025 SejongClass — Code Your Life with Math & Physics</p>
-                <div className="mt-2 text-2xl opacity-30">
-                    ∫ Σ π dx λ ψ → F=ma · E=mc²
+            {/* Footer - 개인정보처리방침 링크 추가 */}
+            <div className="py-8 border-t border-blue-500/20">
+                <div className="container mx-auto px-6">
+                    <div className="text-center text-gray-400 space-y-4">
+                        <p>© 2025 SejongClass — Code Your Life with Math & Physics</p>
+
+                        {/* 법적 링크들 */}
+                        <div className="flex justify-center gap-6 text-sm">
+                            <Link
+                                to="/privacy-policy"
+                                className="hover:text-blue-400 transition-colors"
+                            >
+                                개인정보처리방침
+                            </Link>
+                            <span>|</span>
+                            <Link
+                                to="/terms-of-service"
+                                className="hover:text-blue-400 transition-colors"
+                            >
+                                이용약관
+                            </Link>
+                        </div>
+
+                        <div className="text-2xl opacity-30">
+                            ∫ Σ π dx λ ψ → F=ma · E=mc²
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
     )
 }
