@@ -8,6 +8,9 @@ export default [
     route("/logout", "feature/auth/pages/logout-page.tsx"),
     route("/callback", "feature/auth/pages/callback-page.tsx"),
 
+    route("/privacy-policy", "common/pages/privacy-policy.tsx"),
+    route("/terms-of-service", "common/pages/terms-of-service.tsx"),
+
 
     // - 임시 -
     route("/curriculums", "feature/curriculums/pages/curriculums-page.tsx"),
