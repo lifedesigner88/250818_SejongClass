@@ -22,12 +22,11 @@ export default [
     route("/404", "common/pages/incorrect-path.tsx"),
 
     route("/theme/:theme-slug", "feature/subjects/pages/subjects-page.tsx"),
-
+    route("/test/", "test.tsx"),
     route("/:theme-slug/:subject-slug/:textbook-id", "feature/textbooks/layout/textbook-layout.tsx", [
         index("feature/textbooks/pages/textbook-page.tsx"),
         ...prefix(":unit-id", [index("feature/units/pages/unit-page.tsx")])
     ]),
-
 
 
     route("*", "common/pages/not-found.tsx")

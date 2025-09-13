@@ -163,7 +163,7 @@ export default function TextbookPage() {
 
 
     return (
-            <div className="p-4 space-y-6">
+            <div className="h-[calc(100vh-64px)] overflow-y-auto">
                 {/* 📊 통계 정보 카드들 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
                     {statsData.map((stat, index) => (

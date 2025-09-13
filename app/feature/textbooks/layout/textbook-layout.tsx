@@ -1,7 +1,7 @@
 import type { Route } from "./+types/textbook-layout";
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Link, Outlet, redirect, useLocation, useNavigate } from "react-router";
-import {  ChevronDown, ChevronRight, Menu } from "lucide-react";
+import { ChevronDown, ChevronRight, Menu } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -153,7 +153,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
-        <>
+        <div className={"h-[calc(100vh-64px)] overflow-y-auto"}>
 
             {/*상단 고정 버튼 */}
             <div className="p-4 border-b space-y-4">
@@ -266,29 +266,24 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             </ScrollArea>
 
             {/*하단에 로그인 관련 정보*/}
-        </>
+        </div>
     );
 
     return (
-        <div className="flex">
-            {/* 데스크톱 - Resizable 레이아웃 */}
-            <div className="hidden md:flex flex-1">
-                <ResizablePanelGroup direction="horizontal" >
+        <div>
+            <div className={"hidden md:block"}>
+                {/* 데스크톱 - Resizable 레이아웃 */}
+                <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel defaultSize={20} minSize={15} maxSize={35}>
-                        <div className=" border-r bg-background flex flex-col">
-                            <SidebarContent/>
-                        </div>
+                        <SidebarContent/>
                     </ResizablePanel>
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
-                        <div className="h-screen overflow-auto">
-                            <Outlet
-                                context={{ textbookInfo, handleUnitClick, userId: auth.publicUserData.user_id }}/>
-                        </div>
+                        <Outlet
+                            context={{ textbookInfo, handleUnitClick, userId: auth.publicUserData.user_id }}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
-
             {/* 모바일 - Sheet 레이아웃 */}
             <div className="md:hidden flex flex-col w-full relative">
                 {/* 플로팅 메뉴 버튼 */}

@@ -9,18 +9,6 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-/* 브라우저 기본 스크롤바만 숨기기 (body, html) */
-html, body {
-    overflow-x: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-    display: none;
-}
-
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

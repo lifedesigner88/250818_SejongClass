@@ -52,7 +52,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
     return (
-        <div className="container mx-auto p-6 max-w-7xl">
+        <div className="container mx-auto p-6 max-w-7xl h-[calc(100vh-64px)] overflow-y-auto">
             <div className="space-y-6">
                 {/* 영상 섹션 */}
                 <Collapsible defaultOpen>

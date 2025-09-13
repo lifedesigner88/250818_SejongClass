@@ -30,8 +30,8 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
     }
 
     return (
-        <div className={"flex flex-col justify-center items-center sm:h-[calc(100vh-100px)] my-16 sm:my-0"}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-7">
+        <div className={"flex flex-col justify-center items-center mt-15 mb-30 sm:h-full sm:my-0"}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 sm:pb-20 gap-7">
                 {themes.map((t) => (
                     t.is_active ? (
                         <div

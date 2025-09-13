@@ -117,7 +117,7 @@ export function MarkdownViewer({ content, className = '' }: MarkdownViewerProps)
     return (
         <div className="grid grid-cols-10 gap-6">
             {/* 마크다운 콘텐츠 */}
-            <div className={`col-span-7 flex-1 min-w-0 prose prose-gray dark:prose-invert max-w-none ${className}`}>
+            <div className={`col-span-7 flex-1 min-w-0 prose prose-gray dark:prose-invert max-w-none h-100 overflow-hidden ${className}`}>
                 <ReactMarkdown
                     remarkPlugins={[remarkGfm, remarkMath]}
                     rehypePlugins={[rehypeHighlight, rehypeSlug, rehypeKatex]}

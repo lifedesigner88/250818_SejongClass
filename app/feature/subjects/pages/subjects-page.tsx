@@ -34,17 +34,16 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
     }
 
     return (
-        <div className="container mx-auto py-10 px-2">
-
+        <div className="flex flex-col items-center pt-10 pb-20 sm:px-16 w-full ">
             {/* 과목별 교재 섹션 */}
-            <div className="space-y-10">
+            <div className=" space-y-10 w-full max-w-[1500px]">
                 {textbooks.subjects.map((subject) => (
                     <section key={subject.subject_id} className="relative">
                         {/* 과목 헤더 */}
                         <div className="flex items-center gap-4">
                             <div className="text-4xl">{subject.emoji}</div>
                             <h2 className="text-3xl font-bold text-foreground">
-                                {subject.name} {`( ${subject.textbooks.length} )`}
+                                {subject.name} {`( ${subject.textbooks.length}권 ) `}
                             </h2>
                         </div>
 
@@ -56,7 +55,7 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                                     loop: false,
                                 }}
                                 className="relative">
-                                <CarouselContent className="-ml-2 md:-ml-4 pt-5 pb-5">
+                                <CarouselContent className="pt-5 pb-5">
                                     {subject.textbooks.map((textbook) => (
                                         <CarouselItem
                                             key={textbook.textbook_id}
