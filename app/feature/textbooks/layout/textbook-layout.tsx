@@ -1,11 +1,9 @@
 import type { Route } from "./+types/textbook-layout";
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Link, Outlet, redirect, useLocation, useNavigate } from "react-router";
-import { Book, ChevronDown, ChevronRight, Home, Menu, } from "lucide-react";
-
+import {  ChevronDown, ChevronRight, Menu } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";

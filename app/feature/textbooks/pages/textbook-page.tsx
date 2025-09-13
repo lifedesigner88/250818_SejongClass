@@ -8,7 +8,6 @@ import { BookOpen, Target, Hash, TrendingUp, BarChart } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "#app/common/components/ui/scroll-area.js";
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
