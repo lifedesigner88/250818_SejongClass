@@ -35,7 +35,28 @@ export const links: Route.LinksFunction = () => [
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
     },
+    // 파비콘
+    { rel: "icon", type: "image/svg+xml", href: "/app/common/logo.svg" },
+    { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+    { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
+    { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
+    { rel: "manifest", href: "/site.webmanifest" },
 ];
+
+export const meta: Route.MetaFunction = () => {
+    return [
+        { title: "SejongClass - Code Your Life with Math & Physics" },
+        { name: "description", content: "종이와 연필을 넘어선 새로운 학습 경험. Python으로 수학과 물리를 체험하며 코딩 리터러시를 기르세요." },
+
+        // 기본 Open Graph
+        { property: "og:title", content: "SejongClass" },
+        { property: "og:description", content: "Python으로 수학과 물리를 배우는 새로운 방법" },
+        { property: "og:type", content: "website" },
+        { property: "og:image", content: "/og-default.png" },
+        { property: "og:site_name", content: "SejongClass" },
+    ];
+};
+
 
 export function Layout({ children }: { children: React.ReactNode }) {
 

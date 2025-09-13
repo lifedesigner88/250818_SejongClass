@@ -13,10 +13,7 @@ export default function HomePage() {
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
                         <Link to="/" className="flex items-center space-x-2">
-                            <div
-                                className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-md flex items-center justify-center">
-                                <span className="text-white font-bold text-sm">S</span>
-                            </div>
+                            <img src="/app/common/logo.svg" alt="SejongClass Logo" className="size-8"/>
                             <span className="font-bold text-xl text-gray-900">SejongClass</span>
                         </Link>
 
