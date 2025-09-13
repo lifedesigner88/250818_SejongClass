@@ -160,53 +160,17 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             {/*상단 고정 버튼 */}
             <div className="p-4 border-b space-y-4">
 
-                {/* 홈버튼과 과목 이동 버튼 */}
-                <div className="grid grid-cols-2 gap-2">
-                    <Link to="/themes">
-                        <div
-                            className={`${colors[0].badge} rounded-lg p-3 text-center hover:scale-105 transition-transform cursor-pointer`}>
-                            <Home className="h-4 w-4 mx-auto"/>
-                        </div>
-                    </Link>
-
-                    <Tooltip>
-                        <TooltipTrigger className={"w-full"}>
-                            <Link to={`/theme/${themeSlug}`}>
-                                <div
-                                    className={`${colors[3].badge} rounded-lg p-3 text-center hover:scale-105 transition-transform cursor-pointer`}>
-                                    <Book className="h-4 w-4 mx-auto "/>
-                                </div>
-                            </Link>
-                        </TooltipTrigger>
-                        <TooltipContent side={"right"}>
-                            <p>다른 과목</p>
-                        </TooltipContent>
-                    </Tooltip>
-
-                </div>
-
-                {/* 텍스트 북 제목 제목 */}
-                <Tooltip>
-                    <TooltipTrigger
-                        className={"w-full"}
-                        onClick={() => {
-                            if (window.innerWidth < 768) setIsMobileMenuOpen(false)
-                        }}
-                    >
-                        <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} className={"w-full"}>
-                            <h2 className="font-semibold text-xl text-center w-full truncate mt-3">
-                                {textbookInfo?.title}
-                            </h2>
-                        </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side={"right"}>
-                        <p>개요</p>
-                    </TooltipContent>
-                </Tooltip>
+                <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} className={"w-full"} onClick={() => {
+                    if (window.innerWidth < 768) setIsMobileMenuOpen(false)
+                }}>
+                    <h2 className="font-semibold text-xl text-center w-full truncate mt-3">
+                        {textbookInfo?.title}
+                    </h2>
+                </Link>
             </div>
 
             {/* 실제 네비 게이션*/}
-            <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-140px)] overflow-auto">
+            <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-70px)] overflow-auto">
                 <div className="p-2">
                     {textbookInfo?.majors.map((major, majorIndex) => {
                         const colorSet = colors[majorIndex + 1 % colors.length];
@@ -308,14 +272,12 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     );
 
     return (
-        <div className="flex min-h-screen">
-
-
+        <div className="flex">
             {/* 데스크톱 - Resizable 레이아웃 */}
             <div className="hidden md:flex flex-1">
-                <ResizablePanelGroup direction="horizontal" className="min-h-screen">
+                <ResizablePanelGroup direction="horizontal" >
                     <ResizablePanel defaultSize={20} minSize={15} maxSize={35}>
-                        <div className="h-screen border-r bg-background flex flex-col">
+                        <div className=" border-r bg-background flex flex-col">
                             <SidebarContent/>
                         </div>
                     </ResizablePanel>
@@ -323,7 +285,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <ResizablePanel defaultSize={80}>
                         <div className="h-screen overflow-auto">
                             <Outlet
-                                context={{ textbookInfo, handleUnitClick, userId: auth.publicUserData.user_id  }}/>
+                                context={{ textbookInfo, handleUnitClick, userId: auth.publicUserData.user_id }}/>
                         </div>
                     </ResizablePanel>
                 </ResizablePanelGroup>
@@ -332,7 +294,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             {/* 모바일 - Sheet 레이아웃 */}
             <div className="md:hidden flex flex-col w-full relative">
                 {/* 플로팅 메뉴 버튼 */}
-                <div className="fixed top-7 right-7 z-50">
+                <div className="fixed left-4 bottom-20 z-50">
                     <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                         <SheetTrigger asChild>
                             <Button
@@ -342,7 +304,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 <Menu className="size-7"/>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-100 p-0 [&>button]:hidden">
+                        <SheetContent side="left">
                             <SidebarContent/>
                         </SheetContent>
                     </Sheet>
