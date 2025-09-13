@@ -30,11 +30,8 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
     }
 
     return (
-        <div className={"flex flex-col justify-center items-center min-h-screen"}>
-            <h1 className="text-3xl font-bold text-center mb-10 text-gray-800">
-                🧮 관심있는 테마를 선택해주세요 ⚡
-            </h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+        <div className={"flex flex-col justify-center items-center sm:h-[calc(100vh-100px)] my-16 sm:my-0"}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-7">
                 {themes.map((t) => (
                     t.is_active ? (
                         <div

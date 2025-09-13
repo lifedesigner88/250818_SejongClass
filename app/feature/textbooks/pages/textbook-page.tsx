@@ -141,7 +141,7 @@ export default function TextbookPage() {
             value: formatTime(totalEstimatedSeconds),
             label: '소요시간',
             colorClass: { bg: 'bg-orange-100', text: 'text-orange-600' },
-            className: 'col-span-2 sm:col-span-2 lg:col-span-1'
+            className: 'col-span-1 sm:col-span-2 lg:col-span-1'
 
         }
     ];
@@ -163,143 +163,142 @@ export default function TextbookPage() {
 
 
     return (
-        <div className="p-4 space-y-6">
+            <div className="p-4 space-y-6">
+                {/* 📊 통계 정보 카드들 */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+                    {statsData.map((stat, index) => (
+                        <StatCard key={index} {...stat} />
+                    ))}
+                </div>
 
-            {/* 📊 통계 정보 카드들 */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
-                {statsData.map((stat, index) => (
-                    <StatCard key={index} {...stat} />
-                ))}
-            </div>
-
-            {/* 🎯 필터링 컨트롤 */}
-            <Card className="border-0 shadow-sm bg-gradient-to-br from-background to-muted/20">
-                <CardContent className="pt-0">
-                    <Tabs value={selectedFilter} onValueChange={setSelectedFilter} className="w-full">
-                        <div className="relative">
-                            {/* 모바일에서 스크롤 가능한 탭 */}
-                            <div className="overflow-x-auto scrollbar-hide">
-                                <TabsList
-                                    className="inline-flex h-12 items-center justify-start rounded-lg bg-muted/50 p-1 text-muted-foreground min-w-full">
-                                    <TabsTrigger
-                                        value="all"
-                                        className="cursor-pointer"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                            <span>전체</span>
-                                            <div
-                                                className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100 dark:bg-gray-800 rounded-full text-xs font-semibold px-1.5">
-                                                {majorCounts.all}
-                                            </div>
-                                        </div>
-                                    </TabsTrigger>
-                                    {majorNames.map((majorName, index) => {
-                                        const colorSet = colors[index + 1 % colors.length];
-                                        return (
-                                            <TabsTrigger
-                                                key={majorName}
-                                                value={majorName}
-                                                className="cursor-pointer">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`w-2 h-2 ${colorSet.bg} rounded-full`}></div>
-                                                    <div
-                                                        className="truncate max-w-[100px] sm:max-w-none">{majorName}</div>
-                                                    <div
-                                                        className={`flex items-center justify-center min-w-[20px] h-5 rounded-full text-xs font-semibold px-1.5 ${colorSet.badge}`}>
-                                                        {majorCounts[majorName]}
-                                                    </div>
+                {/* 🎯 필터링 컨트롤 */}
+                <Card className="border-0 shadow-sm bg-gradient-to-br from-background to-muted/20">
+                    <CardContent className="pt-0">
+                        <Tabs value={selectedFilter} onValueChange={setSelectedFilter} className="w-full">
+                            <div className="relative">
+                                {/* 모바일에서 스크롤 가능한 탭 */}
+                                <div className="overflow-x-auto scrollbar-hide">
+                                    <TabsList
+                                        className="inline-flex h-12 items-center justify-start rounded-lg bg-muted/50 p-1 text-muted-foreground min-w-full">
+                                        <TabsTrigger
+                                            value="all"
+                                            className="cursor-pointer"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                                <span>전체</span>
+                                                <div
+                                                    className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100 dark:bg-gray-800 rounded-full text-xs font-semibold px-1.5">
+                                                    {majorCounts.all}
                                                 </div>
-                                            </TabsTrigger>
-                                        );
-                                    })}
-                                </TabsList>
+                                            </div>
+                                        </TabsTrigger>
+                                        {majorNames.map((majorName, index) => {
+                                            const colorSet = colors[index + 1 % colors.length];
+                                            return (
+                                                <TabsTrigger
+                                                    key={majorName}
+                                                    value={majorName}
+                                                    className="cursor-pointer">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`w-2 h-2 ${colorSet.bg} rounded-full`}></div>
+                                                        <div
+                                                            className="truncate max-w-[100px] sm:max-w-none">{majorName}</div>
+                                                        <div
+                                                            className={`flex items-center justify-center min-w-[20px] h-5 rounded-full text-xs font-semibold px-1.5 ${colorSet.badge}`}>
+                                                            {majorCounts[majorName]}
+                                                        </div>
+                                                    </div>
+                                                </TabsTrigger>
+                                            );
+                                        })}
+                                    </TabsList>
+                                </div>
                             </div>
-                        </div>
-                    </Tabs>
-                </CardContent>
-            </Card>
-            {/* 📋 Curriculum 카드 목록 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {filteredCurriculumList.length > 0 ? (
-                    filteredCurriculumList.map((curriculum, index) => {
-                        // 대단원 이름을 기반으로 색상 인덱스 계산
-                        const majorIndex = majorNames.findIndex(name => name === curriculum.major_name);
-                        const colorIndex = majorIndex !== -1 ? majorIndex : 0;
-                        const colorSet = colors[colorIndex + 1 % colors.length];
+                        </Tabs>
+                    </CardContent>
+                </Card>
+                {/* 📋 Curriculum 카드 목록 */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+                    {filteredCurriculumList.length > 0 ? (
+                        filteredCurriculumList.map((curriculum, index) => {
+                            // 대단원 이름을 기반으로 색상 인덱스 계산
+                            const majorIndex = majorNames.findIndex(name => name === curriculum.major_name);
+                            const colorIndex = majorIndex !== -1 ? majorIndex : 0;
+                            const colorSet = colors[colorIndex + 1 % colors.length];
 
 
-                        const handleCurriculumClick = (curriculum_id: number) => {
-                            // **file-based routing** 으로 업데이트 할 예정.
-                            console.log("userId: ",userId)
-                            console.log('curriculum_id value:', curriculum_id);
-                        }
+                            const handleCurriculumClick = (curriculum_id: number) => {
+                                // **file-based routing** 으로 업데이트 할 예정.
+                                console.log("userId: ", userId)
+                                console.log('curriculum_id value:', curriculum_id);
+                            }
 
-                        return (
-                            <div key={`${index}`} className={"relative "}>
-                                <Checkbox
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCurriculumClick(curriculum.curriculum_id)
-                                    }}
-                                    className={"z-50 size-6 absolute right-5 bottom-5"}
-                                />
+                            return (
+                                <div key={`${index}`} className={"relative "}>
+                                    <Checkbox
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleCurriculumClick(curriculum.curriculum_id)
+                                        }}
+                                        className={"z-10 size-6 absolute right-5 bottom-5"}
+                                    />
 
-                                <Tooltip>
-                                    <TooltipTrigger className={"w-full h-full"}>
-                                        <Card
-                                            onClick={() => handleUnitClick(curriculum.unit_id)}
-                                            className="hover:shadow-lg cursor-pointer min-h-[170px] w-full">
-                                            <CardHeader className="space-y-3">
-                                                {/* 상단 메타 정보 */}
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="space-y-1">
-                                                            <Badge
-                                                                className={`font-mono text-xs ${colorSet.badge}`}>
-                                                                {curriculum.code}
+                                    <Tooltip>
+                                        <TooltipTrigger className={"w-full h-full"}>
+                                            <Card
+                                                onClick={() => handleUnitClick(curriculum.unit_id)}
+                                                className="hover:shadow-lg cursor-pointer min-h-[200px] w-full">
+                                                <CardHeader className="space-y-3">
+                                                    {/* 상단 메타 정보 */}
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="space-y-1">
+                                                                <Badge
+                                                                    className={`font-mono text-xs ${colorSet.badge}`}>
+                                                                    {curriculum.code}
+                                                                </Badge>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex flex-col items-end gap-1">
+                                                            <Badge variant="outline" className="font-mono">
+                                                                {String(index + 1).padStart(2, '0')}
                                                             </Badge>
                                                         </div>
                                                     </div>
+                                                </CardHeader>
 
-                                                    <div className="flex flex-col items-end gap-1">
-                                                        <Badge variant="outline" className="font-mono">
-                                                            {String(index + 1).padStart(2, '0')}
-                                                        </Badge>
+                                                <CardContent className="space-y-4">
+                                                    {/* 성취기준 내용 */}
+                                                    <div className="flex items-start gap-2">
+                                                        <CardDescription className="leading-relaxed text-left">
+                                                            {curriculum.achievement_text}
+                                                        </CardDescription>
                                                     </div>
-                                                </div>
-                                            </CardHeader>
 
-                                            <CardContent className="space-y-4">
-                                                {/* 성취기준 내용 */}
-                                                <div className="flex items-start gap-2">
-                                                    <CardDescription className="leading-relaxed text-left">
-                                                        {curriculum.achievement_text}
-                                                    </CardDescription>
-                                                </div>
-
-                                            </CardContent>
-                                        </Card>
-                                    </TooltipTrigger>
-                                    <TooltipContent
-                                        className={`bg-background text-foreground shadow-lg rounded-lg border p-4 ${colorSet.badge} text-sm`}>
-                                        {curriculum.unit_name}
-                                    </TooltipContent>
-                                </Tooltip>
-                            </div>
-                        );
-                    })
-                ) : (
-                    <Card className="col-span-full">
-                        <CardContent className="flex flex-col items-center justify-center py-12">
-                            <CardTitle className="mb-2">해당 대단원의 성취기준이 없습니다</CardTitle>
-                            <CardDescription>
-                                다른 대단원을 선택해보세요.
-                            </CardDescription>
-                        </CardContent>
-                    </Card>
-                )}
+                                                </CardContent>
+                                            </Card>
+                                        </TooltipTrigger>
+                                        <TooltipContent
+                                            className={`bg-background text-foreground shadow-lg rounded-lg border p-4 ${colorSet.badge} text-sm`}>
+                                            {curriculum.unit_name}
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <Card className="col-span-full">
+                            <CardContent className="flex flex-col items-center justify-center py-12">
+                                <CardTitle className="mb-2">해당 대단원의 성취기준이 없습니다</CardTitle>
+                                <CardDescription>
+                                    다른 대단원을 선택해보세요.
+                                </CardDescription>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
             </div>
-        </div>
     );
 }

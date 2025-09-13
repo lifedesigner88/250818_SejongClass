@@ -1,6 +1,6 @@
 import {
     Form,
-    isRouteErrorResponse,
+    isRouteErrorResponse, Link,
     Links,
     Meta,
     Outlet, redirect,
@@ -69,7 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Meta/>
             <Links/>
         </head>
-        <body>
+        <body className={"mt-16"}>
         {children}
         <ScrollRestoration/>
         <Scripts/>
@@ -154,6 +154,63 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
     return (
         <>
+            {/* Navigation Bar - Supabase Style */}
+            <nav className="fixed top-0 z-20 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
+                <div className="w-full px-6">
+                    <div className="flex items-center justify-between h-16">
+                        {/* Logo */}
+                        <Link to="/" className="flex items-center space-x-2">
+                            <img src="/logo.svg" alt="SejongClass Logo" className="size-8"/>
+                            <span className="font-bold text-xl ml-1 text-gray-900">SejongClass</span>
+                        </Link>
+
+                        {/* Navigation Links */}
+                        <div className="hidden md:flex items-center space-x-8">
+                            <a
+                                href="https://www.youtube.com/@sejongclass"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Youtube
+                            </a>
+                            <a
+                                href="http://github.com/lifedesigner88"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Github
+                            </a>
+                            <a
+                                href="https://blog.naver.com/lifedesigner88"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Blog
+                            </a>
+                        </div>
+
+                        <div className="flex items-center space-x-3">
+                            {isLoggedIn ?
+                                <Button
+                                    className={"hidden sm:block bg-gradient-to-r to-red-500 from-orange-300 bg-clip-text text-transparent "}
+                                    variant="ghost" size="sm" onClick={() => navigate("/logout")}>
+                                    로그아웃
+                                </Button> :
+                                <Button variant="ghost" size="sm" onClick={() => setShowLoginDialog(true)}>
+                                    로그인
+                                </Button>
+                            }
+                            <Link to="/themes">
+                                <Button size="sm"
+                                        className=" bg-emerald-600 hover:bg-emerald-700 text-white">
+                                    주제보기
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
             <UserStatus
                 isLoggedIn={isLoggedIn}
                 isLoading={isLoading || isSubmitting}

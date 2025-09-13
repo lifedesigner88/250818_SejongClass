@@ -72,17 +72,17 @@ export function UserStatus({
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
                 <div className={`
-        size-12 rounded-full
-        cursor-pointer
-        shadow-lg
-        transition-all duration-300
-        hover:scale-110 hover:shadow-xl
-        fixed bottom-4 left-4
-        z-50
-        ${providerConfig.bgClass}
-        flex items-center justify-center
-        group
-      `}>
+                        size-12 rounded-full
+                        cursor-pointer
+                        shadow-lg
+                        transition-all duration-300
+                        hover:scale-110 hover:shadow-xl
+                        fixed bottom-4 left-4
+                        z-50
+                        ${providerConfig.bgClass}
+                        flex items-center justify-center
+                        group
+                      `}>
                     {isLoading ? (
                         <Loader2 className="size-6 text-white animate-spin"/>
                     ) : isLoggedIn && provider ? (
