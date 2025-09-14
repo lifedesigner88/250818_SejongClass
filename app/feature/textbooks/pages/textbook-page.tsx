@@ -8,6 +8,7 @@ import { BookOpen, Target, Hash, TrendingUp, BarChart } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
@@ -163,7 +164,8 @@ export default function TextbookPage() {
 
 
     return (
-            <div className="h-[calc(100vh-64px)] overflow-y-auto">
+        <div className=" p-3 h-[calc(100vh-64px)] overflow-y-auto">
+            <div className={"max-w-full"}>
                 {/* 📊 통계 정보 카드들 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
                     {statsData.map((stat, index) => (
@@ -172,49 +174,45 @@ export default function TextbookPage() {
                 </div>
 
                 {/* 🎯 필터링 컨트롤 */}
-                <Card className="border-0 shadow-sm bg-gradient-to-br from-background to-muted/20">
-                    <CardContent className="pt-0">
-                        <Tabs value={selectedFilter} onValueChange={setSelectedFilter} className="w-full">
-                            <div className="relative">
-                                {/* 모바일에서 스크롤 가능한 탭 */}
-                                <div className="overflow-x-auto scrollbar-hide">
-                                    <TabsList
-                                        className="inline-flex h-12 items-center justify-start rounded-lg bg-muted/50 p-1 text-muted-foreground min-w-full">
-                                        <TabsTrigger
-                                            value="all"
-                                            className="cursor-pointer"
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                                <span>전체</span>
-                                                <div
-                                                    className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100 dark:bg-gray-800 rounded-full text-xs font-semibold px-1.5">
-                                                    {majorCounts.all}
-                                                </div>
+                <Card className="border-0 shadow-none">
+                    <CardContent className={"p-0 "}>
+                        <Tabs value={selectedFilter} onValueChange={setSelectedFilter} className={"w-full overflow-x-auto rounded-lg bg-muted"}>
+                            {/* 모바일에서 스크롤 가능한 탭 */}
+                            <TabsList
+                                className="flex h-14 items-center justify-between text-muted-foreground w-full p-2">
+                                    <TabsTrigger
+                                        value="all"
+                                        className="cursor-pointer"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                            <span>전체</span>
+                                            <div
+                                                className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100  rounded-full text-xs font-semibold p-2">
+                                                {majorCounts.all}
                                             </div>
-                                        </TabsTrigger>
-                                        {majorNames.map((majorName, index) => {
-                                            const colorSet = colors[index + 1 % colors.length];
-                                            return (
-                                                <TabsTrigger
-                                                    key={majorName}
-                                                    value={majorName}
-                                                    className="cursor-pointer">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className={`w-2 h-2 ${colorSet.bg} rounded-full`}></div>
-                                                        <div
-                                                            className="truncate max-w-[100px] sm:max-w-none">{majorName}</div>
-                                                        <div
-                                                            className={`flex items-center justify-center min-w-[20px] h-5 rounded-full text-xs font-semibold px-1.5 ${colorSet.badge}`}>
-                                                            {majorCounts[majorName]}
-                                                        </div>
+                                        </div>
+                                    </TabsTrigger>
+                                    {majorNames.map((majorName, index) => {
+                                        const colorSet = colors[index + 1 % colors.length];
+                                        return (
+                                            <TabsTrigger
+                                                key={majorName}
+                                                value={majorName}
+                                                className="cursor-pointer">
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-2 h-2 ${colorSet.bg} rounded-full`}></div>
+                                                    <div
+                                                        className="truncate">{majorName}</div>
+                                                    <div
+                                                        className={`flex items-center justify-center min-w-[20px] h-5 rounded-full text-xs font-semibold p-2 ${colorSet.badge}`}>
+                                                        {majorCounts[majorName]}
                                                     </div>
-                                                </TabsTrigger>
-                                            );
-                                        })}
-                                    </TabsList>
-                                </div>
-                            </div>
+                                                </div>
+                                            </TabsTrigger>
+                                        );
+                                    })}
+                            </TabsList>
                         </Tabs>
                     </CardContent>
                 </Card>
@@ -300,5 +298,6 @@ export default function TextbookPage() {
                     )}
                 </div>
             </div>
+        </div>
     );
 }

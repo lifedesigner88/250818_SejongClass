@@ -153,23 +153,23 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
-        <div className={"h-[calc(100vh-64px)] overflow-y-auto"}>
+        <div className={"h-screen sm:h-[calc(100vh-64px)] overflow-hidden"}>
 
             {/*상단 고정 버튼 */}
-            <div className="p-4 border-b space-y-4">
+            <div className="flex justify-center items-center border-b h-[64px] overflow-hidden">
 
                 <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} className={"w-full"} onClick={() => {
                     if (window.innerWidth < 768) setIsMobileMenuOpen(false)
                 }}>
-                    <h2 className="font-semibold text-xl text-center w-full truncate mt-3">
+                    <h2 className="font-semibold text-xl text-center w-full truncate">
                         {textbookInfo?.title}
                     </h2>
                 </Link>
             </div>
 
             {/* 실제 네비 게이션*/}
-            <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-70px)] overflow-auto">
-                <div className="p-2">
+            <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-64px)] sm:h-[calc(100vh-64px-64px)] overflow-y-auto]">
+                <div className="pb-50 sm:p-2 sm:pb-80">
                     {textbookInfo?.majors.map((major, majorIndex) => {
                         const colorSet = colors[majorIndex + 1 % colors.length];
                         const majorActive = currentUnitId && unitSectionMap.get(currentUnitId)?.majorIndex === major.major_id;
@@ -181,7 +181,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 <CollapsibleTrigger asChild>
                                     <Button
                                         variant="ghost"
-                                        className={`w-full justify-start p-2 h-auto text-left`}>
+                                        className={`w-full justify-start p-2 h-auto text-left mt-4`}>
                                         {!openMajors.has(major.major_id) ? (
                                             <ChevronDown className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
                                         ) : (
@@ -196,7 +196,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                     </Button>
                                 </CollapsibleTrigger>
 
-                                <CollapsibleContent className="ml-6">
+                                <CollapsibleContent className="ml-3 sm:ml-6">
                                     {major.middles.map((middle) => {
                                             const middleActive = currentUnitId && unitSectionMap.get(currentUnitId)?.middleIndex === middle.middle_id;
                                             return (
@@ -222,7 +222,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                         </Button>
                                                     </CollapsibleTrigger>
 
-                                                    <CollapsibleContent className="ml-4">
+                                                    <CollapsibleContent className="ml-1 sm:ml-4">
                                                         {middle.units.map((unit) => {
                                                                 const isActive = currentUnitId === unit.unit_id;
                                                                 return (
@@ -232,7 +232,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                         data-unit-id={unit.unit_id}>
                                                                         <Checkbox
                                                                             // checked={isChecked}
-                                                                            className={"absolute left-4"}
+                                                                            className={"absolute left-5 size-5"}
                                                                             // onClick={() => handleUnitClick(unit.unit_id)}
                                                                         />
                                                                         <Button
@@ -270,8 +270,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     );
 
     return (
-        <div>
-            <div className={"hidden md:block"}>
+        <div className={"h-[calc(100vh-64px)] w-screen overflow-hidden"}>
+            <div className={"hidden md:block h-[calc(100vh-64px)] w-screen overflow-hidden"}>
                 {/* 데스크톱 - Resizable 레이아웃 */}
                 <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel defaultSize={20} minSize={15} maxSize={35}>
@@ -285,7 +285,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 </ResizablePanelGroup>
             </div>
             {/* 모바일 - Sheet 레이아웃 */}
-            <div className="md:hidden flex flex-col w-full relative">
+            <div className="md:hidden flex flex-col relative h-[calc(100vh-64px)] w-screen overflow-hidden">
                 {/* 플로팅 메뉴 버튼 */}
                 <div className="fixed left-4 bottom-20 z-50">
                     <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
