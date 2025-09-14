@@ -69,7 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Meta/>
             <Links/>
         </head>
-        <body className={"mt-16 h-[calc(100vh-64px)]"}>
+        <body className={"mt-16 h-[calc(100vh-64px)] w-screen overflow-y-auto overflow-x-hidden"}>
         {children}
         <ScrollRestoration/>
         <Scripts/>
@@ -113,24 +113,27 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     const { client } = makeSSRClient(request)
     const { data: supabaseAuthData, error } = await client.auth.getUser()
     if (error) return { supabaseAuthData }
+    const user = supabaseAuthData.user;
+
+    const loginedUuserProviderId = user.user_metadata.provider_id;
+    const loginedUserDataFromProvider = user.identities?.filter(identity => identity.id === loginedUuserProviderId)[0];
 
     let publicUserData = await getPublicUserData(supabaseAuthData.user?.id)
     if (!publicUserData) {
-        const user = supabaseAuthData.user;
-        console.log('User metadata:', user.user_metadata);
         publicUserData = await createPublicUserData({
             user_id: user.id,
             email: user.email as string,
             username: user.user_metadata.user_name || user.user_metadata.preferred_username || user?.user_metadata.full_name || "anon",
             nickname: user?.user_metadata.full_name || user?.user_metadata.name || null,
-            profile_url: user?.user_metadata.avatar_url || null,
+            profile_url: user?.user_metadata.profile_url
+                ? user.user_metadata.profile_url.replace(/=s\d+-c$/, '') // 구글의 경우 뒤에 삭제.
+                : (user?.user_metadata.avatar_url || null),
         })
     }
-
     return {
         publicUserData: {
             ...publicUserData,
-            provider: supabaseAuthData.user?.app_metadata.provider,
+            provider: loginedUserDataFromProvider?.provider || null,
         },
     }
 }
@@ -156,7 +159,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
         <>
             {/* Navigation Bar - Supabase Style */}
             <nav className="fixed top-0 z-20 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
-                <div className="w-full px-6">
+                <div className="w-full px-3 sm:px-6">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
                         <Link to="/" className="flex items-center space-x-2">
@@ -211,6 +214,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 </div>
             </nav>
 
+            {/* 로그인한 유저 상태 */}
             <UserStatus
                 isLoggedIn={isLoggedIn}
                 isLoading={isLoading || isSubmitting}
@@ -220,6 +224,8 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 publicUserData={publicUserData as publicUserDataType | undefined}
             />
 
+
+            {/* 로그인 다이얼로그 */}
             <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
                 <DialogContent>
                     <DialogHeader>

@@ -93,7 +93,7 @@ export function UserStatus({
                 </div>
             </PopoverTrigger>
 
-            <PopoverContent className="w-60 ml-1 mb-15 p-0" side="right">
+            <PopoverContent className="w-60 ml-10 mb-3 p-0" side="top">
                 <div className="p-4">
                     {isLoggedIn ? (
                         <div className="space-y-4">
@@ -156,15 +156,14 @@ export function UserStatus({
                                 <div>
                                     <p className="font-medium text-gray-900">Sign In Required</p>
                                     <p className="text-xs text-gray-500">
-                                        Access your learning progress
+                                        로그인이 필요합니다.
                                     </p>
                                 </div>
                             </div>
 
                             <Button
                                 className="w-full justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                                onClick={handleLoginClick}
-                            >
+                                onClick={handleLoginClick}>
                                 <LogIn className="size-4 mr-2"/>
                                 로그인
                             </Button>
