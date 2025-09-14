@@ -34,17 +34,17 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
     }
 
     return (
-        <div className="flex flex-col items-center pt-10 pb-20 sm:px-16 w-full">
+        <div className={"flex flex-col items-center h-[calc(100vh-64px)] overflow-auto"}>
             {/* 과목별 교재 섹션 */}
-            <div className=" space-y-10 w-full max-w-[1500px]">
+            <div className=" space-y-10 w-full sm:w-10/12 max-w-[1500px] mt-10 mb-20">
                 {textbooks.subjects.map((subject) => (
                     <section key={subject.subject_id} className="relative">
                         {/* 과목 헤더 */}
                         <div className="w-full flex justify-center sm:justify-start">
-                            <div className={"flex items-center gap-2"}>
-                                <div className="text-4xl">{subject.emoji}</div>
+                            <div className={"flex items-center gap-1"}>
+                                <div className="text-3xl">{subject.emoji}</div>
                                 <h2 className="text-3xl font-bold text-foreground">
-                                    {subject.name}{`( ${subject.textbooks.length}권 ) `}
+                                    {subject.name}{`  ${subject.textbooks.length}권 `}
                                 </h2>
                             </div>
                         </div>

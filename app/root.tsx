@@ -69,7 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Meta/>
             <Links/>
         </head>
-        <body className={"mt-16 h-[calc(100vh-64px)] w-screen overflow-y-auto overflow-x-hidden"}>
+        <body className={"mt-16 h-[calc(100vh-64px)] w-screen overflow-hidden"}>
         {children}
         <ScrollRestoration/>
         <Scripts/>
