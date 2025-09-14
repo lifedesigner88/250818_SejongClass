@@ -25,3 +25,47 @@ export const useAuthOutletData = () => {
     return useOutletContext<AuthOutletContext>();
 };
 
+// 내장 브라우저 감지 함수
+export const isInAppBrowser = (): boolean => {
+    const ua = navigator.userAgent;
+    if (!ua) return false;
+    // 다양한 내장 브라우저 패턴들
+    const inAppBrowserPatterns = [
+        // 소셜미디어 앱들
+        /FBAN|FBAV/i,                    // Facebook
+        /Instagram/i,                    // Instagram
+        /TwitterAndroid|Twitter for iPhone/i, // Twitter
+        /Line/i,                         // Line
+        /KAKAOTALK/i,                   // KakaoTalk
+        /whale/i,                       // Naver Whale (일부 상황)
+
+        // 모바일 WebView들
+        /wv/i,                          // Android WebView
+        /Version.*Chrome.*Mobile.*Safari.*wv/i, // Android WebView 추가 패턴
+
+        // iOS WebView 감지
+        /iPhone.*AppleWebKit(?!.*Safari)/i,     // iOS WebView (Safari 엔진이지만 Safari 브라우저가 아님)
+        /iPad.*AppleWebKit(?!.*Safari)/i,       // iPad WebView
+
+        // 기타 내장 브라우저들
+        /; wv\)/i,                      // Android WebView 추가 패턴
+        /WebView/i,                     // 일반적인 WebView
+    ];
+
+    // User Agent 기반 검사
+    return inAppBrowserPatterns.some(pattern => pattern.test(ua));
+};
+
+// 추가: 특정 앱 내 브라우저 감지 함수들
+export const getInAppBrowserType = (): string | null => {
+    const ua = navigator.userAgent;
+
+    if (/FBAN|FBAV/i.test(ua)) return 'facebook';
+    if (/Instagram/i.test(ua)) return 'instagram';
+    if (/TwitterAndroid|Twitter for iPhone/i.test(ua)) return 'twitter';
+    if (/Line/i.test(ua)) return 'line';
+    if (/KAKAOTALK/i.test(ua)) return 'kakaotalk';
+    if (/wv/i.test(ua)) return 'webview';
+
+    return null;
+};

@@ -22,7 +22,7 @@ import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { Loader2 } from "lucide-react";
 import { createPublicUserData, getPublicUserData } from "~/feature/users/quries";
-import type { publicUserDataType } from "~/feature/auth/useAuthUtil";
+import { getInAppBrowserType, isInAppBrowser, type publicUserDataType } from "~/feature/auth/useAuthUtil";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -155,6 +155,9 @@ export default function App({ loaderData }: Route.ComponentProps) {
     // 어떤 provider가 클릭되었는지 감지
     const submittedProvider = navigation.formData?.get("provider");
 
+    const isWebView = isInAppBrowser()
+
+
     return (
         <>
             {/* Navigation Bar - Supabase Style */}
@@ -260,20 +263,31 @@ export default function App({ loaderData }: Route.ComponentProps) {
                             type="submit"
                             name="provider"
                             value="google"
-                            disabled={isSubmitting && submittedProvider !== "google"}
+                            disabled={isSubmitting && submittedProvider !== "google" || isWebView}
                             className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
                         >
-                            {isSubmitting && submittedProvider === "google" ? (
-                                <>
-                                    <Loader2 className="size-12 mr-3 animate-spin"/>
-                                    <div className="font-medium text-base">연결 중...</div>
-                                </>
-                            ) : (
-                                <>
+                            {isWebView ? <>
                                     <FcGoogle className="size-13 mr-3"/>
-                                    <div className="font-medium text-base">Google</div>
+                                    <div className="font-medium text-base overflow-hidden">
+                                        {getInAppBrowserType()} ❌ Chrome, Edge, Safari 이용
+                                    </div>
+                                </> :
+                                <>
+                                    {isSubmitting && submittedProvider === "google" ? (
+                                        <>
+                                            <Loader2 className="size-12 mr-3 animate-spin"/>
+                                            <div className="font-medium text-base">연결 중...</div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FcGoogle className="size-13 mr-3"/>
+                                            <div className="font-medium text-base">Google</div>
+                                        </>
+                                    )}
+
                                 </>
-                            )}
+                            }
+
                         </Button>
 
                         {/* GitHub 버튼 */}
