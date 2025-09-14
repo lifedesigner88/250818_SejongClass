@@ -268,8 +268,8 @@ export default function App({ loaderData }: Route.ComponentProps) {
                         >
                             {isWebView ? <>
                                     <FcGoogle className="size-13 mr-3"/>
-                                    <div className="font-medium text-base overflow-hidden">
-                                        {getInAppBrowserType()} ❌ Chrome, Edge, Safari 이용
+                                    <div className="font-medium text- overflow-hidden">
+                                        <p>구글 로그인</p> {getInAppBrowserType()} 지원 ❌ <p> 크롬 이용 </p>
                                     </div>
                                 </> :
                                 <>

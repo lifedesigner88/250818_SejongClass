@@ -60,12 +60,12 @@ export const isInAppBrowser = (): boolean => {
 export const getInAppBrowserType = (): string | null => {
     const ua = navigator.userAgent;
 
-    if (/FBAN|FBAV/i.test(ua)) return 'facebook';
-    if (/Instagram/i.test(ua)) return 'instagram';
-    if (/TwitterAndroid|Twitter for iPhone/i.test(ua)) return 'twitter';
-    if (/Line/i.test(ua)) return 'line';
-    if (/KAKAOTALK/i.test(ua)) return 'kakaotalk';
-    if (/wv/i.test(ua)) return 'webview';
+    if (/KAKAOTALK/i.test(ua)) return '카톡';
+    if (/FBAN|FBAV/i.test(ua)) return '페북';
+    if (/Instagram/i.test(ua)) return '인스타';
+    if (/TwitterAndroid|Twitter for iPhone/i.test(ua)) return '트윗';
+    if (/Line/i.test(ua)) return '라인';
+    if (/wv/i.test(ua)) return '웹뷰';
 
     return null;
 };
