@@ -12,6 +12,12 @@ export default [
     route("/terms-of-service", "common/pages/terms-of-service.tsx"),
 
 
+    ...prefix("/api",[
+        ...prefix("/curriculums",[
+            route("/toggle-curriculum", "api/curriculums/toggle-curriculum.tsx"),
+        ])
+    ]),
+
     // - 임시 -
     route("/curriculums", "feature/curriculums/pages/curriculums-page.tsx"),
     route("/monaco-demo", "common/components/pages/monaco-demo.tsx"),

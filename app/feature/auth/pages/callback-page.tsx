@@ -13,5 +13,5 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     const pendingUrl = url.searchParams.get('pendingUrl');
     if (pendingUrl)
         return redirect(pendingUrl, { headers });
-    return redirect("/", { headers });
+    return redirect("/themes", { headers });
 }

@@ -143,7 +143,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
     const { publicUserData } = loaderData;
     const isLoggedIn = !!publicUserData;
     const [showLoginDialog, setShowLoginDialog] = useState(false);
-    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/");
+    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/themes");
     const provider = publicUserData?.provider;
     const navigate = useNavigate();
 

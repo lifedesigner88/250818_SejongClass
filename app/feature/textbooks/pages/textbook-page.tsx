@@ -1,4 +1,4 @@
-import { useOutletContext } from "react-router";
+import { useFetcher, useOutletContext } from "react-router";
 import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,6 @@ import { BookOpen, Target, Hash, TrendingUp, BarChart } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
@@ -49,7 +48,7 @@ function StatCard({ icon: Icon, value, label, colorClass, className }: StatCardP
 
 export default function TextbookPage() {
 
-    const { textbookInfo, handleUnitClick, userId } = useOutletContext<OutletContextType>();
+    const { textbookInfo, handleUnitClick } = useOutletContext<OutletContextType>();
 
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
 
@@ -73,7 +72,6 @@ export default function TextbookPage() {
                     ), 0
             ), 0
     );
-
     // ⏰ 시간 포맷팅
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
@@ -86,30 +84,42 @@ export default function TextbookPage() {
         code: string;
         achievement_text: string;
         unit_id: number;
-        major_name: string; // number가 아니라 string으로 수정
+        major_name: string;
         unit_name: string;
         curriculum_id: number;
+        isChecked: boolean;
     }[] = [];
 
     textbookInfo.majors.forEach(major => {
         major.middles.forEach(middle => {
             middle.units.forEach(unit => {
-                // 각 unit의 curriculum 정보 추출
                 if (unit.curriculums && unit.curriculums.length > 0) {
                     unit.curriculums.forEach(curriculum => {
                         curriculumList.push({
                             code: curriculum.code,
                             achievement_text: curriculum.achievement_text,
                             unit_id: unit.unit_id,
-                            major_name: major.title, // 대단원 이름 추가
+                            major_name: major.title,
                             unit_name: unit.title,
-                            curriculum_id: curriculum.curriculum_id
+                            curriculum_id: curriculum.curriculum_id,
+                            isChecked: curriculum.checklists.length > 0
                         });
                     });
                 }
             });
         });
     });
+
+    const fetcher = useFetcher()
+    const handleCurriculumClick = (curriculum_id: number) => {
+
+        void fetcher.submit({
+            curriculum_id
+        }, {
+            method: "post",
+            action: "/api/curriculums/toggle-curriculum",
+        })
+    }
 
     // 통계 데이터 배열
     const statsData: StatCardProps[] = [
@@ -164,7 +174,7 @@ export default function TextbookPage() {
 
 
     return (
-        <div className=" p-3 h-[calc(100vh-64px)] overflow-y-auto">
+        <div className=" p-3 h-[calc(100vh-64px)] overflow-y-scroll">
             <div className={"max-w-full"}>
                 {/* 📊 통계 정보 카드들 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
@@ -176,42 +186,43 @@ export default function TextbookPage() {
                 {/* 🎯 필터링 컨트롤 */}
                 <Card className="border-0 shadow-none">
                     <CardContent className={"p-0 "}>
-                        <Tabs value={selectedFilter} onValueChange={setSelectedFilter} className={"w-full overflow-x-auto rounded-lg bg-muted"}>
+                        <Tabs value={selectedFilter} onValueChange={setSelectedFilter}
+                              className={"w-full overflow-x-auto rounded-lg bg-muted"}>
                             {/* 모바일에서 스크롤 가능한 탭 */}
                             <TabsList
                                 className="flex h-14 items-center justify-between text-muted-foreground w-full p-2">
-                                    <TabsTrigger
-                                        value="all"
-                                        className="cursor-pointer"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                            <span>전체</span>
-                                            <div
-                                                className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100  rounded-full text-xs font-semibold p-2">
-                                                {majorCounts.all}
-                                            </div>
+                                <TabsTrigger
+                                    value="all"
+                                    className="cursor-pointer"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                        <span>전체</span>
+                                        <div
+                                            className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100  rounded-full text-xs font-semibold p-2">
+                                            {majorCounts.all}
                                         </div>
-                                    </TabsTrigger>
-                                    {majorNames.map((majorName, index) => {
-                                        const colorSet = colors[index + 1 % colors.length];
-                                        return (
-                                            <TabsTrigger
-                                                key={majorName}
-                                                value={majorName}
-                                                className="cursor-pointer">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`w-2 h-2 ${colorSet.bg} rounded-full`}></div>
-                                                    <div
-                                                        className="truncate">{majorName}</div>
-                                                    <div
-                                                        className={`flex items-center justify-center min-w-[20px] h-5 rounded-full text-xs font-semibold p-2 ${colorSet.badge}`}>
-                                                        {majorCounts[majorName]}
-                                                    </div>
+                                    </div>
+                                </TabsTrigger>
+                                {majorNames.map((majorName, index) => {
+                                    const colorSet = colors[index + 1 % colors.length];
+                                    return (
+                                        <TabsTrigger
+                                            key={majorName}
+                                            value={majorName}
+                                            className="cursor-pointer">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-2 h-2 ${colorSet.bg} rounded-full`}></div>
+                                                <div
+                                                    className="truncate">{majorName}</div>
+                                                <div
+                                                    className={`flex items-center justify-center min-w-[20px] h-5 rounded-full text-xs font-semibold p-2 ${colorSet.badge}`}>
+                                                    {majorCounts[majorName]}
                                                 </div>
-                                            </TabsTrigger>
-                                        );
-                                    })}
+                                            </div>
+                                        </TabsTrigger>
+                                    );
+                                })}
                             </TabsList>
                         </Tabs>
                     </CardContent>
@@ -226,12 +237,6 @@ export default function TextbookPage() {
                             const colorSet = colors[colorIndex + 1 % colors.length];
 
 
-                            const handleCurriculumClick = (curriculum_id: number) => {
-                                // **file-based routing** 으로 업데이트 할 예정.
-                                console.log("userId: ", userId)
-                                console.log('curriculum_id value:', curriculum_id);
-                            }
-
                             return (
                                 <div key={`${index}`} className={"relative "}>
                                     <Checkbox
@@ -240,6 +245,7 @@ export default function TextbookPage() {
                                             handleCurriculumClick(curriculum.curriculum_id)
                                         }}
                                         className={"z-10 size-6 absolute right-5 bottom-5"}
+                                        checked={curriculum.isChecked}
                                     />
 
                                     <Tooltip>
@@ -301,3 +307,4 @@ export default function TextbookPage() {
         </div>
     );
 }
+

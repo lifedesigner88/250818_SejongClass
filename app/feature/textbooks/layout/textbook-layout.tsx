@@ -280,7 +280,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
                         <Outlet
-                            context={{ textbookInfo, handleUnitClick, userId: auth.publicUserData.user_id }}/>
+                            context={{ textbookInfo, handleUnitClick }}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
@@ -306,7 +306,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 {/* 메인 콘텐츠가 전체 화면 사용 */}
                 <div className="flex-1 w-full h-full overflow-auto">
                     <Outlet
-                        context={{ textbookInfo, handleUnitClick, userId: auth.publicUserData.user_id }}/>
+                        context={{ textbookInfo, handleUnitClick }}/>
                 </div>
             </div>
         </div>
