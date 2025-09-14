@@ -161,7 +161,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
     return (
         <>
             {/* Navigation Bar - Supabase Style */}
-            <nav className="fixed top-0 z-20 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
+            <nav className="fixed top-0 z-20 w-screen border-b border-gray-200 bg-white/80 backdrop-blur-md">
                 <div className="w-full px-3 sm:px-6">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}

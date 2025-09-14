@@ -40,11 +40,13 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                 {textbooks.subjects.map((subject) => (
                     <section key={subject.subject_id} className="relative">
                         {/* 과목 헤더 */}
-                        <div className="flex items-center gap-4">
-                            <div className="text-4xl">{subject.emoji}</div>
-                            <h2 className="text-3xl font-bold text-foreground">
-                                {subject.name} {`( ${subject.textbooks.length}권 ) `}
-                            </h2>
+                        <div className="w-full flex justify-center sm:justify-start">
+                            <div className={"flex items-center gap-2"}>
+                                <div className="text-4xl">{subject.emoji}</div>
+                                <h2 className="text-3xl font-bold text-foreground">
+                                    {subject.name}{`( ${subject.textbooks.length}권 ) `}
+                                </h2>
+                            </div>
                         </div>
 
                         {/* 교재 캐러셀 */}
@@ -70,8 +72,10 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                                 </CarouselContent>
 
                                 {/* 네비게이션 버튼 */}
-                                <CarouselPrevious variant={"default"}/>
-                                <CarouselNext variant={"default"}/>
+                                <CarouselPrevious variant={"outline"}
+                                                  className={"left-5 -top-5 size-11 sm:top-1/2 sm:-left-12 sm:size-10"}/>
+                                <CarouselNext variant={"outline"}
+                                              className={"right-5 -top-5 size-11 sm:top-1/2 sm:-right-12 sm:size-10"}/>
                             </Carousel>
                         ) : (
                             <div className="text-center py-12 text-muted-foreground">
