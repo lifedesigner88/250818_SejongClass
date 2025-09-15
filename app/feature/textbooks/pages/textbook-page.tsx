@@ -111,7 +111,6 @@ export default function TextbookPage() {
 
     const fetcher = useFetcher()
     const handleCurriculumClick = (curriculum_id: number) => {
-
         void fetcher.submit({
             curriculum_id
         }, {
@@ -247,10 +246,9 @@ export default function TextbookPage() {
                                             e.stopPropagation();
                                             handleCurriculumClick(curriculum.curriculum_id)
                                         }}
-                                        className={`cursor-pointer z-10 size-10 sm:size-8 absolute right-5 bottom-5 opacity-75 hover:size-12 transition-all${
-                                            optimism ? 'opacity-10 animate-pulse'  : ''
-                                        }`}
+                                        className={`cursor-pointer z-10 size-10 sm:size-6 absolute right-5 bottom-5 hover:size-12 transition-all`}
                                         checked={optimism ? !curriculum.isChecked : curriculum.isChecked}
+                                        disabled={optimism}
                                     />
 
                                     <Tooltip>
