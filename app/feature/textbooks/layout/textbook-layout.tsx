@@ -218,7 +218,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                     <CollapsibleTrigger asChild>
                                                         <Button
                                                             variant="ghost"
-                                                            className="w-full justify-start p-2 h-auto text-left text-sm">
+                                                            className="w-full justify-start p-2 h-auto text-left text-sm my-1">
                                                             {!openMiddles.has(`${major.major_id}-${middle.middle_id}`) ? (
                                                                 <ChevronDown className="h-3 w-3 mr-2 flex-shrink-0"/>
                                                             ) : (

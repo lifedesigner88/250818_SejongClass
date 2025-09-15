@@ -1,13 +1,15 @@
 import { useFetcher, useOutletContext } from "react-router";
 import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Target, Hash, TrendingUp, BarChart } from "lucide-react";
+import { Target, Hash, TrendingUp, BarChart } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
+import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
+
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
@@ -15,36 +17,6 @@ export type OutletContextType = {
     handleUnitClick: (unitId: number) => void;
     userId: string;
 };
-
-
-// 통계 카드 타입 정의
-interface StatCardProps {
-    icon: React.ElementType;
-    value: string | number;
-    label: string;
-    colorClass: {
-        bg: string;
-        text: string;
-    };
-    className?: string;
-}
-
-// 통계 카드 컴포넌트
-function StatCard({ icon: Icon, value, label, colorClass, className }: StatCardProps) {
-    return (
-        <Card className={`hover:shadow-md transition-shadow duration-300 ${className || ''}`}>
-            <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                <div
-                    className={`flex items-center justify-center w-10 h-10 md:w-12 md:h-12 ${colorClass.bg} rounded-full mb-2 md:mb-3`}>
-                    <Icon className={`w-5 h-5 md:w-6 md:h-6 ${colorClass.text}`}/>
-                </div>
-                <div
-                    className={`text-xl md:text-2xl font-bold ${colorClass.text} mb-1 truncate max-w-full`}>{value}</div>
-                <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">{label}</div>
-            </CardContent>
-        </Card>
-    );
-}
 
 export default function TextbookPage() {
 
@@ -54,7 +26,7 @@ export default function TextbookPage() {
     if (!textbookInfo) return (<div> TextbookInfo 가 없습니다. </div>)
 
     // 📊 카운트 및 시간 계산
-    const majorCount = textbookInfo.majors.length;
+
     const middleCount = textbookInfo.majors.reduce((acc, major) =>
         acc + major.middles.length, 0);
 
@@ -63,6 +35,7 @@ export default function TextbookPage() {
                 acc2 + middle.units.length, 0
             ), 0
     );
+
     const totalEstimatedSeconds = textbookInfo.majors.reduce((acc, major) =>
             acc + major.middles.reduce((acc2, middle) =>
                     acc2 + middle.units.reduce((acc3, unit) =>
@@ -89,9 +62,14 @@ export default function TextbookPage() {
         isChecked: boolean;
     }[] = [];
 
+
+    let checkedUnitsCounter = 0;
+
     textbookInfo.majors.forEach(major => {
         major.middles.forEach(middle => {
             middle.units.forEach(unit => {
+
+                if (unit.progress && unit.progress.length > 0) checkedUnitsCounter++
                 if (unit.curriculums && unit.curriculums.length > 0) {
                     unit.curriculums.forEach(curriculum => {
                         curriculumList.push({
@@ -109,6 +87,8 @@ export default function TextbookPage() {
         });
     });
 
+    const checkedCurriculums = curriculumList.filter(curriculum => curriculum.isChecked);
+
     const fetcher = useFetcher()
     const handleCurriculumClick = (curriculum_id: number) => {
         void fetcher.submit({
@@ -118,42 +98,6 @@ export default function TextbookPage() {
             action: "/api/curriculums/toggle-curriculum",
         })
     }
-
-    // 통계 데이터 배열
-    const statsData: StatCardProps[] = [
-        {
-            icon: BookOpen,
-            value: majorCount,
-            label: '대단원',
-            colorClass: { bg: 'bg-blue-100', text: 'text-blue-600' }
-        },
-        {
-            icon: Hash,
-            value: middleCount,
-            label: '중단원',
-            colorClass: { bg: 'bg-green-100', text: 'text-green-600' }
-        },
-        {
-            icon: Target,
-            value: unitCount,
-            label: '소단원',
-            colorClass: { bg: 'bg-purple-100', text: 'text-purple-600' }
-        },
-        {
-            icon: BarChart,
-            value: curriculumList.length,
-            label: '성취기준',
-            colorClass: { bg: 'bg-yellow-100', text: 'text-yellow-600' }
-        },
-        {
-            icon: TrendingUp,
-            value: formatTime(totalEstimatedSeconds),
-            label: '소요시간',
-            colorClass: { bg: 'bg-orange-100', text: 'text-orange-600' },
-            className: 'col-span-1 sm:col-span-2 lg:col-span-1'
-
-        }
-    ];
 
     // 🔍 필터링된 curriculum 목록 - 대단원명으로 필터링
     const filteredCurriculumList = selectedFilter === 'all'
@@ -171,14 +115,105 @@ export default function TextbookPage() {
     };
 
 
+    const unitProgress = (checkedUnitsCounter / unitCount) * 100;
+    const curriculumProgress = (checkedCurriculums.length / curriculumList.length) * 100;
+    const totalProgress = (unitProgress * 0.5) + (curriculumProgress * 0.5);
+
+    const progressFetcher = useFetcher();
+
+    useEffect(() => {
+        if (totalProgress > 0) {
+            void progressFetcher.submit({
+                progress_rate: totalProgress.toString()
+            }, {
+                method: "post",
+                action: "/api/enrollments/update-progress"
+            });
+        }
+    }, [totalProgress]);
+
+
     return (
         <div className=" p-3 h-[calc(100vh-64px)] overflow-y-scroll">
             <div className={"max-w-full"}>
                 {/* 📊 통계 정보 카드들 */}
+                {/* 📊 통계 정보 카드들 - 하드코딩 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
-                    {statsData.map((stat, index) => (
-                        <StatCard key={index} {...stat} />
-                    ))}
+                    {/* 대단원 카드 */}
+                    <Card className="hover:shadow-md transition-shadow duration-300">
+                        <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
+                            <AnimatedCircularProgressBar className={"size-30"} max={100} value={totalProgress} gaugePrimaryColor={"#4ade80"} gaugeSecondaryColor={"#f4f4f5"}/>
+                            {totalProgress == 100 ? "":"ㅇ"}
+                        </CardContent>
+                    </Card>
+
+                    {/* 중단원 카드 */}
+                    <Card className="hover:shadow-md transition-shadow duration-300">
+                        <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
+                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
+                                <Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/>
+                            </div>
+                            <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
+                                {middleCount}
+                            </div>
+                            <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
+                                중단원
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* 소단원 카드 */}
+                    <Card className="hover:shadow-md transition-shadow duration-300">
+                        <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
+                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full mb-2 md:mb-3">
+                                {checkedUnitsCounter === unitCount ? (
+                                    <div className="text-4xl">🎉</div>
+                                ) : (
+                                    <Target className="w-5 h-5 md:w-6 md:h-6 text-purple-600"/>
+                                )}
+                            </div>
+                            <div className="text-xl md:text-2xl font-bold text-purple-600 mb-1 truncate max-w-full">
+                                {checkedUnitsCounter} / {unitCount}
+                            </div>
+                            <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
+                                소단원
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* 성취기준 카드 */}
+                    <Card className="hover:shadow-md transition-shadow duration-300">
+                        <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
+                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-yellow-100 rounded-full mb-2 md:mb-3">
+                                {checkedCurriculums.length === curriculumList.length ? (
+                                    <div className="text-4xl">🎉</div>
+                                ) : (
+                                    <BarChart className="w-5 h-5 md:w-6 md:h-6 text-yellow-600"/>
+                                )}
+                            </div>
+                            <div className="text-xl md:text-2xl font-bold text-yellow-600 mb-1 truncate max-w-full">
+                                {checkedCurriculums.length} / {curriculumList.length}
+                            </div>
+                            <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
+                                성취기준
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* 소요시간 카드 */}
+                    <Card className="hover:shadow-md transition-shadow duration-300 col-span-1 sm:col-span-2 lg:col-span-1">
+                        <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
+                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full mb-2 md:mb-3">
+                                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600"/>
+                            </div>
+                            <div className="text-xl md:text-2xl font-bold text-orange-600 mb-1 truncate max-w-full">
+                                {formatTime(totalEstimatedSeconds)}
+                            </div>
+                            <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
+                                소요시간
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
 
                 {/* 🎯 필터링 컨트롤 */}
