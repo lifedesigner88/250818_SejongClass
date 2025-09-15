@@ -5,11 +5,12 @@ import type { Route } from "./+types/update-progress";
 export const action = async ({ request }: Route.ActionArgs) => {
 
     const userId = await getUserIdForSever(request)
-    const formData = await request.formData();
-    const progress = formData.get('progress_rate');
+    // JSON 데이터 파싱
+    const data = await request.json();
+    const progress = data.progress_rate;
 
-    console.log(progress)
-    console.log(userId)
+    console.log(progress);
+    console.log(userId);
 
     // update 쿼리 날리기.
 

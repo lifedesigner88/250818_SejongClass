@@ -1,6 +1,6 @@
-import { useFetcher, useOutletContext } from "react-router";
+import { type ShouldRevalidateFunction, useFetcher, useOutletContext } from "react-router";
 import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -68,7 +68,6 @@ export default function TextbookPage() {
     textbookInfo.majors.forEach(major => {
         major.middles.forEach(middle => {
             middle.units.forEach(unit => {
-
                 if (unit.progress && unit.progress.length > 0) checkedUnitsCounter++
                 if (unit.curriculums && unit.curriculums.length > 0) {
                     unit.curriculums.forEach(curriculum => {
@@ -101,11 +100,21 @@ export default function TextbookPage() {
 
     // 🔍 필터링된 curriculum 목록 - 대단원명으로 필터링
     const filteredCurriculumList = selectedFilter === 'all'
-        ? curriculumList
+        ? curriculumList.filter(curriculum => !curriculum.isChecked)
         : curriculumList.filter(curriculum => curriculum.major_name === selectedFilter);
+
+    const unCheckedCurriculumList = curriculumList.filter(curriculum => !curriculum.isChecked);
 
     // 📊 대단원별 카운트 - curriculumList의 major_name을 활용
     const majorNames = [...new Set(curriculumList.map(c => c.major_name))];
+    const CheckedMajorCounts: Record<string, number> = {
+        all: unCheckedCurriculumList.length,
+        ...majorNames.reduce((acc, majorName) => {
+            acc[majorName] = curriculumList.filter(c => c.major_name === majorName && c.isChecked).length;
+            return acc;
+        }, {} as Record<string, number>)
+    };
+
     const majorCounts: Record<string, number> = {
         all: curriculumList.length,
         ...majorNames.reduce((acc, majorName) => {
@@ -119,20 +128,6 @@ export default function TextbookPage() {
     const curriculumProgress = (checkedCurriculums.length / curriculumList.length) * 100;
     const totalProgress = (unitProgress * 0.5) + (curriculumProgress * 0.5);
 
-    // const progressFetcher = useFetcher();
-    //
-    // useEffect(() => {
-    //     if (totalProgress > 0) {
-    //         void progressFetcher.submit({
-    //             progress_rate: totalProgress.toString()
-    //         }, {
-    //             method: "post",
-    //             action: "/api/enrollments/update-progress"
-    //         });
-    //     }
-    // }, [totalProgress]);
-
-
     return (
         <div className=" p-3 h-[calc(100vh-64px)] overflow-y-scroll">
             <div className={"max-w-full"}>
@@ -142,15 +137,18 @@ export default function TextbookPage() {
                     {/* 대단원 카드 */}
                     <Card className="hover:shadow-md transition-shadow duration-300">
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                            <AnimatedCircularProgressBar className={"size-30"} max={100} value={totalProgress} gaugePrimaryColor={"#4ade80"} gaugeSecondaryColor={"#f4f4f5"}/>
-                            {totalProgress == 100 ? "":"ㅇ"}
+                            <AnimatedCircularProgressBar className={"size-30"} max={100} value={totalProgress}
+                                                         gaugePrimaryColor={`${totalProgress > 99 ? "red" : "#4ade80"}`}
+                                                         gaugeSecondaryColor={"#f4f4f5"}/>
+
                         </CardContent>
                     </Card>
 
                     {/* 중단원 카드 */}
                     <Card className="hover:shadow-md transition-shadow duration-300">
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
+                            <div
+                                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
                                 <Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/>
                             </div>
                             <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
@@ -165,7 +163,8 @@ export default function TextbookPage() {
                     {/* 소단원 카드 */}
                     <Card className="hover:shadow-md transition-shadow duration-300">
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full mb-2 md:mb-3">
+                            <div
+                                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-full mb-2 md:mb-3">
                                 {checkedUnitsCounter === unitCount ? (
                                     <div className="text-4xl">🎉</div>
                                 ) : (
@@ -184,7 +183,8 @@ export default function TextbookPage() {
                     {/* 성취기준 카드 */}
                     <Card className="hover:shadow-md transition-shadow duration-300">
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-yellow-100 rounded-full mb-2 md:mb-3">
+                            <div
+                                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-yellow-100 rounded-full mb-2 md:mb-3">
                                 {checkedCurriculums.length === curriculumList.length ? (
                                     <div className="text-4xl">🎉</div>
                                 ) : (
@@ -201,9 +201,11 @@ export default function TextbookPage() {
                     </Card>
 
                     {/* 소요시간 카드 */}
-                    <Card className="hover:shadow-md transition-shadow duration-300 col-span-1 sm:col-span-2 lg:col-span-1">
+                    <Card
+                        className="hover:shadow-md transition-shadow duration-300 col-span-1 sm:col-span-2 lg:col-span-1">
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                            <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full mb-2 md:mb-3">
+                            <div
+                                className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full mb-2 md:mb-3">
                                 <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600"/>
                             </div>
                             <div className="text-xl md:text-2xl font-bold text-orange-600 mb-1 truncate max-w-full">
@@ -230,10 +232,10 @@ export default function TextbookPage() {
                                 >
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                        <span>전체</span>
+                                        <span>미완</span>
                                         <div
                                             className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100  rounded-full text-xs font-semibold p-2">
-                                            {majorCounts.all}
+                                            {CheckedMajorCounts.all} 
                                         </div>
                                     </div>
                                 </TabsTrigger>
@@ -250,7 +252,7 @@ export default function TextbookPage() {
                                                     className="truncate">{majorName}</div>
                                                 <div
                                                     className={`flex items-center justify-center min-w-[20px] h-5 rounded-full text-xs font-semibold p-2 ${colorSet.badge}`}>
-                                                    {majorCounts[majorName]}
+                                                    {CheckedMajorCounts[majorName]} / {majorCounts[majorName]}
                                                 </div>
                                             </div>
                                         </TabsTrigger>
@@ -334,10 +336,7 @@ export default function TextbookPage() {
                     ) : (
                         <Card className="col-span-full">
                             <CardContent className="flex flex-col items-center justify-center py-12">
-                                <CardTitle className="mb-2">해당 대단원의 성취기준이 없습니다</CardTitle>
-                                <CardDescription>
-                                    다른 대단원을 선택해보세요.
-                                </CardDescription>
+                                <CardTitle className="text-9xl"> 🎉 </CardTitle>
                             </CardContent>
                         </Card>
                     )}

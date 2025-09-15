@@ -1,6 +1,13 @@
 import type { Route } from "./+types/textbook-layout";
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { Link, Outlet, redirect, useFetcher, useLocation, useNavigate } from "react-router";
+import {
+    Link,
+    Outlet,
+    redirect,
+    useFetcher,
+    useLocation,
+    useNavigate
+} from "react-router";
 import { ChevronDown, ChevronRight, Menu } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -15,9 +22,12 @@ import { z } from "zod";
 import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { getUserIdFromSession } from "~/feature/auth/queries";
+import { calculateTotalProgressOptimized } from "~/feature/textbooks/total-progress";
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
+
+    console.time("⏳ textbook-layout loader")
     const themeSlug = params["theme-slug"];
     const subjectSlug = params["subject-slug"];
     const textbookId = params["textbook-id"];
@@ -36,6 +46,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         && textbookInfo.subject.slug === subjectSlug
         && textbookInfo.subject.theme.slug === themeSlug)
     ) throw redirect("/404");
+    console.timeEnd("⏳ textbook-layout loader")
 
     return { themeSlug, subjectSlug, textbookId, textbookInfo };
 }
@@ -43,6 +54,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 // 📜 page
 export default function TextbookLayout({ loaderData, params }: Route.ComponentProps) {
 
+    console.time("🔥 textbook-layout render")
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
 
@@ -160,6 +172,21 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         })
     }
 
+    const progressRate = calculateTotalProgressOptimized(textbookInfo)
+
+    useEffect(() => {
+        if (progressRate > 0) {
+            fetch('/api/enrollments/update-progress', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    progress_rate: progressRate,
+                })
+            }).catch(console.error);
+        }
+    }, [progressRate]);
 
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
