@@ -51,12 +51,10 @@ export default function TextbookPage() {
     const { textbookInfo, handleUnitClick } = useOutletContext<OutletContextType>();
 
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
-
     if (!textbookInfo) return (<div> TextbookInfo 가 없습니다. </div>)
 
     // 📊 카운트 및 시간 계산
     const majorCount = textbookInfo.majors.length;
-
     const middleCount = textbookInfo.majors.reduce((acc, major) =>
         acc + major.middles.length, 0);
 
@@ -72,6 +70,7 @@ export default function TextbookPage() {
                     ), 0
             ), 0
     );
+
     // ⏰ 시간 포맷팅
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
@@ -111,8 +110,10 @@ export default function TextbookPage() {
     });
 
     const fetcher = useFetcher()
+    let submittingId: number = 0;
     const handleCurriculumClick = (curriculum_id: number) => {
 
+        submittingId = curriculum_id; // for Optimistic UI
         void fetcher.submit({
             curriculum_id
         }, {
@@ -236,6 +237,10 @@ export default function TextbookPage() {
                             const colorIndex = majorIndex !== -1 ? majorIndex : 0;
                             const colorSet = colors[colorIndex + 1 % colors.length];
 
+                            const isSubmitting = fetcher.state === "submitting";
+                            const isLoading = fetcher.state === "loading";
+
+                            const optimism = submittingId === curriculum.curriculum_id && (isSubmitting || isLoading)
 
                             return (
                                 <div key={`${index}`} className={"relative "}>
@@ -244,15 +249,17 @@ export default function TextbookPage() {
                                             e.stopPropagation();
                                             handleCurriculumClick(curriculum.curriculum_id)
                                         }}
-                                        className={"z-10 size-6 absolute right-5 bottom-5"}
-                                        checked={curriculum.isChecked}
+                                        className={`cursor-pointer z-10 size-10 sm:size-8 absolute right-5 bottom-5 opacity-75 hover:size-12 transition-all${
+                                            optimism ? 'opacity-10 animate-pulse' : ''
+                                        }`}
+                                        checked={optimism ? !curriculum.isChecked : curriculum.isChecked}
                                     />
 
                                     <Tooltip>
                                         <TooltipTrigger className={"w-full h-full"}>
                                             <Card
                                                 onClick={() => handleUnitClick(curriculum.unit_id)}
-                                                className="hover:shadow-lg cursor-pointer min-h-[200px] w-full">
+                                                className="hover:shadow-lg min-h-[200px] w-full">
                                                 <CardHeader className="space-y-3">
                                                     {/* 상단 메타 정보 */}
                                                     <div className="flex items-center justify-between">
