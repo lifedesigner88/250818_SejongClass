@@ -1,4 +1,4 @@
-import { type ShouldRevalidateFunction, useFetcher, useOutletContext } from "react-router";
+import { useFetcher, useOutletContext } from "react-router";
 import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
