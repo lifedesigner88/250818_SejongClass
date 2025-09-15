@@ -248,7 +248,7 @@ export default function TextbookPage() {
                                         }}
                                         className={`cursor-pointer z-10 size-10 sm:size-6 absolute right-5 bottom-5 hover:size-12 transition-all`}
                                         checked={optimism ? !curriculum.isChecked : curriculum.isChecked}
-                                        disabled={optimism}
+                                        disabled={(isSubmitting || isLoading)}
                                     />
 
                                     <Tooltip>
