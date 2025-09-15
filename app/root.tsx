@@ -154,12 +154,16 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
     // 어떤 provider가 클릭되었는지 감지
     const submittedProvider = navigation.formData?.get("provider");
-
     const isWebView = isInAppBrowser()
-
 
     return (
         <>
+            {(isLoading || isSubmitting) && (
+                <div className="fixed inset-0 z-30 flex items-center justify-center">
+                    <Loader2 className="size-20 sm:size-30 animate-spin text-emerald-700"/>
+                </div>
+            )}
+
             {/* Navigation Bar - Supabase Style */}
             <nav className="fixed top-0 z-20 w-screen border-b border-gray-200 bg-white/80 backdrop-blur-md">
                 <div className="w-full px-3 sm:px-6">

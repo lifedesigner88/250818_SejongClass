@@ -246,7 +246,7 @@ export default function TextbookPage() {
                                             e.stopPropagation();
                                             handleCurriculumClick(curriculum.curriculum_id)
                                         }}
-                                        className={`cursor-pointer z-10 size-10 sm:size-6 absolute right-5 bottom-5 hover:size-12 transition-all`}
+                                        className={`cursor-pointer z-10 size-10 lg:size-7 absolute right-5 bottom-5 hover:size-12 transition-all`}
                                         checked={optimism ? !curriculum.isChecked : curriculum.isChecked}
                                         disabled={(isSubmitting || isLoading)}
                                     />
@@ -255,7 +255,8 @@ export default function TextbookPage() {
                                         <TooltipTrigger className={"w-full h-full"}>
                                             <Card
                                                 onClick={() => handleUnitClick(curriculum.unit_id)}
-                                                className="hover:shadow-lg min-h-[200px] w-full">
+                                                className="hover:shadow-lg min-h-[200px] w-full cursor-zoom-in">
+
                                                 <CardHeader className="space-y-3">
                                                     {/* 상단 메타 정보 */}
                                                     <div className="flex items-center justify-between">
