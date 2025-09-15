@@ -1,8 +1,7 @@
-import { boolean, integer, pgPolicy, pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import { curriculumsTable } from "~/feature/curriculums/schema";
-import { serviceRole } from "drizzle-orm/supabase";
 
 export const checklistsTable = pgTable("checklists", {
         user_id: uuid().references(() => usersTable.user_id, {
