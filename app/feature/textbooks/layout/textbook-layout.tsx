@@ -54,7 +54,6 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 // 📜 page
 export default function TextbookLayout({ loaderData, params }: Route.ComponentProps) {
 
-    console.time("🔥 textbook-layout render")
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
 
