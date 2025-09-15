@@ -119,18 +119,18 @@ export default function TextbookPage() {
     const curriculumProgress = (checkedCurriculums.length / curriculumList.length) * 100;
     const totalProgress = (unitProgress * 0.5) + (curriculumProgress * 0.5);
 
-    const progressFetcher = useFetcher();
-
-    useEffect(() => {
-        if (totalProgress > 0) {
-            void progressFetcher.submit({
-                progress_rate: totalProgress.toString()
-            }, {
-                method: "post",
-                action: "/api/enrollments/update-progress"
-            });
-        }
-    }, [totalProgress]);
+    // const progressFetcher = useFetcher();
+    //
+    // useEffect(() => {
+    //     if (totalProgress > 0) {
+    //         void progressFetcher.submit({
+    //             progress_rate: totalProgress.toString()
+    //         }, {
+    //             method: "post",
+    //             action: "/api/enrollments/update-progress"
+    //         });
+    //     }
+    // }, [totalProgress]);
 
 
     return (
