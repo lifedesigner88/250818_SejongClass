@@ -110,10 +110,8 @@ export default function TextbookPage() {
     });
 
     const fetcher = useFetcher()
-    let submittingId: number = 0;
     const handleCurriculumClick = (curriculum_id: number) => {
 
-        submittingId = curriculum_id; // for Optimistic UI
         void fetcher.submit({
             curriculum_id
         }, {
@@ -239,8 +237,8 @@ export default function TextbookPage() {
 
                             const isSubmitting = fetcher.state === "submitting";
                             const isLoading = fetcher.state === "loading";
-
-                            const optimism = submittingId === curriculum.curriculum_id && (isSubmitting || isLoading)
+                            const submittingId = fetcher.formData?.get("curriculum_id");
+                            const optimism = Number(submittingId) === curriculum.curriculum_id && (isSubmitting || isLoading)
 
                             return (
                                 <div key={`${index}`} className={"relative "}>
@@ -250,7 +248,7 @@ export default function TextbookPage() {
                                             handleCurriculumClick(curriculum.curriculum_id)
                                         }}
                                         className={`cursor-pointer z-10 size-10 sm:size-8 absolute right-5 bottom-5 opacity-75 hover:size-12 transition-all${
-                                            optimism ? 'opacity-10 animate-pulse' : ''
+                                            optimism ? 'opacity-10 animate-pulse'  : ''
                                         }`}
                                         checked={optimism ? !curriculum.isChecked : curriculum.isChecked}
                                     />
