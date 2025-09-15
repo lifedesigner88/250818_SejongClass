@@ -1,4 +1,4 @@
-import { pgTable, serial, smallint, varchar, text, integer, check, index } from "drizzle-orm/pg-core";
+import { pgTable, serial, smallint, varchar, text, integer, check, index, pgPolicy } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { unitsTable } from "~/feature/units/schema";
 import { checklistsTable } from "~/feature/checklists/schema";
@@ -46,6 +46,47 @@ export const curriculumsTable = pgTable("curriculums", {
     index("idx_curriculum_grade_domain").on(table.grade_group, table.domain_number),
     index("idx_curriculum_code").on(table.code),
     index("idx_curriculum_sort_order").on(table.sort_order),
+
+    // pgPolicy(`policy-public`, {
+    //     for: 'select',
+    //     to: 'anon',  // 익명 사용자도 가능
+    // }),
+    pgPolicy(`policy-select`, {
+        for: 'select',
+        to: 'authenticated',
+        using: sql`auth.uid() = user_id`,
+    }),
+    // pgPolicy(`policy-insert`, {
+    //     for: 'insert',
+    //     to: 'authenticated',
+    //     withCheck: sql`auth.uid() = user_id`,
+    // }),
+    // pgPolicy(`policy-update`, {
+    //     for: 'update',
+    //     to: 'authenticated',
+    //     using: sql`auth.uid() = user_id`,
+    //     withCheck: sql`auth.uid() = user_id`,
+    // }),
+    // pgPolicy(`policy-delete`, {
+    //     for: 'delete',
+    //     to: 'authenticated',
+    //     using: sql`auth.uid() = user_id`,
+    // }),
+    pgPolicy(`policy-admin-insert`, {
+        for: 'insert',
+        to: 'authenticated',
+        using: sql`auth.jwt() ->> 'role' = 'admin'`,
+    }),
+    pgPolicy(`policy-admin-update`, {
+        for: 'update',
+        to: 'authenticated',
+        using: sql`auth.jwt() ->> 'role' = 'admin'`,
+    }),
+    pgPolicy(`policy-admin-delete`, {
+        for: 'delete',
+        to: 'authenticated',
+        using: sql`auth.jwt() ->> 'role' = 'admin'`,
+    })
 ]);
 
 export const curriculumsRelations = relations(curriculumsTable, ({ one, many }) => ({

@@ -1,6 +1,6 @@
-import { boolean, integer, pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, integer, pgPolicy, pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { curriculumsTable } from "~/feature/curriculums/schema";
 
 export const checklistsTable = pgTable("checklists", {
@@ -18,6 +18,31 @@ export const checklistsTable = pgTable("checklists", {
         primaryKey({
             name: 'pk_checklist_user_curriculum',
             columns: [table.user_id, table.curriculum_id]
+        }),
+        pgPolicy(`policy-select`, {
+            for: 'select',
+            to: 'authenticated',
+            using: sql`auth.uid() = user_id`,
+        }),
+        pgPolicy(`policy-insert`, {
+            for: 'insert',
+            to: 'authenticated',
+            withCheck: sql`auth.uid() = user_id`,
+        }),
+        // pgPolicy(`policy-public`, {
+        //     for: 'select',
+        //     to: 'anon',  // 익명 사용자도 가능
+        // }),
+        pgPolicy(`policy-update`, {
+            for: 'update',
+            to: 'authenticated',
+            using: sql`auth.uid() = user_id`,
+            withCheck: sql`auth.uid() = user_id`,
+        }),
+        pgPolicy(`policy-delete`, {
+            for: 'delete',
+            to: 'authenticated',
+            using: sql`auth.uid() = user_id`,
         }),
     ]
 );
