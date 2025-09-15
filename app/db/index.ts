@@ -20,6 +20,55 @@ import { usersRelations, usersTable, } from '~/feature/users/schema';
 import { checklistsRelations, checklistsTable } from "~/feature/checklists/schema";
 import { curriculumsRelations, curriculumsTable } from "~/feature/curriculums/schema";
 
+const schema = {
+    themesTable,
+    themesRelations,
+
+    subjectsTable,
+    subjectsRelations,
+
+    textbooksTable,
+    textbooksRelations,
+
+    majorsTable,
+    majorsRelations,
+
+    middlesTable,
+    middlesRelations,
+
+    unitsTable,
+    unitsRelations,
+
+    dealingsTable,
+    dealingsRelations,
+
+    conceptsTable,
+    conceptsRelations,
+
+    prerequisitesTable,
+    prerequisitesRelations,
+
+    supportivesTable,
+    supportivesRelations,
+
+    mastersTable,
+    mastersRelations,
+
+    enrollmentsTable,
+    enrollmentsRelations,
+
+    progressTable,
+    progressRelations,
+
+    usersTable,
+    usersRelations,
+
+    curriculumsTable,
+    curriculumsRelations,
+
+    checklistsTable,
+    checklistsRelations
+}
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL!,
@@ -32,58 +81,5 @@ const pool = new Pool({
 });
 
 // 스키마를 포함하여 drizzle 초기화
-const db = drizzle({
-    client: pool,
-    schema: {
-
-        themesTable,
-        themesRelations,
-
-        subjectsTable,
-        subjectsRelations,
-
-        textbooksTable,
-        textbooksRelations,
-
-        majorsTable,
-        majorsRelations,
-
-        middlesTable,
-        middlesRelations,
-
-        unitsTable,
-        unitsRelations,
-
-        dealingsTable,
-        dealingsRelations,
-
-        conceptsTable,
-        conceptsRelations,
-
-        prerequisitesTable,
-        prerequisitesRelations,
-
-        supportivesTable,
-        supportivesRelations,
-
-        mastersTable,
-        mastersRelations,
-
-        enrollmentsTable,
-        enrollmentsRelations,
-
-        progressTable,
-        progressRelations,
-
-        usersTable,
-        usersRelations,
-
-        curriculumsTable,
-        curriculumsRelations,
-
-        checklistsTable,
-        checklistsRelations
-    }
-});
-
+const db = drizzle({ client: pool, schema });
 export default db;

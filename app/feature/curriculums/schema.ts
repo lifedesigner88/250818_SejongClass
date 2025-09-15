@@ -53,8 +53,5 @@ export const curriculumsRelations = relations(curriculumsTable, ({ one, many }) 
         fields: [curriculumsTable.unit_id],
         references: [unitsTable.unit_id],
     }),
-    checklists: many(checklistsTable, {
-        fields: [curriculumsTable.curriculum_id],
-        references: [checklistsTable.curriculum_id],
-    })
+    checklists: many(checklistsTable)
 }));
