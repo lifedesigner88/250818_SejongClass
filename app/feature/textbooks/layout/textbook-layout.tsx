@@ -1,6 +1,6 @@
 import type { Route } from "./+types/textbook-layout";
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import { Link, Outlet, redirect, useLocation, useNavigate } from "react-router";
+import { Link, Outlet, redirect, useFetcher, useLocation, useNavigate } from "react-router";
 import { ChevronDown, ChevronRight, Menu } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -16,6 +16,7 @@ import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { getUserIdFromSession } from "~/feature/auth/queries";
 
+// ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const themeSlug = params["theme-slug"];
     const subjectSlug = params["subject-slug"];
@@ -39,6 +40,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     return { themeSlug, subjectSlug, textbookId, textbookInfo };
 }
 
+// 📜 page
 export default function TextbookLayout({ loaderData, params }: Route.ComponentProps) {
 
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
@@ -142,13 +144,21 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     const handleUnitClick = (unitId: number) => {
         // 로그인 되고, 과목을 등록한 유저만 오픈 가능.
-        if (!auth.isLoggedIn) {
-            auth.setPendingUrlAfterLogin(location.pathname); // 로그인 후 이동할 unit 저장
-            auth.setShowLoginDialog(true);
-        } else navigate(`${unitId}`);
+        navigate(`${unitId}`);
 
         if (window.innerWidth < 768) setIsMobileMenuOpen(false);
     };
+
+    const fetcher = useFetcher()
+    const handleUnitToggleClick = (unit_id: number) => {
+        console.log("handleUnitToggleClick", unit_id)
+        void fetcher.submit({
+            unit_id
+        }, {
+            method: "post",
+            action: "/api/units/toggle-unit",
+        })
+    }
 
 
     // 사이드바 콘텐츠 컴포넌트
@@ -168,7 +178,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             </div>
 
             {/* 실제 네비 게이션*/}
-            <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-64px)] sm:h-[calc(100vh-64px-64px)] overflow-y-auto]">
+            <ScrollArea ref={scrollAreaRef}
+                        className="h-[calc(100vh-64px)] sm:h-[calc(100vh-64px-64px)] overflow-y-auto]">
                 <div className="pb-50 sm:p-2 sm:pb-80">
                     {textbookInfo?.majors.map((major, majorIndex) => {
                         const colorSet = colors[majorIndex + 1 % colors.length];
@@ -224,16 +235,27 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
                                                     <CollapsibleContent className="ml-1 sm:ml-4">
                                                         {middle.units.map((unit) => {
+
                                                                 const isActive = currentUnitId === unit.unit_id;
+                                                                const isSubmitting = fetcher.state === "submitting";
+                                                                const isLoading = fetcher.state === "loading";
+                                                                const submittingId = fetcher.formData?.get("unit_id");
+                                                                const optimism = Number(submittingId) === unit.unit_id && (isSubmitting || isLoading)
+                                                                const isChecked = unit.progress.length > 0;
+
                                                                 return (
                                                                     <div
                                                                         className="flex items-center relative"
                                                                         key={unit.unit_id}
                                                                         data-unit-id={unit.unit_id}>
                                                                         <Checkbox
-                                                                            // checked={isChecked}
-                                                                            className={"absolute left-5 size-5"}
-                                                                            // onClick={() => handleUnitClick(unit.unit_id)}
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleUnitToggleClick(unit.unit_id)
+                                                                            }}
+                                                                            className={"absolute left-2 size-6 cursor-pointer"}
+                                                                            checked={optimism ? !isChecked : isChecked}
+                                                                            disabled={(isSubmitting || isLoading)}
                                                                         />
                                                                         <Button
                                                                             variant="ghost"

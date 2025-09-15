@@ -65,6 +65,12 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                                                 }
                                             }
                                         }
+                                    },
+                                    progress:{
+                                        where : eq(checklistsTable.user_id, user_id),
+                                        columns: {
+                                            completion_status: true,
+                                        }
                                     }
                                 }
                             }

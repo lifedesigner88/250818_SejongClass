@@ -72,10 +72,10 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                                 </CarouselContent>
 
                                 {/* 네비게이션 버튼 */}
-                                <CarouselPrevious variant={"outline"}
-                                                  className={"left-5 -top-5 size-11 sm:top-1/2 sm:-left-12 sm:size-10"}/>
-                                <CarouselNext variant={"outline"}
-                                              className={"right-5 -top-5 size-11 sm:top-1/2 sm:-right-12 sm:size-10"}/>
+                                <CarouselPrevious variant={"default"}
+                                                  className={"left-5 -top-5 size-11 sm:top-1/2 sm:-left-12 xl:-left-16 sm:size-10 disabled:opacity-5"}/>
+                                <CarouselNext variant={"default"}
+                                              className={"right-5 -top-5 size-11 sm:top-1/2 sm:-right-12 xl:-right-16 sm:size-10 disabled:opacity-5"}/>
                             </Carousel>
                         ) : (
                             <div className="text-center py-12 text-muted-foreground">

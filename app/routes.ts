@@ -15,6 +15,9 @@ export default [
     ...prefix("/api",[
         ...prefix("/curriculums",[
             route("/toggle-curriculum", "api/curriculums/toggle-curriculum.tsx"),
+        ]),
+        ...prefix("/units",[
+            route("/toggle-unit", "api/units/toggle-unit.tsx"),
         ])
     ]),
 

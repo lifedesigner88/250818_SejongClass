@@ -11,7 +11,7 @@ export const progressTable = pgTable("progress", {
             onDelete: "cascade",
         }).notNull(),
 
-        completion_status: boolean().default(false).notNull(),
+        completion_status: boolean().default(true).notNull(),
         updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
     },
     (table) => [

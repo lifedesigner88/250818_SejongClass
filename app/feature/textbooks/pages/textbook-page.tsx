@@ -246,7 +246,7 @@ export default function TextbookPage() {
                                             e.stopPropagation();
                                             handleCurriculumClick(curriculum.curriculum_id)
                                         }}
-                                        className={`cursor-pointer z-10 size-10 lg:size-7 absolute right-5 bottom-5 hover:size-12 transition-all`}
+                                        className={`cursor-pointer z-10 size-10 lg:size-8 absolute right-5 bottom-5`}
                                         checked={optimism ? !curriculum.isChecked : curriculum.isChecked}
                                         disabled={(isSubmitting || isLoading)}
                                     />
