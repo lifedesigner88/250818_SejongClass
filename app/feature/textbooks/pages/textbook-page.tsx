@@ -26,10 +26,6 @@ export default function TextbookPage() {
     if (!textbookInfo) return (<div> TextbookInfo 가 없습니다. </div>)
 
     // 📊 카운트 및 시간 계산
-
-    const middleCount = textbookInfo.majors.reduce((acc, major) =>
-        acc + major.middles.length, 0);
-
     const unitCount = textbookInfo.majors.reduce((acc, major) =>
             acc + major.middles.reduce((acc2, middle) =>
                 acc2 + middle.units.length, 0
@@ -43,6 +39,7 @@ export default function TextbookPage() {
                     ), 0
             ), 0
     );
+
 
     // ⏰ 시간 포맷팅
     const formatTime = (seconds: number) => {
@@ -64,11 +61,16 @@ export default function TextbookPage() {
 
 
     let checkedUnitsCounter = 0;
+    let unCheckedUnitsEstimatedSeconds = 0;
 
     textbookInfo.majors.forEach(major => {
         major.middles.forEach(middle => {
             middle.units.forEach(unit => {
-                if (unit.progress && unit.progress.length > 0) checkedUnitsCounter++
+
+                if (unit.progress && unit.progress.length > 0)
+                    checkedUnitsCounter++
+                else unCheckedUnitsEstimatedSeconds += unit.estimated_seconds;
+
                 if (unit.curriculums && unit.curriculums.length > 0) {
                     unit.curriculums.forEach(curriculum => {
                         curriculumList.push({
@@ -144,18 +146,22 @@ export default function TextbookPage() {
                         </CardContent>
                     </Card>
 
-                    {/* 중단원 카드 */}
+                    {/* 남은시간 카드 */}
                     <Card className="hover:shadow-md transition-shadow duration-300">
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
                             <div
                                 className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
-                                <Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/>
+                                {unCheckedUnitsEstimatedSeconds === 0 ? (
+                                    <div className="text-4xl">🎉</div>
+                                ) : (
+                                    <Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/>
+                                )}
                             </div>
                             <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
-                                {middleCount}
+                                {unCheckedUnitsEstimatedSeconds === 0 ? "완강" : formatTime(unCheckedUnitsEstimatedSeconds)}
                             </div>
                             <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
-                                중단원
+                                남은 강의
                             </div>
                         </CardContent>
                     </Card>
@@ -206,13 +212,18 @@ export default function TextbookPage() {
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
                             <div
                                 className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-orange-100 rounded-full mb-2 md:mb-3">
-                                <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600"/>
+
+                                {unCheckedUnitsEstimatedSeconds === 0 ? (
+                                    <div className="text-4xl">🎉</div>
+                                ) : (
+                                    <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600"/>
+                                )}
                             </div>
                             <div className="text-xl md:text-2xl font-bold text-orange-600 mb-1 truncate max-w-full">
                                 {formatTime(totalEstimatedSeconds)}
                             </div>
                             <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
-                                소요시간
+                                총 강의
                             </div>
                         </CardContent>
                     </Card>
@@ -235,7 +246,7 @@ export default function TextbookPage() {
                                         <span>진행중</span>
                                         <div
                                             className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100  rounded-full text-xs font-semibold p-2">
-                                            {CheckedMajorCounts.all} 
+                                            {CheckedMajorCounts.all}
                                         </div>
                                     </div>
                                 </TabsTrigger>

@@ -66,7 +66,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         return <h1></h1>
     }
 
-
     // 좌측 네비게이션 토글 관련 변수
     const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
     const [openMiddles, setOpenMiddles] = useState<Set<string>>(new Set());
@@ -205,11 +204,12 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
             {/* 실제 네비 게이션*/}
             <ScrollArea ref={scrollAreaRef}
-                        className="h-[calc(100vh-64px)] sm:h-[calc(100vh-64px-64px)] overflow-y-auto]">
+                        className="h-[calc(100vh-64px)] sm:h-[calc(100vh-64px-64px)]">
                 <div className="pb-50 sm:p-2 sm:pb-80">
                     {textbookInfo?.majors.map((major, majorIndex) => {
                         const colorSet = colors[majorIndex + 1 % colors.length];
                         const majorActive = currentUnitId && unitSectionMap.get(currentUnitId)?.majorIndex === major.major_id;
+
                         return (
                             <Collapsible
                                 key={major.major_id}
