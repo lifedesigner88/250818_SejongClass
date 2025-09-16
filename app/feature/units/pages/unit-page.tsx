@@ -1,4 +1,4 @@
-import { Form, redirect } from "react-router";
+import { Form, redirect, useOutletContext } from "react-router";
 import type { Route } from "./+types/unit-page";
 import { getUnitAndConceptsByUnitId, updateUnitReadmeContent } from "../queries";
 import { z } from "zod";
@@ -14,6 +14,7 @@ import {
     SheetTrigger
 } from "@/components/ui/sheet";
 import { useState } from "react";
+import type { OutletContextType } from "~/feature/textbooks/pages/textbook-page";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const paramsSchema = z.object({
@@ -28,6 +29,8 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     if (!(unitData
         && data["textbook-id"] === unitData.middle.major.textbook.textbook_id))
         throw redirect("/404");
+
+
 
     return { unitData }
 }
@@ -48,6 +51,16 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 
 export default function UnitPage({ loaderData }: Route.ComponentProps) {
+
+    const { isEnrolled, setOpenEnrollWindow } = useOutletContext<OutletContextType>();
+
+    if (!isEnrolled) {
+        setOpenEnrollWindow(true)
+        return
+    }
+
+
+
     const { unitData } = loaderData;
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 

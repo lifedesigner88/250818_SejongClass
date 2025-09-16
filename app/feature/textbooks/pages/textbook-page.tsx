@@ -15,12 +15,13 @@ type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
     textbookInfo: TextbookInfo;
     handleUnitClick: (unitId: number) => void;
-    userId: string;
+    isEnrolled: boolean
+    setOpenEnrollWindow: (open: boolean) => void;
 };
 
 export default function TextbookPage() {
 
-    const { textbookInfo, handleUnitClick } = useOutletContext<OutletContextType>();
+    const { textbookInfo, handleUnitClick, isEnrolled, setOpenEnrollWindow } = useOutletContext<OutletContextType>();
 
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
     if (!textbookInfo) return (<div> TextbookInfo 가 없습니다. </div>)
@@ -92,6 +93,12 @@ export default function TextbookPage() {
 
     const fetcher = useFetcher()
     const handleCurriculumClick = (curriculum_id: number) => {
+
+        if(!isEnrolled) {
+            setOpenEnrollWindow(true)
+            return
+        }
+
         void fetcher.submit({
             curriculum_id
         }, {

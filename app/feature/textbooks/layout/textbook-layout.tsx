@@ -23,6 +23,13 @@ import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import { getUserIdForSever, useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { calculateTotalProgressOptimized } from "~/feature/textbooks/total-progress";
 import { Progress } from "@/components/ui/progress";
+import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel,
+    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -37,11 +44,12 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     if (!success) throw redirect("/404");
 
     const userId = await getUserIdForSever(request)
-    if (!userId) return { themeSlug, subjectSlug, textbookId }
+    if (!userId) return { themeSlug, subjectSlug, textbookId, textbookInfo: null }
 
-    const textbookInfo = await getTextbookInfobyTextBookId(data.textbookId, userId);
+    const textbookInfo = await getTextbookInfobyTextBookId(data?.textbookId, userId);
 
     // 정확한 경로 검사
+    // Todo : 아직 공개 안한 자료의 경우 막는 로직 추가 해야함.
     if (!(textbookInfo
         && textbookInfo.subject.slug === subjectSlug
         && textbookInfo.subject.theme.slug === themeSlug)
@@ -89,6 +97,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             return newSet;
         });
     };
+
 
     // unit 의 대단원 중단원 정보 저장.
     const unitSectionMap = useMemo(() => {
@@ -152,8 +161,14 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     }, [currentUnitId]);
 
 
+    // 강의 등록 여부 체크
+    const isEnrolled = textbookInfo!.enrollments.length > 0;
+    const [openEnrollWindow, setOpenEnrollWindow] = useState(false);
     const handleUnitClick = (unitId: number) => {
-        // 로그인 되고, 과목을 등록한 유저만 오픈 가능.
+        if (!isEnrolled) {
+            setOpenEnrollWindow(true)
+            return
+        }
         navigate(`${unitId}`);
 
         if (window.innerWidth < 768) setIsMobileMenuOpen(false);
@@ -161,7 +176,12 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     const fetcher = useFetcher()
     const handleUnitToggleClick = (unit_id: number) => {
-        console.log("handleUnitToggleClick", unit_id)
+
+        if (!isEnrolled) {
+            setOpenEnrollWindow(true)
+            return
+        }
+
         void fetcher.submit({
             unit_id
         }, {
@@ -171,8 +191,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     }
 
     // 진행상황 계산.
-    const progressRate = calculateTotalProgressOptimized(textbookInfo)
 
+    const progressRate = calculateTotalProgressOptimized(textbookInfo!)
     useEffect(() => {
         if (progressRate > 0) {
             fetch('/api/enrollments/update-progress', {
@@ -313,9 +333,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                         );
                     })}
                 </div>
-            </ScrollArea>
 
-            {/*하단에 로그인 관련 정보*/}
+            </ScrollArea>
         </div>
     );
 
@@ -330,7 +349,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
                         <Outlet
-                            context={{ textbookInfo, handleUnitClick }}/>
+                            context={{ textbookInfo, handleUnitClick, isEnrolled, setOpenEnrollWindow }}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
@@ -356,9 +375,25 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 {/* 메인 콘텐츠가 전체 화면 사용 */}
                 <div className="flex-1 w-full h-full overflow-auto">
                     <Outlet
-                        context={{ textbookInfo, handleUnitClick }}/>
+                        context={{ textbookInfo, handleUnitClick, isEnrolled, setOpenEnrollWindow }}/>
                 </div>
             </div>
+
+            {/* 결제 관련 */}
+            <AlertDialog open={openEnrollWindow} onOpenChange={setOpenEnrollWindow}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle> 강의를 등록하시겠습니까?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            강의는 무료 입니다.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
