@@ -8,7 +8,6 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
         where: eq(textbooksTable.textbook_id, textbook_id),
         columns: {
             title: true,
-            readme_content : true,
             cover_image_url: true,
             youtube_video_id: true,
             price: true,

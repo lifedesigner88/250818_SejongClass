@@ -12,10 +12,10 @@ export const textbooksTable = pgTable("textbooks", {
     slug: varchar({ length: 100 }).notNull().unique(),
     price: integer().default(0).notNull(),
     is_published: boolean().default(false).notNull(),
+    when_opened: varchar({ length: 100 }),
     sort_order: integer().default(1).notNull(),
     cover_image_url: varchar({ length: 500 }),
     estimated_hours: smallint().default(0).notNull(),
-    readme_content: varchar({ length: 4000 }).default("textbook_readme_content_default").notNull(),
     youtube_video_id: varchar({ length: 20 }),
 
     // foreign key

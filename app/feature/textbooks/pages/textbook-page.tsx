@@ -232,7 +232,7 @@ export default function TextbookPage() {
                                 >
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                                        <span>미완</span>
+                                        <span>진행중</span>
                                         <div
                                             className=" flex items-center justify-center min-w-[20px] h-5 bg-blue-100  rounded-full text-xs font-semibold p-2">
                                             {CheckedMajorCounts.all} 

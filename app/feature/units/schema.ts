@@ -1,4 +1,14 @@
-import { boolean, check, integer, pgPolicy, pgTable, serial, smallint, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+    boolean,
+    check,
+    integer,
+    pgPolicy,
+    pgTable,
+    serial,
+    smallint,
+    timestamp,
+    varchar
+} from "drizzle-orm/pg-core";
 import { middlesTable } from "~/feature/middles/schema";
 import { relations, sql } from "drizzle-orm";
 import { dealingsTable } from "~/feature/dealings/schema";
@@ -14,6 +24,7 @@ export const unitsTable = pgTable("units", {
     estimated_seconds: smallint().default(0).notNull(),
     sort_order: integer().default(1).notNull(),
     is_published: boolean().default(false).notNull(),
+    is_free: boolean().default(false).notNull(),
     updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
 
     // foreign key
