@@ -22,6 +22,7 @@ import { z } from "zod";
 import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import { getUserIdForSever, useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { calculateTotalProgressOptimized } from "~/feature/textbooks/total-progress";
+import { Progress } from "@/components/ui/progress";
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -169,6 +170,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         })
     }
 
+    // 진행상황 계산.
     const progressRate = calculateTotalProgressOptimized(textbookInfo)
 
     useEffect(() => {
@@ -190,7 +192,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         <div className={"h-screen sm:h-[calc(100vh-64px)] overflow-hidden"}>
 
             {/*상단 고정 버튼 */}
-            <div className="flex justify-center items-center border-b h-[64px] overflow-hidden">
+            <div className="flex justify-center items-center h-[64px] relative">
 
                 <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} className={"w-full"} onClick={() => {
                     if (window.innerWidth < 768) setIsMobileMenuOpen(false)
@@ -198,6 +200,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <h2 className="font-semibold text-xl text-center w-full truncate">
                         {textbookInfo?.title}
                     </h2>
+                    <Progress value={progressRate} className="absolute -bottom-1 w-full z-30"/>
                 </Link>
             </div>
 
