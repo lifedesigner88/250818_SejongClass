@@ -9,17 +9,23 @@ import {
     CarouselPrevious,
 } from "~/common/components/ui/carousel";
 import { Card } from "~/common/components/ui/card";
-import { Button } from "~/common/components/ui/button";
 import { Badge } from "~/common/components/ui/badge";
 import { Progress } from "~/common/components/ui/progress";
 import { AspectRatio } from "~/common/components/ui/aspect-ratio";
-import { BookOpen, Clock, DollarSign, Star, TrendingUp, PlayCircle, Lock, ShoppingCart } from "lucide-react";
+import { BookOpen, Clock, Star, TrendingUp, Users2 } from "lucide-react";
 import React from "react";
-import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
+import { DateTime } from "luxon"
+import { getUserIdForSever, useAuthOutletData } from "~/feature/auth/useAuthUtil";
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+type ThemeWithTextbooks = Awaited<ReturnType<typeof getTextbooksByTheamSlug>>;
+type TextbooksType = NonNullable<ThemeWithTextbooks>["subjects"][number]["textbooks"][number];
+
+
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const themeSlug = params['theme-slug'];
-    const textbooks = await getTextbooksByTheamSlug(themeSlug);
+    const userId = await getUserIdForSever(request)
+    const textbooks = await getTextbooksByTheamSlug(themeSlug, userId);
+    console.dir(textbooks, { depth: null })
     if (!textbooks) throw redirect("/404")
     return { textbooks };
 };
@@ -61,7 +67,7 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                                     {subject.textbooks.map((textbook) => (
                                         <CarouselItem
                                             key={textbook.textbook_id}
-                                            className="basis-1/1 md:basis-1/2 lg:basis-1/3">
+                                            className="basis-1/1 lg:basis-1/2 2xl:basis-1/3">
                                             <TextbookCard
                                                 textbook={textbook}
                                                 themeSlug={textbooks.slug}
@@ -97,18 +103,25 @@ function TextbookCard({
                           themeSlug,
                           subjectSlug
                       }: {
-    textbook: any,
+    textbook: TextbooksType,
     themeSlug: string,
     subjectSlug: string
 }) {
-    // 임의의 진도율 생성 (교재 ID를 기반으로 일관된 값 생성)
-    const progressValue = ((textbook.textbook_id * 23) % 100);
-    const isStarted = progressValue > 0;
-    const isCompleted = progressValue === 100 || progressValue > 95;
+
+    const isEnrolled = textbook.enrollments.length > 0;
+    const whenEnrolled = isEnrolled ? textbook.enrollments[0].created_at : null;
+    const progressValue = isEnrolled ? textbook.enrollments[0].progress_rate : 0;
+    const lastStudyDate = isEnrolled ? textbook.enrollments[0].last_study_date : null;
+
+    const estimatedTime = textbook.estimated_hours;
+    const enrolledStudents = textbook.enrolled_students;
+    const averageRating = textbook.average_rating;
+
+    const isCompleted = progressValue === 100
 
     // 상태 분류
     const isPublished = textbook.is_published;
-    const isPaid = textbook.price > 0;
+    const isNotFree = textbook.price > 0;
 
     // 클릭 가능 여부 및 링크 결정
     const isClickable = isPublished;
@@ -140,6 +153,7 @@ function TextbookCard({
                             ? 'group-hover:shadow-lg group-hover:scale-[0.98] cursor-pointer'
                             : 'opacity-75 cursor-not-allowed'
                     }`}>
+
                     {/* 메인 커버 이미지 */}
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500">
                         {textbook.cover_image_url ? (
@@ -152,7 +166,6 @@ function TextbookCard({
                             />
                         ) : (
                             <div className="flex items-center justify-center h-full text-white">
-                                <BookOpen className="w-16 h-16 opacity-80"/>
                             </div>
                         )}
                     </div>
@@ -177,9 +190,8 @@ function TextbookCard({
 
                     {/* 가격/무료 배지 */}
                     <div className="absolute top-3 left-3 z-10">
-                        {isPaid ? (
+                        {isNotFree ? (
                             <Badge variant="default" className="text-xs bg-green-600/90 text-white backdrop-blur-sm">
-                                <DollarSign className="w-3 h-3 mr-1"/>
                                 {(textbook.price / 10000).toFixed(0)}만원
                             </Badge>
                         ) : isPublished ? (
@@ -192,20 +204,35 @@ function TextbookCard({
                     {/* 제목 오버레이 (하단) */}
                     <div
                         className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/50 to-transparent p-4 z-10">
-                        <h3 className={`text-base font-bold leading-tight line-clamp-2 text-white transition-colors ${
+
+                        <h3 className={`text-2xl pt-6 pb-2 font-bold leading-tight line-clamp-2 text-white transition-colors ${
                             isClickable ? 'group-hover:text-blue-200' : ''
                         }`}>
                             {textbook.title}
                         </h3>
 
                         {/* 진도 표시 (발행된 교재만) */}
-                        {isPublished && isStarted && (
+                        {isPublished && (
                             <div className="mt-3 space-y-2">
                                 <div className="flex items-center justify-between text-xs text-white/90">
                                     <div className="flex items-center gap-1">
                                         <TrendingUp className="w-3 h-3"/>
-                                        <span>진도</span>
+                                        <div>
+                                            {whenEnrolled
+                                                ? whenEnrolled.toLocaleDateString('ko-KR', {
+                                                    year: '2-digit',
+                                                    month: '2-digit',
+                                                    day: '2-digit'
+                                                }).replace(/\. /g, '.').replace(/\.$/, '')
+                                                : "미"
+                                            }등록
+                                        </div>
                                     </div>
+                                    {lastStudyDate && (
+                                        <div className="flex items-center gap-1">
+                                            {DateTime.fromJSDate(new Date(lastStudyDate)).toRelative({ locale: "ko" })} 접속
+                                        </div>
+                                    )}
                                     <span className="font-medium">{progressValue}%</span>
                                 </div>
                                 <Progress value={progressValue} className="h-1.5 bg-white/20"/>
@@ -217,81 +244,23 @@ function TextbookCard({
                             </div>
                         )}
 
-                        {/* 상태별 정보 표시 */}
-                        {!isPublished ? (
-                            <div className="flex items-center gap-1 text-xs text-white/80 mt-2">
-                                <Lock className="w-3 h-3"/>
-                                <span>출시 예정</span>
-                            </div>
-                        ) : !isStarted ? (
-                            <div className="flex items-center gap-1 text-xs text-white/80 mt-2">
-                                {isPaid ? (
-                                    <>
-                                        <ShoppingCart className="w-3 h-3"/>
-                                        <span>구매 후 이용</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <PlayCircle className="w-3 h-3"/>
-                                        <span>시작 대기</span>
-                                    </>
-                                )}
-                            </div>
-                        ) : null}
-
                         {/* 간단한 메타 정보 */}
                         <div
                             className="flex items-center justify-between text-xs text-white/70 mt-3 pt-2 border-t border-white/20">
                             <div className="flex items-center gap-1">
                                 <Clock className="w-3 h-3"/>
-                                <span>4주</span>
+                                <span>{Number(estimatedTime).toFixed(1)} 시간</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Users2 className="w-3 h-3"/>
+                                <span>{enrolledStudents} 명 등록 </span>
                             </div>
                             <div className="flex items-center gap-1">
                                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400"/>
-                                <span>4.8</span>
+                                <span>{Number(averageRating).toFixed(1)}</span>
                             </div>
                         </div>
-                    </div>
 
-                    {/* 호버 오버레이 & 액션 버튼 */}
-                    <div
-                        className={`absolute inset-0 bg-black/0 transition-colors duration-300 flex flex-col items-center justify-center z-20 ${
-                            isClickable ? 'group-hover:bg-black/30' : ''
-                        }`}>
-                        {!isPublished ? (
-                            /* 잠금 아이콘 (준비중일 때) */
-                            <div
-                                className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/70 rounded-full p-4 backdrop-blur-sm">
-                                <Lock className="w-10 h-10 text-white"/>
-                            </div>
-                        ) : (
-                            /* 액션 버튼 (호버 시 표시) */
-                            <Button
-                                size="sm"
-                                className={`opacity-0 group-hover:opacity-100 transition-all duration-300 text-sm px-6 py-3 backdrop-blur-sm ${
-                                    isPaid
-                                        ? 'bg-green-600/90 hover:bg-green-700 text-white'
-                                        : 'bg-blue-600/90 hover:bg-blue-700 text-white'
-                                }`}
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                {isPaid ? (
-                                    <>
-                                        <ShoppingCart className="w-4 h-4 mr-2"/>
-                                        구매하기
-                                    </>
-                                ) : isCompleted ? (
-                                    "복습하기"
-                                ) : isStarted ? (
-                                    "계속하기"
-                                ) : (
-                                    <>
-                                        <PlayCircle className="w-4 h-4 mr-2"/>
-                                        시작하기
-                                    </>
-                                )}
-                            </Button>
-                        )}
                     </div>
 
                     {/* 준비중일 때 전체 오버레이 */}

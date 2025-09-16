@@ -8,7 +8,7 @@ import {
     integer,
     check,
     varchar,
-    pgPolicy
+    pgPolicy,
 } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { textbooksTable } from "~/feature/textbooks/schema";
@@ -27,7 +27,8 @@ export const enrollmentsTable = pgTable("enrollments", {
         review: varchar({ length: 500 }),
         rating: smallint().default(10),
 
-        created_at: timestamp().defaultNow(),
+        last_study_date: timestamp().defaultNow().notNull(),
+        created_at: timestamp().defaultNow().notNull(),
         updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
     },
     (table) => [
