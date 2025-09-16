@@ -2,6 +2,7 @@ import db from "~/db";
 import { textbooksTable } from "~/feature/textbooks/schema";
 import { eq } from "drizzle-orm";
 import { checklistsTable } from "~/feature/checklists/schema";
+import { enrollmentsTable } from "~/feature/enrollments/schema";
 
 export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: string) {
     return db.query.textbooksTable.findFirst({
@@ -23,6 +24,12 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                             slug: true,
                         }
                     }
+                },
+            },
+            enrollments: {
+                where: eq(enrollmentsTable.user_id, user_id),
+                columns: {
+                    payment_status: true,
                 }
             },
             majors: {
@@ -47,10 +54,10 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                                     title: true,
                                     is_published: true,
                                     estimated_seconds: true,
-                                }                                ,
+                                },
                                 orderBy: (units, { asc }) => [asc(units.sort_order)],
                                 with: {
-                                    curriculums:{
+                                    curriculums: {
                                         columns: {
                                             curriculum_id: true,
                                             code: true,
@@ -58,15 +65,15 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                                         },
                                         with: {
                                             checklists: {
-                                                where : eq(checklistsTable.user_id, user_id),
+                                                where: eq(checklistsTable.user_id, user_id),
                                                 columns: {
                                                     completion_status: true,
                                                 }
                                             }
                                         }
                                     },
-                                    progress:{
-                                        where : eq(checklistsTable.user_id, user_id),
+                                    progress: {
+                                        where: eq(checklistsTable.user_id, user_id),
                                         columns: {
                                             completion_status: true,
                                         }

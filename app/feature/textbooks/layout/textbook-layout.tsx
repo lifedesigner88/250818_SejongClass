@@ -20,8 +20,7 @@ import colors from "~/feature/textbooks/major-color";
 import { z } from "zod";
 
 import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
-import { getUserIdFromSession } from "~/feature/auth/queries";
+import { getUserIdForSever, useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { calculateTotalProgressOptimized } from "~/feature/textbooks/total-progress";
 
 // ✅ loader
@@ -36,8 +35,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const { success, data } = paramsSchema.safeParse({ textbookId });
     if (!success) throw redirect("/404");
 
-    const userId = await getUserIdFromSession(request)
-    if (!userId) throw redirect("/404"); // 로그인이 필요하다는 페이지 따로 만들어야 할듯.
+    const userId = await getUserIdForSever(request)
+    if (!userId) return { themeSlug, subjectSlug, textbookId }
 
     const textbookInfo = await getTextbookInfobyTextBookId(data.textbookId, userId);
 
@@ -54,9 +53,6 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 // 📜 page
 export default function TextbookLayout({ loaderData, params }: Route.ComponentProps) {
 
-    const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
-    const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
-
     // 로그인 안된 유저 로그인 유도
     const location = useLocation();
     const auth = useAuthOutletData()
@@ -65,6 +61,9 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         auth.setShowLoginDialog(true)
         return <h1></h1>
     }
+
+    const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
+    const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
 
     // 좌측 네비게이션 토글 관련 변수
     const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
@@ -93,7 +92,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     // unit 의 대단원 중단원 정보 저장.
     const unitSectionMap = useMemo(() => {
         const map = new Map<number, { majorIndex: number; middleIndex: number }>();
-        textbookInfo.majors.forEach((major) => {
+        textbookInfo!.majors.forEach((major) => {
             major.middles.forEach((middle) => {
                 middle.units.forEach(unit => {
                     map.set(unit.unit_id, { majorIndex: major.major_id, middleIndex: middle.middle_id });

@@ -1,4 +1,4 @@
-import { redirect, useOutletContext } from "react-router";
+import { useOutletContext } from "react-router";
 import { makeSSRClient } from "~/supa-clents";
 import { parseCookieHeader } from "@supabase/ssr";
 import { jwtDecode } from "jwt-decode";
@@ -100,13 +100,13 @@ export const getUserIdFromCookieSync = (request: Request): string | null => {
 
         // 토큰 데이터 디코딩
         const fullTokenData = tokenChunks.join('');
+
         const decodedData = fullTokenData.startsWith('base64-')
             ? atob(fullTokenData.replace('base64-', ''))
             : fullTokenData;
 
         // JWT에서 userId 추출
         const { access_token } = JSON.parse(decodedData);
-
         const result = jwtDecode<{ sub: string }>(access_token);
         return result.sub;
     } catch {
@@ -123,9 +123,9 @@ export const getUserIdFromSession = async (request: Request): Promise<string | n
 };
 
 
-export const getLoggedInUserId = async (request: Request): Promise<string> => {
+export const getLoggedInUserId = async (request: Request): Promise<string | null> => {
     const { client } = makeSSRClient(request);
     const { data, error } = await client.auth.getUser();
-    if (error || data.user === null) throw redirect("/");
+    if (error || data.user === null) return null;
     return data.user.id;
 }
