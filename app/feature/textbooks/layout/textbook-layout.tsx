@@ -56,7 +56,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     ) throw redirect("/404");
     console.timeEnd("⏳ textbook-layout loader")
 
-    return { themeSlug, subjectSlug, textbookId, textbookInfo, userId };
+    return { themeSlug, subjectSlug, textbookId, textbookInfo };
 }
 
 // 📜 page
@@ -72,7 +72,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     }
 
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
-    const { themeSlug, subjectSlug, textbookId, textbookInfo, userId } = loaderData;
+    const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
 
     // 좌측 네비게이션 토글 관련 변수
     const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
@@ -195,9 +195,9 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     }
 
     // 진행상황 계산.
-    const progressRate = calculateTotalProgressOptimized(textbookInfo!)
+    const progressRate = Math.floor(calculateTotalProgressOptimized(textbookInfo!))
     useEffect(() => {
-        if (progressRate > 0) {
+        if (progressRate >= 0) {
             fetch('/api/enrollments/update-progress', {
                 method: 'POST',
                 headers: {
@@ -205,6 +205,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 },
                 body: JSON.stringify({
                     progress_rate: progressRate,
+                    textbook_id: textbookId,
                 })
             }).catch(console.error);
         }
@@ -215,10 +216,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     const widgets = useRef<TossPaymentsWidgets>(null);
 
 
+    // 토스창 렌더링
     const initToss = async () => {
-
         const toss = await loadTossPayments("test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm")
-        widgets.current = toss.widgets({ customerKey: userId! })
+        widgets.current = toss.widgets({ customerKey: auth.publicUserData.user_id })
 
         await widgets.current?.setAmount({
             value: price,
@@ -234,29 +235,48 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         })
     };
 
+    const enrollFetcher = useFetcher()
+    // 강의 등록
     const enrollTextBooks = async () => {
         if (price === 0) {
+            await enrollFetcher.submit({
+                    textbook_id: textbookId,
+                    price
+                },
+                {
+                    method: "post",
+                    action: "/api/enrollments/enroll-free",
+                })
 
-            return
 
         } else {
             await widgets.current?.requestPayment({
                     orderId: crypto.randomUUID(),
-                    orderName: "wemake product promotion",
-                    customerEmail: "lifedesigner88@gmail.com",
-                    customerName: "sejongPark",
+                    orderName: textbookInfo!.title,
+                    customerEmail: auth.publicUserData.email,
+                    customerName: auth.publicUserData.username,
                     metadata: {
                         textbook_id: textbookId,
                     },
-                    successUrl: `${window.location.href}/success`,
+                    successUrl: "/api/enrollments/enroll",
                     failUrl: `${window.location.href}/fail`,
                 }
             )
         }
     }
+
+    useEffect( () => {
+
+        console.log(enrollFetcher.data)
+
+    }, [enrollFetcher.data])
+
+    // 등록창 닫기.
     const enrollCancel = () => {
         const currentPath = location.pathname;
         const wilNavigatePath = `/${themeSlug}/${subjectSlug}/${textbookId}`;
+
+        // unit 창에서 들어온  요청 검증
         if (currentPath !== wilNavigatePath) {
             navigate(wilNavigatePath);
         }
@@ -394,7 +414,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             </ScrollArea>
         </div>
     );
-
     return (
         <div className={"h-[calc(100vh-64px)] w-screen overflow-hidden"}>
 
@@ -404,10 +423,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <div className={tosswindow ? "block" : "hidden"}>
                         <AlertDialogHeader>
                             <AlertDialogTitle>{textbookInfo!.title}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                <div id={"toss-payment-methods"} className={"w-full"}></div>
-                                <div id={"toss-payment-agreement"} className={"w-full"}></div>
-                            </AlertDialogDescription>
+                            <div id={"toss-payment-methods"} className={"w-full"}></div>
+                            <div id={"toss-payment-agreement"} className={"w-full"}></div>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel onClick={() => enrollCancel()}>돌아가기</AlertDialogCancel>

@@ -20,7 +20,8 @@ export default [
             route("/toggle-unit", "api/units/toggle-unit.tsx"),
         ]),
         ...prefix("/enrollments",[
-            // route("/enroll", "api/enrollments/enroll.tsx"),
+            route("/enroll", "api/enrollments/enroll.tsx"),
+            route("/enroll-free", "api/enrollments/enroll-free.tsx"),
             // route("/unenroll", "api/enrollments/unenroll.tsx"),
             route("/update-progress", "api/enrollments/update-progress.tsx"),
         ])

@@ -25,7 +25,7 @@ export const enrollmentsTable = pgTable("enrollments", {
         progress_rate: smallint().default(0).notNull(),
         payment_status: boolean().default(false).notNull(),
         review: varchar({ length: 500 }),
-        rating: smallint().default(10),
+        rating: smallint(),
 
         last_study_date: timestamp().defaultNow().notNull(),
         created_at: timestamp().defaultNow().notNull(),

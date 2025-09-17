@@ -136,7 +136,7 @@ export default function TextbookPage() {
 
     const unitProgress = (checkedUnitsCounter / unitCount) * 100;
     const curriculumProgress = (checkedCurriculums.length / curriculumList.length) * 100;
-    const totalProgress = (unitProgress * 0.5) + (curriculumProgress * 0.5);
+    const totalProgress = Math.floor((unitProgress * 0.5) + (curriculumProgress * 0.5));
     const price = textbookInfo!.price;
 
 

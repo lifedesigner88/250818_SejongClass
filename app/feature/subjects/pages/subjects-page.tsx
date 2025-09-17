@@ -174,14 +174,14 @@ function TextbookCard({
                     <div className="absolute top-3 right-3 flex flex-col gap-1 z-10">
                         {/* 발행 상태 배지 */}
                         {!isPublished && (
-                            <Badge variant="secondary" className="text-xs bg-red-500/90 text-white backdrop-blur-sm">
+                            <Badge variant="secondary" className="text-sm bg-red-500/90 text-white backdrop-blur-sm">
                                 준비중
                             </Badge>
                         )}
 
                         {/* 완료 상태 배지 */}
                         {isCompleted && isPublished && (
-                            <Badge className="text-xs bg-yellow-500/90 hover:bg-yellow-600 backdrop-blur-sm">
+                            <Badge className="text-sm bg-yellow-500/90 hover:bg-yellow-600 backdrop-blur-sm">
                                 <Star className="w-3 h-3 mr-1 fill-white"/>
                                 완료
                             </Badge>
@@ -190,33 +190,44 @@ function TextbookCard({
 
                     {/* 가격/무료 배지 */}
                     <div className="absolute top-3 left-3 z-10">
-                        {isNotFree ? (
-                            <Badge variant="default" className="text-xs bg-green-600/90 text-white backdrop-blur-sm">
+                        {isEnrolled?
+                            <Badge variant="default" className="text-sm bg-orange-500/90 text-white backdrop-blur-sm">
+                                등록
+                            </Badge> :
+                        isNotFree ? (
+                            <Badge variant="default" className="text-sm bg-green-600/90 text-white backdrop-blur-sm">
                                 {(textbook.price / 10000).toFixed(0)}만원
                             </Badge>
                         ) : isPublished ? (
-                            <Badge variant="default" className="text-xs bg-blue-600/90 text-white backdrop-blur-sm">
+                            <Badge variant="default" className="text-sm bg-blue-600/90 text-white backdrop-blur-sm">
                                 무료
                             </Badge>
-                        ) : null}
+                        ) : null
+                    }
+
                     </div>
 
                     {/* 제목 오버레이 (하단) */}
                     <div
                         className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/50 to-transparent p-4 z-10">
 
+                        <div className={"flex justify-between items-center"}>
                         <h3 className={`text-2xl pt-6 pb-2 font-bold leading-tight line-clamp-2 text-white transition-colors ${
                             isClickable ? 'group-hover:text-blue-200' : ''
                         }`}>
                             {textbook.title}
                         </h3>
-
+                        {lastStudyDate && (
+                            <div className="flex items-center gap-1 text-white pt-5">
+                                {DateTime.fromJSDate(new Date(lastStudyDate)).toRelative({ locale: "ko" })}
+                            </div>
+                        )}
+                        </div>
                         {/* 진도 표시 (발행된 교재만) */}
                         {isPublished && (
                             <div className="mt-3 space-y-2">
                                 <div className="flex items-center justify-between text-xs text-white/90">
                                     <div className="flex items-center gap-1">
-                                        <TrendingUp className="w-3 h-3"/>
                                         <div>
                                             {whenEnrolled
                                                 ? whenEnrolled.toLocaleDateString('ko-KR', {
@@ -224,15 +235,11 @@ function TextbookCard({
                                                     month: '2-digit',
                                                     day: '2-digit'
                                                 }).replace(/\. /g, '.').replace(/\.$/, '')
-                                                : "미"
-                                            }등록
+                                                : "미등록"
+                                            }
                                         </div>
                                     </div>
-                                    {lastStudyDate && (
-                                        <div className="flex items-center gap-1">
-                                            {DateTime.fromJSDate(new Date(lastStudyDate)).toRelative({ locale: "ko" })} 접속
-                                        </div>
-                                    )}
+
                                     <span className="font-medium">{progressValue}%</span>
                                 </div>
                                 <Progress value={progressValue} className="h-1.5 bg-white/20"/>
