@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Target, Hash, TrendingUp, BarChart } from "lucide-react";
+import { Target, Hash, TrendingUp, BarChart, BanIcon } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -149,20 +149,27 @@ export default function TextbookPage() {
                     {/* 대단원 카드 */}
                     <Card className="hover:shadow-md transition-shadow duration-300">
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
-                            <AnimatedCircularProgressBar className={"size-30"} max={100} value={totalProgress}
-                                                         gaugePrimaryColor={`${totalProgress > 99 ? "red" : "#4ade80"}`}
-                                                         gaugeSecondaryColor={"#f4f4f5"}/>
+                            {isEnrolled ? <>
+                                    <AnimatedCircularProgressBar className={"size-30"} max={100} value={totalProgress}
+                                                                 gaugePrimaryColor={`${totalProgress > 99 ? "red" : "#4ade80"}`}
+                                                                 gaugeSecondaryColor={"#f4f4f5"}/>
+                                </> :
+                                <div className="flex items-center justify-center w-30 h-30 bg-red-100 rounded-full">
+                                    <BanIcon className="w-20 h-20 text-red-500"/>
+                                </div>}
 
                         </CardContent>
                     </Card>
 
                     {/* 남은시간 카드 */}
-                    <Card className={`hover:shadow-md transition-shadow duration-300 ${isEnrolled? "" :"cursor-pointer"}`} onClick={() => {
-                        if (!isEnrolled) {
-                            setOpenEnrollWindow(true)
-                            return
-                        }
-                    }}>
+                    <Card
+                        className={`hover:shadow-md transition-shadow duration-300 ${isEnrolled ? "" : "cursor-pointer"}`}
+                        onClick={() => {
+                            if (!isEnrolled) {
+                                setOpenEnrollWindow(true)
+                                return
+                            }
+                        }}>
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
                             <div
                                 className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
@@ -184,8 +191,8 @@ export default function TextbookPage() {
                                 <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
                                     {price === 0 ? "무료" : price.toLocaleString() + "원"}
                                 </div>
-                                <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
-                                    {price === 0 ? "미등록" : "미결제"}
+                                <div className="text-xs md:text-sm text-center truncate max-w-full text-red-500">
+                                    {price === 0 ? "🚫 미등록" : "🚫 미결제"}
 
                                 </div>
                             </>
