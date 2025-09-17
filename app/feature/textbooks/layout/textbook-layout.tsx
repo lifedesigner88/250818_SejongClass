@@ -8,7 +8,7 @@ import {
     useLocation,
     useNavigate
 } from "react-router";
-import { ChevronDown, ChevronRight, Menu } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader2, Menu } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -213,11 +213,17 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
 
     const [tosswindow, setTosswindow] = useState(false);
+    const [enrollSuccess, setEnrollSuccess] = useState(false);
+    const [enrollFail, setEnrollFail] = useState(false);
+    const [tossLoading, setTossLoading] = useState(false);
+
+
     const widgets = useRef<TossPaymentsWidgets>(null);
 
 
     // 토스창 렌더링
     const initToss = async () => {
+        setTossLoading(true);
         const toss = await loadTossPayments("test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm")
         widgets.current = toss.widgets({ customerKey: auth.publicUserData.user_id })
 
@@ -233,6 +239,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         await widgets.current?.renderAgreement({
             selector: "#toss-payment-agreement",
         })
+        setTossLoading(false);
     };
 
     const enrollFetcher = useFetcher()
@@ -252,22 +259,34 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         } else {
             await widgets.current?.requestPayment({
                     orderId: crypto.randomUUID(),
-                    orderName: textbookInfo!.title,
+                    orderName: `SejongClass-${textbookInfo!.title}`,
                     customerEmail: auth.publicUserData.email,
                     customerName: auth.publicUserData.username,
                     metadata: {
                         textbook_id: textbookId,
                     },
-                    successUrl: "/api/enrollments/enroll",
+                    successUrl: `${window.location.origin}/api/enrollments/enroll`,
                     failUrl: `${window.location.href}/fail`,
                 }
             )
         }
     }
 
-    useEffect( () => {
+    useEffect(() => {
 
-        console.log(enrollFetcher.data)
+        if (enrollFetcher.data === "success") {
+            setEnrollSuccess(true)
+            setTimeout(() => {
+                enrollCancel()
+            }, 3000)
+
+        } else if (enrollFetcher.data === "fail") {
+            setEnrollFail(true)
+            setTimeout(() => {
+                enrollCancel()
+            }, 3000)
+        }
+
 
     }, [enrollFetcher.data])
 
@@ -281,7 +300,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             navigate(wilNavigatePath);
         }
         setOpenEnrollWindow(false)
-        setTosswindow(false)
+        setTimeout(() => {
+            setTossLoading(false)
+            setTosswindow(false)
+        }, 1000)
     }
 
     // 사이드바 콘텐츠 컴포넌트
@@ -420,19 +442,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             {/* 결제 관련 */}
             <AlertDialog open={openEnrollWindow}>
                 <AlertDialogContent>
-                    <div className={tosswindow ? "block" : "hidden"}>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>{textbookInfo!.title}</AlertDialogTitle>
-                            <div id={"toss-payment-methods"} className={"w-full"}></div>
-                            <div id={"toss-payment-agreement"} className={"w-full"}></div>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel onClick={() => enrollCancel()}>돌아가기</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => enrollTextBooks()}>
-                                {price === 0 ? "결제없이 수강신청" : `${price.toLocaleString()}원 결제`}
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </div>
+
+                    {/* 강의 등록 의사 물어보기 */}
                     <div className={tosswindow ? "hidden" : "block"}>
                         <AlertDialogHeader>
                             <AlertDialogTitle>강의등록</AlertDialogTitle>
@@ -447,6 +458,61 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 setTosswindow(true)
                                 void initToss()
                             }}>강의등록</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </div>
+
+
+                    {/* 결제창 띄우기 */}
+                    <div className={tosswindow ? "block" : "hidden"}>
+
+                        {/* 결제 성공 */}
+                        <AlertDialogHeader className={enrollSuccess ? "block" : "hidden"}>
+                            <AlertDialogTitle>등록 완료</AlertDialogTitle>
+                            <AlertDialogDescription className={"text-center text-9xl pb-15 pt-8 animate-bounce"}>
+                                🎉
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        {/* 결제 실패 */}
+                        <AlertDialogHeader className={enrollFail ? "block" : "hidden"}>
+                            <AlertDialogTitle>등록 오류</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                새로고침후 다시 시도해 주세요.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        <AlertDialogHeader className={enrollSuccess || enrollFail ? "hidden" : "block"}>
+                            <AlertDialogHeader className={enrollSuccess || enrollFail ? "hidden" : "block"}>
+                                <AlertDialogTitle>{textbookInfo!.title}</AlertDialogTitle>
+                                <div id={"toss-payment-methods"} className={"w-full"}></div>
+                                <div id={"toss-payment-agreement"} className={"w-full"}></div>
+                            </AlertDialogHeader>
+                        </AlertDialogHeader>
+
+                        <AlertDialogFooter>
+                            <AlertDialogCancel
+                                onClick={() => enrollCancel()}>{enrollSuccess || enrollFail ? "수강하기" : "돌아가기"}</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => enrollTextBooks()}
+                                               className={enrollSuccess || enrollFail ? "hidden" : "block"}
+                                               disabled={tossLoading || enrollFetcher.state === "submitting" || enrollFetcher.state === "loading"}>
+                                {tossLoading ?
+                                    <div className={"flex items-center gap-1"}>
+                                        <Loader2 className="size-5 mr-3 animate-spin"/>
+                                        <div> 로딩중 ...</div>
+                                    </div>
+                                    : <>
+                                        {enrollFetcher.state === "submitting" || enrollFetcher.state === "loading" ? (
+                                            <div className="flex items-center gap-2">
+                                                <div
+                                                    className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                                                처리중...
+                                            </div>
+                                        ) : (
+                                            price === 0 ? "결제없이 수강신청" : `${price.toLocaleString()}원 결제`
+                                        )}
+                                    </>}
+                            </AlertDialogAction>
+
                         </AlertDialogFooter>
                     </div>
                 </AlertDialogContent>

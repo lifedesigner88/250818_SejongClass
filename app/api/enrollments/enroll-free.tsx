@@ -4,7 +4,7 @@ import { enrollFreeTextbook, getTextbookPrice, incrementEnrolledStudents } from 
 
 
 export const action = async ({ request }: Route.ActionArgs) => {
-
+//Todo 리다이렉트 로직 구현
     try {
         const formData = await request.formData();
         const textbooksId = formData.get('textbook_id') as string;
@@ -12,18 +12,18 @@ export const action = async ({ request }: Route.ActionArgs) => {
         const textbook_id = Number(textbooksId);
 
         // 무료인지 체크
-        const { price: DBPrice } = await getTextbookPrice(textbook_id);
+        const { price: DBPrice }: any = await getTextbookPrice(textbook_id);
         const userId = await getUserIdForSever(request)
 
-        if (Number(requestPrice) === DBPrice) {
-            const enrolledData = await enrollFreeTextbook(textbook_id, userId);
+        if (Number(requestPrice) === DBPrice && userId !== null) {
+            await enrollFreeTextbook(textbook_id, userId!);
             await incrementEnrolledStudents(textbook_id)
-            console.log(enrolledData);
+        } else {
+            return "fail"
         }
-
     } catch (e) {
         console.log(e);
-        return "success"
+        return "fail"
     }
-    return "fail"
+    return "success"
 }

@@ -1,5 +1,4 @@
 import type { Route } from "./+types/enroll";
-import { getUserIdForSever } from "~/feature/auth/useAuthUtil";
 import { z } from "zod";
 import type { TossPaymentResponse } from "~/api/enrollments/TossReturnType";
 
@@ -14,11 +13,6 @@ const paramsSchema = z.object({
 const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY;
 
 export const action = async ({ request }: Route.ActionArgs) => {
-
-
-
-
-
 
     // 결제가 되었을 때
     const url = new URL(request.url);
@@ -41,13 +35,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     })
 
     const responseData: TossPaymentResponse = await response.json();
-
-
-    const userId = getUserIdForSever(request)
-
-    // 무료 일때
-
-    console.log("enroll🎉")
+    console.log(responseData)
 
     return responseData
 

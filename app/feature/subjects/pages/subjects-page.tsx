@@ -12,7 +12,7 @@ import { Card } from "~/common/components/ui/card";
 import { Badge } from "~/common/components/ui/badge";
 import { Progress } from "~/common/components/ui/progress";
 import { AspectRatio } from "~/common/components/ui/aspect-ratio";
-import { BookOpen, Clock, Star, TrendingUp, Users2 } from "lucide-react";
+import { BookOpen, Clock, Star, Users2 } from "lucide-react";
 import React from "react";
 import { DateTime } from "luxon"
 import { getUserIdForSever, useAuthOutletData } from "~/feature/auth/useAuthUtil";
