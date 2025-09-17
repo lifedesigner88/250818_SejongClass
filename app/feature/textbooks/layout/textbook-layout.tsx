@@ -447,8 +447,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <div className={tosswindow ? "hidden" : "block"}>
                         <AlertDialogHeader>
                             <AlertDialogTitle>강의등록</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                이 강의는 {price === 0 ? "무료" : `${price.toLocaleString()}원`} 입니다.
+                            <AlertDialogDescription className={"pb-3"}>
+                                {price === 0 ? "무료" : `${price.toLocaleString()}원`} 입니다.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
 
