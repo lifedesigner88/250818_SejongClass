@@ -25,7 +25,7 @@ export const enrollmentsTable = pgTable("enrollments", {
         progress_rate: smallint().default(0).notNull(),
         payment_status: boolean().default(false).notNull(),
         review: varchar({ length: 500 }),
-        rating: smallint(),
+        rating: smallint().default(0).notNull(),
 
         last_study_date: timestamp().defaultNow().notNull(),
         created_at: timestamp().defaultNow().notNull(),
@@ -37,7 +37,7 @@ export const enrollmentsTable = pgTable("enrollments", {
             columns: [table.user_id, table.textbook_id]
         }),
         check("completion_percentage_range", sql`progress_rate BETWEEN 0 AND 100`),
-        check("rating_range", sql`rating >= 1 and rating <= 10`),
+        check("rating_range", sql`rating >= 0 and rating <=10`),
 
 
         // pgPolicy(`policy-public`, {

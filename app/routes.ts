@@ -24,7 +24,10 @@ export default [
             route("/enroll-free", "api/enrollments/enroll-free.tsx"),
             // route("/unenroll", "api/enrollments/unenroll.tsx"),
             route("/update-progress", "api/enrollments/update-progress.tsx"),
-        ])
+        ]),
+        ...prefix("/cron", [
+            route("/calculate-textbook", "api/cron/calculate-textbook.tsx")
+        ]),
     ]),
 
     // - 임시 -
