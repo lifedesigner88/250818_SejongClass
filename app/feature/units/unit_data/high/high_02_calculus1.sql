@@ -6,9 +6,9 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('함수의 극한과 연속', 1, true, 10), -- textbook_id는 고등학교 2학년 미적분1 교재 ID로 가정
-            ('미분', 2, true, 10),
-            ('적분', 3, true, 10)
+            ('함수의 극한과 연속', 1, true, 27), -- textbook_id는 고등학교 2학년 미적분1 교재 ID로 가정
+            ('미분', 2, true, 27),
+            ('적분', 3, true, 27)
         RETURNING major_id, title
 ),
 

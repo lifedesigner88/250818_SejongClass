@@ -5,9 +5,9 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('경우의 수', 1, true, 11), -- textbook_id는 고등학교 3학년 확률과 통계 교재 ID로 가정
-            ('확률', 2, true, 11),
-            ('통계', 3, true, 11)
+            ('경우의 수', 1, true, 28), -- textbook_id는 고등학교 3학년 확률과 통계 교재 ID로 가정
+            ('확률', 2, true, 28),
+            ('통계', 3, true, 28)
         RETURNING major_id, title
 ),
 

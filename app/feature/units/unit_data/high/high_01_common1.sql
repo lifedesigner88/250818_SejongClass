@@ -6,10 +6,10 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('다항식', 1, true, 7), -- textbook_id는 고등학교 1학년 공통수학 교재 ID로 가정
-            ('방정식과 부등식', 2, true, 7),
-            ('경우의 수', 3, true, 7),
-            ('행렬', 4, true, 7)
+            ('다항식', 1, true, 24), -- textbook_id는 고등학교 1학년 공통수학 교재 ID로 가정
+            ('방정식과 부등식', 2, true, 24),
+            ('경우의 수', 3, true, 24),
+            ('행렬', 4, true, 24)
         RETURNING major_id, title
 ),
 

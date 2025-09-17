@@ -5,9 +5,9 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('지수함수와 로그함수', 1, true, 9), -- textbook_id는 고등학교 2학년 대수 교재 ID로 가정
-            ('삼각함수', 2, true, 9),
-            ('수열', 3, true, 9)
+            ('지수함수와 로그함수', 1, true, 26), -- textbook_id는 고등학교 2학년 대수 교재 ID로 가정
+            ('삼각함수', 2, true, 26),
+            ('수열', 3, true, 26)
         RETURNING major_id, title
 ),
 

@@ -5,9 +5,9 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('도형의 방정식', 1, true, 8), -- textbook_id는 고등학교 1학년 공통수학2 교재 ID로 가정
-            ('집합과 명제', 2, true, 8),
-            ('함수와 그래프', 3, true, 8)
+            ('도형의 방정식', 1, true, 25), -- textbook_id는 고등학교 1학년 공통수학2 교재 ID로 가정
+            ('집합과 명제', 2, true, 25),
+            ('함수와 그래프', 3, true, 25)
         RETURNING major_id, title
 ),
 

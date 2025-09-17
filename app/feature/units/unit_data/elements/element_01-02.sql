@@ -5,10 +5,10 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('수와 연산', 1, true, 1), -- textbook_id는 기존에 있는 초등수학 교재 ID로 가정
-            ('변화와 관계', 2, true, 1),
-            ('도형과 측정', 3, true, 1),
-            ('자료와 가능성', 4, true, 1)
+            ('수와 연산', 1, true, 18), -- textbook_id는 기존에 있는 초등수학 교재 ID로 가정
+            ('변화와 관계', 2, true, 18),
+            ('도형과 측정', 3, true, 18),
+            ('자료와 가능성', 4, true, 18)
         RETURNING major_id, title
 ),
 

@@ -6,9 +6,9 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('이차곡선', 1, true, 13), -- textbook_id는 고등학교 3학년 기하 교재 ID로 가정
-            ('공간도형과 공간좌표', 2, true, 13),
-            ('벡터', 3, true, 13)
+            ('이차곡선', 1, true, 30), -- textbook_id는 고등학교 3학년 기하 교재 ID로 가정
+            ('공간도형과 공간좌표', 2, true, 30),
+            ('벡터', 3, true, 30)
         RETURNING major_id, title
 ),
 

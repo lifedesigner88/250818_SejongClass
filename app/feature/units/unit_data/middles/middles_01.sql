@@ -5,9 +5,9 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('수와 연산', 1, true, 4), -- textbook_id는 중학교 1학년 교재 ID로 가정
-            ('변화와 관계', 2, true, 4),
-            ('도형과 측정', 3, true, 4)
+            ('수와 연산', 1, true, 21), -- textbook_id는 중학교 1학년 교재 ID로 가정
+            ('변화와 관계', 2, true, 21),
+            ('도형과 측정', 3, true, 21)
         RETURNING major_id, title
 ),
 
@@ -137,7 +137,7 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('자료와 가능성', 4, true, 4)
+            ('자료와 가능성', 4, true, 21)
         RETURNING major_id, title
 ),
 

@@ -5,9 +5,9 @@ BEGIN;
 WITH major_inserts AS (
     INSERT INTO majors (title, sort_order, is_published, textbook_id)
         VALUES
-            ('수열의 극한', 1, true, 12), -- textbook_id는 고등학교 3학년 미적분2 교재 ID로 가정
-            ('미분법', 2, true, 12),
-            ('적분법', 3, true, 12)
+            ('수열의 극한', 1, true, 29), -- textbook_id는 고등학교 3학년 미적분2 교재 ID로 가정
+            ('미분법', 2, true, 29),
+            ('적분법', 3, true, 29)
         RETURNING major_id, title
 ),
 
