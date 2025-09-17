@@ -29,6 +29,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { loadTossPayments, type TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -55,7 +56,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     ) throw redirect("/404");
     console.timeEnd("⏳ textbook-layout loader")
 
-    return { themeSlug, subjectSlug, textbookId, textbookInfo };
+    return { themeSlug, subjectSlug, textbookId, textbookInfo, userId };
 }
 
 // 📜 page
@@ -71,7 +72,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     }
 
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
-    const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
+    const { themeSlug, subjectSlug, textbookId, textbookInfo, userId } = loaderData;
 
     // 좌측 네비게이션 토글 관련 변수
     const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
@@ -162,7 +163,11 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     // 강의 등록 여부 체크
     const isEnrolled = textbookInfo!.enrollments.length > 0;
+    const price = textbookInfo!.price;
+
     const [openEnrollWindow, setOpenEnrollWindow] = useState(false);
+    const [afterEnrollNaviUrl, setAfterEnrollNaviUrl] = useState<string>(location.pathname);
+
     const handleUnitClick = (unitId: number) => {
         if (!isEnrolled) {
             setOpenEnrollWindow(true)
@@ -190,7 +195,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     }
 
     // 진행상황 계산.
-
     const progressRate = calculateTotalProgressOptimized(textbookInfo!)
     useEffect(() => {
         if (progressRate > 0) {
@@ -205,6 +209,60 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             }).catch(console.error);
         }
     }, [progressRate]);
+
+
+    const [tosswindow, setTosswindow] = useState(false);
+    const widgets = useRef<TossPaymentsWidgets>(null);
+
+
+    const initToss = async () => {
+
+        const toss = await loadTossPayments("test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm")
+        widgets.current = toss.widgets({ customerKey: userId! })
+
+        await widgets.current?.setAmount({
+            value: price,
+            currency: "KRW"
+        })
+
+        await widgets.current?.renderPaymentMethods({
+            selector: "#toss-payment-methods",
+        })
+
+        await widgets.current?.renderAgreement({
+            selector: "#toss-payment-agreement",
+        })
+    };
+
+    const enrollTextBooks = async () => {
+        if (price === 0) {
+
+            return
+
+        } else {
+            await widgets.current?.requestPayment({
+                    orderId: crypto.randomUUID(),
+                    orderName: "wemake product promotion",
+                    customerEmail: "lifedesigner88@gmail.com",
+                    customerName: "sejongPark",
+                    metadata: {
+                        textbook_id: textbookId,
+                    },
+                    successUrl: `${window.location.href}/success`,
+                    failUrl: `${window.location.href}/fail`,
+                }
+            )
+        }
+    }
+    const enrollCancel = () => {
+        const currentPath = location.pathname;
+        const wilNavigatePath = `/${themeSlug}/${subjectSlug}/${textbookId}`;
+        if (currentPath !== wilNavigatePath) {
+            navigate(wilNavigatePath);
+        }
+        setOpenEnrollWindow(false)
+        setTosswindow(false)
+    }
 
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
@@ -339,6 +397,45 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     return (
         <div className={"h-[calc(100vh-64px)] w-screen overflow-hidden"}>
+
+            {/* 결제 관련 */}
+            <AlertDialog open={openEnrollWindow}>
+                <AlertDialogContent>
+                    <div className={tosswindow ? "block" : "hidden"}>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>{textbookInfo!.title}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                <div id={"toss-payment-methods"} className={"w-full"}></div>
+                                <div id={"toss-payment-agreement"} className={"w-full"}></div>
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel onClick={() => enrollCancel()}>돌아가기</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => enrollTextBooks()}>
+                                {price === 0 ? "결제없이 수강신청" : `${price.toLocaleString()}원 결제`}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </div>
+                    <div className={tosswindow ? "hidden" : "block"}>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>강의등록</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                이 강의는 {price === 0 ? "무료" : `${price.toLocaleString()}원`} 입니다.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+
+                        <AlertDialogFooter>
+                            <AlertDialogCancel onClick={() => enrollCancel()}>둘러보기</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => {
+                                setTosswindow(true)
+                                void initToss()
+                            }}>강의등록</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </div>
+                </AlertDialogContent>
+            </AlertDialog>
+
+
             <div className={"hidden md:block h-[calc(100vh-64px)] w-screen overflow-hidden"}>
                 {/* 데스크톱 - Resizable 레이아웃 */}
                 <ResizablePanelGroup direction="horizontal">
@@ -348,7 +445,13 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
                         <Outlet
-                            context={{ textbookInfo, handleUnitClick, isEnrolled, setOpenEnrollWindow }}/>
+                            context={{
+                                textbookInfo,
+                                handleUnitClick,
+                                isEnrolled,
+                                setOpenEnrollWindow,
+                                setAfterEnrollNaviUrl
+                            }}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
@@ -374,25 +477,16 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 {/* 메인 콘텐츠가 전체 화면 사용 */}
                 <div className="flex-1 w-full h-full overflow-auto">
                     <Outlet
-                        context={{ textbookInfo, handleUnitClick, isEnrolled, setOpenEnrollWindow }}/>
+                        context={{
+                            textbookInfo,
+                            handleUnitClick,
+                            isEnrolled,
+                            setOpenEnrollWindow,
+                            setAfterEnrollNaviUrl
+                        }}/>
                 </div>
             </div>
 
-            {/* 결제 관련 */}
-            <AlertDialog open={openEnrollWindow} onOpenChange={setOpenEnrollWindow}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle> 강의를 등록하시겠습니까?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            강의는 무료 입니다.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div>
     );
 }

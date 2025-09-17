@@ -17,6 +17,7 @@ export type OutletContextType = {
     handleUnitClick: (unitId: number) => void;
     isEnrolled: boolean
     setOpenEnrollWindow: (open: boolean) => void;
+    setAfterEnrollNaviUrl: (url: string) => void;
 };
 
 export default function TextbookPage() {
@@ -94,7 +95,7 @@ export default function TextbookPage() {
     const fetcher = useFetcher()
     const handleCurriculumClick = (curriculum_id: number) => {
 
-        if(!isEnrolled) {
+        if (!isEnrolled) {
             setOpenEnrollWindow(true)
             return
         }
@@ -136,12 +137,14 @@ export default function TextbookPage() {
     const unitProgress = (checkedUnitsCounter / unitCount) * 100;
     const curriculumProgress = (checkedCurriculums.length / curriculumList.length) * 100;
     const totalProgress = (unitProgress * 0.5) + (curriculumProgress * 0.5);
+    const price = textbookInfo!.price;
+
 
     return (
         <div className=" p-3 h-[calc(100vh-64px)] overflow-y-scroll">
             <div className={"max-w-full"}>
+
                 {/* 📊 통계 정보 카드들 */}
-                {/* 📊 통계 정보 카드들 - 하드코딩 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
                     {/* 대단원 카드 */}
                     <Card className="hover:shadow-md transition-shadow duration-300">
@@ -154,7 +157,12 @@ export default function TextbookPage() {
                     </Card>
 
                     {/* 남은시간 카드 */}
-                    <Card className="hover:shadow-md transition-shadow duration-300">
+                    <Card className={`hover:shadow-md transition-shadow duration-300 ${isEnrolled? "" :"cursor-pointer"}`} onClick={() => {
+                        if (!isEnrolled) {
+                            setOpenEnrollWindow(true)
+                            return
+                        }
+                    }}>
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
                             <div
                                 className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
@@ -164,12 +172,25 @@ export default function TextbookPage() {
                                     <Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/>
                                 )}
                             </div>
-                            <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
-                                {unCheckedUnitsEstimatedSeconds === 0 ? "완강" : formatTime(unCheckedUnitsEstimatedSeconds)}
-                            </div>
-                            <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
-                                남은 강의
-                            </div>
+                            {isEnrolled ? <>
+                                <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
+                                    {unCheckedUnitsEstimatedSeconds === 0 ? "완강" : formatTime(unCheckedUnitsEstimatedSeconds)}
+                                </div>
+                                <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
+                                    남은 강의
+                                </div>
+                            </> : <>
+
+                                <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
+                                    {price === 0 ? "무료" : price.toLocaleString() + "원"}
+                                </div>
+                                <div className="text-xs md:text-sm text-gray-600 text-center truncate max-w-full">
+                                    {price === 0 ? "미등록" : "미결제"}
+
+                                </div>
+                            </>
+                            }
+
                         </CardContent>
                     </Card>
 

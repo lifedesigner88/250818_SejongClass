@@ -1,4 +1,4 @@
-import { Form, redirect, useOutletContext } from "react-router";
+import { Form, redirect, useLocation, useOutletContext } from "react-router";
 import type { Route } from "./+types/unit-page";
 import { getUnitAndConceptsByUnitId, updateUnitReadmeContent } from "../queries";
 import { z } from "zod";
@@ -13,7 +13,7 @@ import {
     SheetTitle,
     SheetTrigger
 } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { OutletContextType } from "~/feature/textbooks/pages/textbook-page";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
@@ -30,8 +30,6 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
         && data["textbook-id"] === unitData.middle.major.textbook.textbook_id))
         throw redirect("/404");
 
-
-
     return { unitData }
 }
 
@@ -43,7 +41,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
     const { success, data } = schema.safeParse(Object.fromEntries(formData));
     if (!success) throw new Error('Invalid form data');
-
+    console.log("hihi")
     await updateUnitReadmeContent(1, data?.content);
 
     return { success: true };
@@ -52,13 +50,21 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
-    const { isEnrolled, setOpenEnrollWindow } = useOutletContext<OutletContextType>();
+    const { isEnrolled, setOpenEnrollWindow, setAfterEnrollNaviUrl } = useOutletContext<OutletContextType>();
 
-    if (!isEnrolled) {
-        setOpenEnrollWindow(true)
-        return
+    const location = useLocation();
+    const shouldHandleEnrollment = useMemo(() => {
+        if (!isEnrolled) {
+            setAfterEnrollNaviUrl(location.pathname);
+            setOpenEnrollWindow(true);
+            return true;
+        }
+        return false;
+    }, []);
+
+    if (shouldHandleEnrollment) {
+        return <h1></h1>;
     }
-
 
 
     const { unitData } = loaderData;
@@ -128,7 +134,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         <Brain className="h-6 w-6"/>
                     </button>
                 </SheetTrigger>
-                <SheetContent side="right" >
+                <SheetContent side="right">
                     <SheetTitle className="p-10 flex items-center gap-3 text-xl">
                         <div className="p-2 bg-purple-500/10 rounded-xl">
                             <Brain className="h-8 w-8 text-purple-600 dark:text-purple-400"/>
