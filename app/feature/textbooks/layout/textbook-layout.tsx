@@ -194,7 +194,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         })
     }
 
-    // 진행상황 계산.
+    // 과먹 진행상황 계산.
     const progressRate = Math.floor(calculateTotalProgressOptimized(textbookInfo!))
     useEffect(() => {
         if (progressRate >= 0) {
@@ -254,8 +254,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     method: "post",
                     action: "/api/enrollments/enroll-free",
                 })
-
-
         } else {
             await widgets.current?.requestPayment({
                     orderId: crypto.randomUUID(),
@@ -264,12 +262,16 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     customerName: auth.publicUserData.username,
                     metadata: {
                         textbook_id: textbookId,
+                        user_id: auth.publicUserData.user_id,
+                        redirect_url: location.pathname,
+                        customerEmail: auth.publicUserData.email,
                     },
                     successUrl: `${window.location.origin}/api/enrollments/enroll`,
                     failUrl: `${window.location.href}/fail`,
                 }
             )
         }
+
     }
 
     useEffect(() => {
@@ -286,7 +288,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 enrollCancel()
             }, 3000)
         }
-
 
     }, [enrollFetcher.data])
 
