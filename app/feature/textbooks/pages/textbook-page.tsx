@@ -13,6 +13,7 @@ import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-p
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
+    isAdmin: boolean;
     textbookInfo: TextbookInfo;
     handleUnitClick: (unitId: number) => void;
     isEnrolled: boolean

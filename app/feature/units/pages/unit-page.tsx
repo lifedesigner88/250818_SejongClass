@@ -5,7 +5,6 @@ import { z } from "zod";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, Play, BookOpen, Brain } from "lucide-react";
 import colors from "~/feature/textbooks/major-color";
-import { MarkdownViewer } from "@/components/markdownViewr";
 import {
     Sheet,
     SheetContent,
@@ -15,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { useMemo, useState } from "react";
 import type { OutletContextType } from "~/feature/textbooks/pages/textbook-page";
+import Tiptap from "~/src/Tiptap";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const paramsSchema = z.object({
@@ -41,7 +41,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
     const { success, data } = schema.safeParse(Object.fromEntries(formData));
     if (!success) throw new Error('Invalid form data');
-    console.log("hihi")
     await updateUnitReadmeContent(1, data?.content);
 
     return { success: true };
@@ -50,11 +49,11 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
-    const { isEnrolled, setOpenEnrollWindow, setAfterEnrollNaviUrl } = useOutletContext<OutletContextType>();
+    const { isAdmin, isEnrolled, setOpenEnrollWindow, setAfterEnrollNaviUrl } = useOutletContext<OutletContextType>();
 
     const location = useLocation();
     const shouldHandleEnrollment = useMemo(() => {
-        if (!isEnrolled) {
+        if (!isAdmin && !isEnrolled) {
             setAfterEnrollNaviUrl(location.pathname);
             setOpenEnrollWindow(true);
             return true;
@@ -109,7 +108,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     </CollapsibleTrigger>
                     <CollapsibleContent className="mt-4">
                         <div className="p-6 bg-white dark:bg-gray-900 rounded-lg border">
-                            <MarkdownViewer content={unitData.readme_content ?? ""}/>
+                            {/*<MarkdownViewer content={unitData.readme_content ?? ""}/>*/}
+                            <Tiptap />
                         </div>
                     </CollapsibleContent>
                 </Collapsible>

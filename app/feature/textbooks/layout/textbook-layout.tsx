@@ -70,6 +70,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         auth.setShowLoginDialog(true)
         return <h1></h1>
     }
+    const isAdmin = auth.isAdmin
 
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
@@ -169,12 +170,12 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     const [afterEnrollNaviUrl, setAfterEnrollNaviUrl] = useState<string>(location.pathname);
 
     const handleUnitClick = (unitId: number) => {
-        if (!isEnrolled) {
+        if (!isAdmin && !isEnrolled) {
             setOpenEnrollWindow(true)
             return
         }
-        navigate(`${unitId}`);
 
+        navigate(`${unitId}`);
         if (window.innerWidth < 768) setIsMobileMenuOpen(false);
     };
 
@@ -263,7 +264,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     metadata: {
                         textbook_id: textbookId,
                         user_id: auth.publicUserData.user_id,
-                        redirect_url: location.pathname,
+                        redirect_url: afterEnrollNaviUrl,
                         customerEmail: auth.publicUserData.email,
                     },
                     successUrl: `${window.location.origin}/api/enrollments/enroll`,
@@ -530,6 +531,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     <ResizablePanel defaultSize={80}>
                         <Outlet
                             context={{
+                                isAdmin,
                                 textbookInfo,
                                 handleUnitClick,
                                 isEnrolled,
@@ -562,6 +564,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 <div className="flex-1 w-full h-full overflow-auto">
                     <Outlet
                         context={{
+                            isAdmin,
                             textbookInfo,
                             handleUnitClick,
                             isEnrolled,

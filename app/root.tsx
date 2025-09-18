@@ -114,6 +114,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     const { data: supabaseAuthData, error } = await client.auth.getUser()
     if (error) return { supabaseAuthData }
     const user = supabaseAuthData.user;
+    const isAdmin = user.role === "admin";
 
     const loginedUuserProviderId = user.user_metadata.provider_id;
     const loginedUserDataFromProvider = user.identities?.filter(identity => identity.id === loginedUuserProviderId)[0];
@@ -134,6 +135,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     return {
         publicUserData: {
             ...publicUserData,
+            isAdmin,
             provider: loginedUserDataFromProvider?.provider || null,
         },
     }
@@ -156,6 +158,8 @@ export default function App({ loaderData }: Route.ComponentProps) {
     // 어떤 provider가 클릭되었는지 감지
     const submittedProvider = navigation.formData?.get("provider");
     const isWebView = isInAppBrowser()
+    const isAdmin = publicUserData?.isAdmin;
+    console.log(isAdmin,"🎉")
 
     return (
         <>
@@ -319,6 +323,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 </DialogContent>
             </Dialog>
             <Outlet context={{
+                isAdmin,
                 isLoggedIn,
                 publicUserData,
                 setShowLoginDialog,

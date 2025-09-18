@@ -19,6 +19,7 @@ export interface publicUserDataType {
 }
 
 interface AuthOutletContext {
+    isAdmin: boolean;
     isLoggedIn: boolean;
     publicUserData: publicUserDataType
     setShowLoginDialog: (show: boolean) => void;

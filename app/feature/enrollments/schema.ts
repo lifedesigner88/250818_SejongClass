@@ -1,5 +1,4 @@
 import {
-    boolean,
     pgTable,
     primaryKey,
     smallint,
