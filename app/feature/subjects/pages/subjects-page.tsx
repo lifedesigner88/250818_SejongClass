@@ -25,7 +25,6 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const themeSlug = params['theme-slug'];
     const userId = await getUserIdForSever(request)
     const textbooks = await getTextbooksByTheamSlug(themeSlug, userId!);
-    console.dir(textbooks, { depth: null })
     if (!textbooks) throw redirect("/404")
     return { textbooks };
 };

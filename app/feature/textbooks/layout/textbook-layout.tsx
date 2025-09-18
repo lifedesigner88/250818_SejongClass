@@ -441,7 +441,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
             {/* 결제 관련 */}
             <AlertDialog open={openEnrollWindow}>
-                <AlertDialogContent>
+                <AlertDialogContent className={"max-w-full px-1 sm:px-6 max-h-screen overflow-y-auto"}>
 
                     {/* 강의 등록 의사 물어보기 */}
                     <div className={tosswindow ? "hidden" : "block"}>
@@ -482,7 +482,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                         </AlertDialogHeader>
 
                         <AlertDialogHeader className={enrollSuccess || enrollFail ? "hidden" : "block"}>
-                            <AlertDialogHeader className={enrollSuccess || enrollFail ? "hidden" : "block"}>
+                            <AlertDialogHeader>
                                 <AlertDialogTitle>{textbookInfo!.title}</AlertDialogTitle>
                                 <div id={"toss-payment-methods"} className={"w-full"}></div>
                                 <div id={"toss-payment-agreement"} className={"w-full"}></div>
