@@ -50,9 +50,15 @@ export const action = async ({ request }: Route.ActionArgs) => {
 export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
     const { isAdmin, isEnrolled, setOpenEnrollWindow, setAfterEnrollNaviUrl } = useOutletContext<OutletContextType>();
+    const { unitData } = loaderData;
+    const isFree = unitData.is_free;
+    const isPublished = unitData.is_published;
 
     const location = useLocation();
     const shouldHandleEnrollment = useMemo(() => {
+        if (isFree) return;
+        if (!isPublished) return <h1> 강의 준비중 입니다. </h1>;
+
         if (!isAdmin && !isEnrolled) {
             setAfterEnrollNaviUrl(location.pathname);
             setOpenEnrollWindow(true);
@@ -66,7 +72,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     }
 
 
-    const { unitData } = loaderData;
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
     return (
@@ -109,7 +114,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     <CollapsibleContent className="mt-4">
                         <div className="p-6 bg-white dark:bg-gray-900 rounded-lg border">
                             {/*<MarkdownViewer content={unitData.readme_content ?? ""}/>*/}
-                            <Tiptap />
+                            <Tiptap/>
                         </div>
                     </CollapsibleContent>
                 </Collapsible>

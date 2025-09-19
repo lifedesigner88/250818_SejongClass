@@ -177,8 +177,6 @@ export default function App({ loaderData }: Route.ComponentProps) {
     const submittedProvider = navigation.formData?.get("provider");
     const isWebView = isInAppBrowser()
     const isAdmin = publicUserData?.isAdmin;
-    console.log(isAdmin,"🎉")
-
     return (
         <>
             {(isLoading || isSubmitting) && (

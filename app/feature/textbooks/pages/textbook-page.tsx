@@ -1,21 +1,22 @@
-import { useFetcher, useOutletContext } from "react-router";
-import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Target, Hash, TrendingUp, BarChart, BanIcon } from "lucide-react";
-import colors from "~/feature/textbooks/major-color";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Checkbox } from "@/components/ui/checkbox";
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
+import { Target, Hash, TrendingUp, BarChart, BanIcon } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useFetcher, useOutletContext } from "react-router";
+import colors from "~/feature/textbooks/major-color";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import React, { useState } from "react";
+import { DateTime } from "luxon";
 
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
     isAdmin: boolean;
     textbookInfo: TextbookInfo;
-    handleUnitClick: (unitId: number) => void;
+    handleUnitClick: (unitId: number, isFree: boolean, isPublish: boolean) => void;
     isEnrolled: boolean
     setOpenEnrollWindow: (open: boolean) => void;
     setAfterEnrollNaviUrl: (url: string) => void;
@@ -60,6 +61,8 @@ export default function TextbookPage() {
         unit_name: string;
         curriculum_id: number;
         isChecked: boolean;
+        isFree: boolean;
+        isPublished: boolean;
     }[] = [];
 
 
@@ -83,7 +86,9 @@ export default function TextbookPage() {
                             major_name: major.title,
                             unit_name: unit.title,
                             curriculum_id: curriculum.curriculum_id,
-                            isChecked: curriculum.checklists.length > 0
+                            isChecked: curriculum.checklists.length > 0,
+                            isFree: unit.is_free,
+                            isPublished: unit.is_published,
                         });
                     });
                 }
@@ -176,9 +181,12 @@ export default function TextbookPage() {
                                 className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
                                 {unCheckedUnitsEstimatedSeconds === 0 ? (
                                     <div className="text-4xl">🎉</div>
-                                ) : (
-                                    <Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/>
-                                )}
+                                ) : <>
+                                    {isEnrolled
+                                        ? <><Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/></>
+                                        : <div className="text-3xl">✏️</div>
+                                    }
+                                </>}
                             </div>
                             {isEnrolled ? <>
                                 <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
@@ -190,10 +198,10 @@ export default function TextbookPage() {
                             </> : <>
 
                                 <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
-                                    {price === 0 ? "무료" : price.toLocaleString() + "원"}
+                                    {price === 0 ? "강의등록" : "🚫 미결제"}
                                 </div>
-                                <div className="text-xs md:text-sm text-center truncate max-w-full text-red-500">
-                                    {price === 0 ? "🚫 미등록" : "🚫 미결제"}
+                                <div className="text-xs md:text-sm text-center truncate max-w-full text-green-600">
+                                    {price === 0 ? "무료" : price.toLocaleString() + "원"}
 
                                 </div>
                             </>
@@ -338,7 +346,7 @@ export default function TextbookPage() {
                                     <Tooltip>
                                         <TooltipTrigger className={"w-full h-full"}>
                                             <Card
-                                                onClick={() => handleUnitClick(curriculum.unit_id)}
+                                                onClick={() => handleUnitClick(curriculum.unit_id, curriculum.isFree, curriculum.isPublished)}
                                                 className="hover:shadow-lg min-h-[200px] w-full cursor-zoom-in">
 
                                                 <CardHeader className="space-y-3">
@@ -351,12 +359,21 @@ export default function TextbookPage() {
                                                                     {curriculum.code}
                                                                 </Badge>
                                                             </div>
+                                                            {curriculum.isPublished
+                                                                ? isEnrolled
+                                                                    ? ""
+                                                                    : curriculum.isFree
+                                                                        ? " 🔵 free"
+                                                                        : " 🔒"
+                                                                : " 🚫"
+                                                            }
                                                         </div>
-
                                                         <div className="flex flex-col items-end gap-1">
                                                             <Badge variant="outline" className="font-mono">
                                                                 {String(index + 1).padStart(2, '0')}
                                                             </Badge>
+
+
                                                         </div>
                                                     </div>
                                                 </CardHeader>

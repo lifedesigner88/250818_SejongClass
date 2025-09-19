@@ -155,8 +155,8 @@ function TextbookCard({
                     className={`relative w-full h-full transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden 
                     ${
                         isClickable || isAdmin
-                            ? 'group-hover:shadow-lg group-hover:scale-[0.98] cursor-pointer'
-                            : 'opacity-75 cursor-not-allowed'
+                            ? 'group-hover:shadow-lg group-hover:scale-[0.95] cursor-pointer'
+                            : 'cursor-not-allowed'
                     }
                     `}>
 

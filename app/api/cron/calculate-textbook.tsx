@@ -124,35 +124,35 @@ export const action = async ({ request }: Route.LoaderArgs) => {
     }
 };
 
-export default function CalculateTextbook() {
-
-    const secretKey = import.meta.env.VITE_SEJONG_SECRET_KEY;
-
-    const activateAction = async () => {
-        try {
-            const response = await fetch("/api/cron/calculate-textbook", {
-                method: "POST",
-                headers: {
-                    "X-SEJONG": secretKey!,
-                    "Content-Type": "application/json",
-                },
-            });
-
-            if (!response.ok) {
-                console.error(`HTTP error! status: ${response.status}`);
-                return;
-            }
-
-            const data = await response.json();
-            console.log("계산 결과:", data);
-            console.log("calculate-textbook🕺");
-
-        } catch (error) {
-            console.error('요청 오류:', error);
-        }
-    };
-
-    return <div>
-        <Button onClick={() => activateAction()}>Calculate Textbooks</Button>
-    </div>;
-}
+// export default function CalculateTextbook() {
+//
+//     const secretKey = import.meta.env.VITE_SEJONG_SECRET_KEY;
+//
+//     const activateAction = async () => {
+//         try {
+//             const response = await fetch("/api/cron/calculate-textbook", {
+//                 method: "POST",
+//                 headers: {
+//                     "X-SEJONG": secretKey!,
+//                     "Content-Type": "application/json",
+//                 },
+//             });
+//
+//             if (!response.ok) {
+//                 console.error(`HTTP error! status: ${response.status}`);
+//                 return;
+//             }
+//
+//             const data = await response.json();
+//             console.log("계산 결과:", data);
+//             console.log("calculate-textbook🕺");
+//
+//         } catch (error) {
+//             console.error('요청 오류:', error);
+//         }
+//     };
+//
+//     return <div>
+//         <Button onClick={() => activateAction()}>Calculate Textbooks</Button>
+//     </div>;
+// }

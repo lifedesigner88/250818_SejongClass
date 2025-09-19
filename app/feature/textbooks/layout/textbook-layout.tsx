@@ -30,6 +30,8 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { loadTossPayments, type TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
+import { isNewInOneMonth } from "~/lib/utils";
+import { DateTime } from "luxon";
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -169,8 +171,20 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     const [openEnrollWindow, setOpenEnrollWindow] = useState(false);
     const [afterEnrollNaviUrl, setAfterEnrollNaviUrl] = useState<string>(location.pathname);
 
-    const handleUnitClick = (unitId: number) => {
-        if (!isAdmin && !isEnrolled) {
+    const handleUnitClick = (unitId: number, isFree: boolean, isPublished: boolean) => {
+
+        if (isFree) {
+            navigate(`${unitId}`);
+            if (window.innerWidth < 768) setIsMobileMenuOpen(false);
+            return
+        }
+
+        if (!isPublished) {
+            openNotPubAlert(true)
+            return
+        }
+
+        if (!isAdmin && !isEnrolled && !isFree) {
             setOpenEnrollWindow(true)
             return
         }
@@ -180,7 +194,11 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     };
 
     const fetcher = useFetcher()
-    const handleUnitToggleClick = (unit_id: number) => {
+    const handleUnitToggleClick = (unit_id: number, isPublished: boolean) => {
+        if (!isPublished) {
+            openNotPubAlert(true)
+            return
+        }
 
         if (!isEnrolled) {
             setOpenEnrollWindow(true)
@@ -308,6 +326,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         }, 1000)
     }
 
+    const [notPublished, openNotPubAlert] = useState(false)
+
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
         <div className={"h-screen sm:h-[calc(100vh-64px)] overflow-hidden"}>
@@ -391,6 +411,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                 const submittingId = fetcher.formData?.get("unit_id");
                                                                 const optimism = Number(submittingId) === unit.unit_id && (isSubmitting || isLoading)
                                                                 const isChecked = unit.progress.length > 0;
+                                                                const updated = isNewInOneMonth(unit.updated_at!)
+
 
                                                                 return (
                                                                     <div
@@ -400,7 +422,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                         <Checkbox
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
-                                                                                handleUnitToggleClick(unit.unit_id)
+                                                                                handleUnitToggleClick(unit.unit_id, unit.is_published)
                                                                             }}
                                                                             className={"absolute left-2 size-6 cursor-pointer"}
                                                                             checked={optimism ? !isChecked : isChecked}
@@ -408,12 +430,31 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                         />
                                                                         <Button
                                                                             variant="ghost"
-                                                                            className={`w-full justify-start p-2 h-auto text-left text-sm ${
+                                                                            className={`w-full justify-start p-2 h-auto text-left text-sm group ${
                                                                                 isActive ? 'bg-accent text-accent-foreground' : ''
                                                                             }`}
-                                                                            onClick={() => handleUnitClick(unit.unit_id)}>
+                                                                            onClick={() => handleUnitClick(unit.unit_id, unit.is_free, unit.is_published)}
+                                                                        >
                                                                             <div
-                                                                                className="truncate w-full pl-10">{unit.title}</div>
+                                                                                className="truncate w-full pl-10">
+                                                                                {unit.title}
+                                                                                {unit.is_published
+                                                                                    ? isEnrolled
+                                                                                        ? ""
+                                                                                        : unit.is_free
+                                                                                            ? " 🟢 free"
+                                                                                            : " 🔒"
+                                                                                    : " 🚫"
+                                                                                }
+                                                                                {unit.is_published
+                                                                                    ? updated
+                                                                                        ? <span
+                                                                                            className="text-xs   opacity-0 group-hover:opacity-50"> &nbsp;&nbsp;&nbsp;
+                                                                                            {` ${DateTime.fromJSDate(unit.updated_at!).toRelative()}`}</span>
+                                                                                        : ""
+                                                                                    : ""
+                                                                                }
+                                                                            </div>
                                                                             <div
                                                                                 className={`text-xs text-muted-foreground flex-shrink-0 pr-2 ${isActive ? "" : "opacity-35"}`}>
                                                                                 {isActive ? "🔥 " : null}
@@ -441,6 +482,23 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     return (
         <div className={"h-[calc(100vh-64px)] w-screen overflow-hidden"}>
 
+            <AlertDialog open={notPublished} onOpenChange={openNotPubAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            🚫 강의 준비 중 🚫
+                        </AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogAction>
+                            둘러보기
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+
+            </AlertDialog>
+
+
             {/* 결제 관련 */}
             <AlertDialog open={openEnrollWindow}>
                 <AlertDialogContent className={"max-w-full px-1 sm:px-6 max-h-screen overflow-y-auto"}>
@@ -448,7 +506,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     {/* 강의 등록 의사 물어보기 */}
                     <div className={tosswindow ? "hidden" : "block"}>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>강의등록</AlertDialogTitle>
+                            <AlertDialogTitle>✏️ 강의등록 ✏️</AlertDialogTitle>
                             <AlertDialogDescription className={"pb-3"}>
                                 {price === 0 ? "무료" : `${price.toLocaleString()}원`} 입니다.
                             </AlertDialogDescription>

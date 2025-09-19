@@ -10,6 +10,9 @@ export async function getUnitAndConceptsByUnitId(unit_id: number) {
             title: true,
             youtube_video_id: true,
             readme_content: true,
+            is_free: true,
+            is_published: true,
+            updated_at: true,
         },
         with: {
             middle: {
