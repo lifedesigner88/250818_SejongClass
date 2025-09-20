@@ -115,7 +115,6 @@ export const getUserIdFromCookieSync = (request: Request): string | null => {
     }
 };
 
-
 export const getUserIdFromSession = async (request: Request): Promise<string | null> => {
     const { client } = makeSSRClient(request);
     const { data: { session }, error } = await client.auth.getSession();
@@ -123,10 +122,18 @@ export const getUserIdFromSession = async (request: Request): Promise<string | n
     return session.user.id;
 };
 
-
 export const getLoggedInUserId = async (request: Request): Promise<string | null> => {
     const { client } = makeSSRClient(request);
     const { data, error } = await client.auth.getUser();
     if (error || data.user === null) return null;
     return data.user.id;
+}
+
+
+export const getUserIsAdmin = async (request: Request): Promise<boolean> => {
+    const { client } = makeSSRClient(request);
+    const { data, error } = await client.auth.getSession();
+    if (error || data.session?.user === null) return false;
+    console.log(data.session?.user.role);
+    return data.session?.user.role === 'admin';
 }

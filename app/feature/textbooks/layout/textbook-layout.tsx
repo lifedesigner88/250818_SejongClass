@@ -363,28 +363,26 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
             {/*상단 고정 버튼 */}
             <div className="flex justify-center items-center h-[64px] relative">
 
+                {/* 모든 목차 열고 닫기 */}
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onToggle}
+                    className="cursor-pointer ml-5">
+                    {isExpanded ? (
+                        <ChevronsUp className="h-4 w-4"/>
+                    ) : (
+                        <ChevronsDown className="h-4 w-4"/>
+                    )}
+                </Button>
                 <Link to={`/${themeSlug}/${subjectSlug}/${textbookId}`} className={"w-full"} onClick={() => {
                     if (window.innerWidth < 768) setIsMobileMenuOpen(false)
                 }}>
-                    <h2 className="font-semibold text-xl text-center w-full truncate">
+                    <h2 className="font-semibold text-xl text-center w-full truncate pr-8">
                         {textbookInfo?.title}
                     </h2>
-                    <Progress value={progressRate} className="absolute -bottom-1 w-full z-30"/>
                 </Link>
-
-                {/* 모든 목차 열고 닫기 */}
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onToggle}
-                    className="cursor-pointer">
-                    {isExpanded ? (
-                        <ChevronsUp className="h-4 w-4 mr-1"/>
-                    ) : (
-                        <ChevronsDown className="h-4 w-4 mr-1"/>
-                    )}
-                </Button>
-
+                <Progress value={progressRate} className="absolute -bottom-1 w-full z-30"/>
             </div>
 
             {/* 실제 네비 게이션*/}
