@@ -8,7 +8,7 @@ import {
     useLocation,
     useNavigate
 } from "react-router";
-import { ChevronDown, ChevronRight, Loader2, Menu } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronsDown, ChevronsUp, Loader2, Menu } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -32,6 +32,7 @@ import {
 import { loadTossPayments, type TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
 import { isNewInOneMonth } from "~/lib/utils";
 import { DateTime } from "luxon";
+import { Badge } from "@/components/ui/badge";
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -77,29 +78,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     const currentUnitId = params["unit-id"] ? parseInt(params["unit-id"]) : null;
     const { themeSlug, subjectSlug, textbookId, textbookInfo } = loaderData;
 
-    // 좌측 네비게이션 토글 관련 변수
-    const [openMajors, setOpenMajors] = useState<Set<number>>(new Set());
-    const [openMiddles, setOpenMiddles] = useState<Set<string>>(new Set());
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const scrollAreaRef = useRef<HTMLDivElement>(null);
-    const toggleMajor = (majorIndex: number) => {
-        setOpenMajors(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(majorIndex)) newSet.delete(majorIndex)
-            else newSet.add(majorIndex);
-            return newSet;
-        });
-    };
-    const toggleMiddle = (majorIndex: number, middleIndex: number) => {
-        const key = `${majorIndex}-${middleIndex}`;
-        setOpenMiddles(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(key)) newSet.delete(key);
-            else newSet.add(key);
-            return newSet;
-        });
-    };
 
 
     // unit 의 대단원 중단원 정보 저장.
@@ -125,16 +107,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         const { majorIndex, middleIndex } = sectionInfo;
         const middleKey = `${majorIndex}-${middleIndex}`;
 
-        setOpenMajors(prev => {
-            if (prev.has(majorIndex)) {
-                const newSet = new Set(prev);
-                newSet.delete(majorIndex);
-                return newSet;
-            }
-            return prev;
-        });
-
-        setOpenMiddles(prev => {
+        setCloseSection(prev => {
             if (prev.has(middleKey)) {
                 const newSet = new Set(prev);
                 newSet.delete(middleKey);
@@ -195,6 +168,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     const fetcher = useFetcher()
     const handleUnitToggleClick = (unit_id: number, isPublished: boolean) => {
+
         if (!isPublished) {
             openNotPubAlert(true)
             return
@@ -328,6 +302,60 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     const [notPublished, openNotPubAlert] = useState(false)
 
+
+    // 좌측 네비게이션 토글 관련 변수
+    const [closeSection, setCloseSection] = useState<Set<string>>(new Set());
+    const [isExpanded, setIsExpanded] = useState(true);
+
+    const allSectionSet = new Set<string>()
+    const toggleSection = (majorIndex: number, middleIndex: number) => {
+        const key = `${majorIndex}-${middleIndex}`;
+        setCloseSection(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(key)) newSet.delete(key);
+            else newSet.add(key);
+            return newSet;
+        });
+    };
+    // 모두 펼치기.
+    const onToggle = () => {
+        setIsExpanded((prv) => !prv)
+        if (isExpanded) setCloseSection(allSectionSet)
+        else setCloseSection(new Set())
+    }
+
+    const justOpenMajor = (majorIndex: number) => {
+        if (majorIndex === 0) {
+            setCloseSection(new Set<string>())
+            return
+        }
+        const willDeletedIfContain = `${majorIndex}-`;
+        const filteredSet = new Set<string>();
+
+        // 조건에 맞지 않는 것만 새 Set에 추가
+        allSectionSet.forEach(value => {
+            if (!value.startsWith(willDeletedIfContain)) {
+                filteredSet.add(value);
+            }
+        });
+        setCloseSection(filteredSet);
+    };
+
+    useEffect(() => {
+        console.log("🔵")
+        if (countMajorClosed('-0', closeSection) === countMajorClosed('-0', allSectionSet))
+            setIsExpanded(false)
+        else setIsExpanded(true)
+
+
+    }, [closeSection])
+
+    const countMajorClosed = (suffix: string, set: Set<string>) => {
+        let count = 0;
+        for (const item of set) if (item.endsWith(suffix)) count++;
+        return count;
+    };
+
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
         <div className={"h-screen sm:h-[calc(100vh-64px)] overflow-hidden"}>
@@ -343,6 +371,20 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     </h2>
                     <Progress value={progressRate} className="absolute -bottom-1 w-full z-30"/>
                 </Link>
+
+                {/* 모든 목차 열고 닫기 */}
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onToggle}
+                    className="cursor-pointer">
+                    {isExpanded ? (
+                        <ChevronsUp className="h-4 w-4 mr-1"/>
+                    ) : (
+                        <ChevronsDown className="h-4 w-4 mr-1"/>
+                    )}
+                </Button>
+
             </div>
 
             {/* 실제 네비 게이션*/}
@@ -352,17 +394,17 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     {textbookInfo?.majors.map((major, majorIndex) => {
                         const colorSet = colors[majorIndex + 1 % colors.length];
                         const majorActive = currentUnitId && unitSectionMap.get(currentUnitId)?.majorIndex === major.major_id;
-
+                        allSectionSet.add(`${major.major_id}-${0}`)
                         return (
                             <Collapsible
                                 key={major.major_id}
-                                open={!openMajors.has(major.major_id)}
-                                onOpenChange={() => toggleMajor(major.major_id)}>
+                                open={!closeSection.has(`${major.major_id}-${0}`)}
+                                onOpenChange={() => toggleSection(major.major_id, 0)}>
                                 <CollapsibleTrigger asChild>
                                     <Button
                                         variant="ghost"
                                         className={`w-full justify-start p-2 h-auto text-left mt-4`}>
-                                        {!openMajors.has(major.major_id) ? (
+                                        {!closeSection.has(`${major.major_id}-${0}`) ? (
                                             <ChevronDown className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
                                         ) : (
                                             <ChevronRight className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
@@ -379,16 +421,17 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 <CollapsibleContent className="ml-3 sm:ml-6">
                                     {major.middles.map((middle) => {
                                             const middleActive = currentUnitId && unitSectionMap.get(currentUnitId)?.middleIndex === middle.middle_id;
+                                            allSectionSet.add(`${major.major_id}-${middle.middle_id}`);
                                             return (
                                                 <Collapsible
                                                     key={`${middle.middle_id}`}
-                                                    open={!openMiddles.has(`${major.major_id}-${middle.middle_id}`)}
-                                                    onOpenChange={() => toggleMiddle(major.major_id, middle.middle_id)}>
+                                                    open={!closeSection.has(`${major.major_id}-${middle.middle_id}`)}
+                                                    onOpenChange={() => toggleSection(major.major_id, middle.middle_id)}>
                                                     <CollapsibleTrigger asChild>
                                                         <Button
                                                             variant="ghost"
                                                             className="w-full justify-start p-2 h-auto text-left text-sm my-1">
-                                                            {!openMiddles.has(`${major.major_id}-${middle.middle_id}`) ? (
+                                                            {!closeSection.has(`${major.major_id}-${middle.middle_id}`) ? (
                                                                 <ChevronDown className="h-3 w-3 mr-2 flex-shrink-0"/>
                                                             ) : (
                                                                 <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0"/>
@@ -412,7 +455,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                 const optimism = Number(submittingId) === unit.unit_id && (isSubmitting || isLoading)
                                                                 const isChecked = unit.progress.length > 0;
                                                                 const updated = isNewInOneMonth(unit.updated_at!)
-
 
                                                                 return (
                                                                     <div
@@ -442,21 +484,26 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                                     ? isEnrolled
                                                                                         ? ""
                                                                                         : unit.is_free
-                                                                                            ? " 🟢 free"
+                                                                                            ? <Badge
+                                                                                                className={"ml-2 bg-sky-200"}
+                                                                                                variant={"outline"}>free</Badge>
                                                                                             : " 🔒"
                                                                                     : " 🚫"
                                                                                 }
                                                                                 {unit.is_published
                                                                                     ? updated
                                                                                         ? <span
-                                                                                            className="text-xs   opacity-0 group-hover:opacity-50"> &nbsp;&nbsp;&nbsp;
-                                                                                            {` ${DateTime.fromJSDate(unit.updated_at!).toRelative()}`}</span>
+                                                                                            className="text-xs   opacity-0 group-hover:opacity-50">
+                                                                                            &nbsp;&nbsp;&nbsp;
+                                                                                            {` ${DateTime.fromJSDate(unit.updated_at!).setLocale('ko').toRelative()}`}
+                                                                                          </span>
                                                                                         : ""
                                                                                     : ""
                                                                                 }
                                                                             </div>
                                                                             <div
-                                                                                className={`text-xs text-muted-foreground flex-shrink-0 pr-2 ${isActive ? "" : "opacity-35"}`}>
+                                                                                className={`text-xs text-muted-foreground flex-shrink-0 pr-2 
+                                                                                ${isActive ? "" : "opacity-35"}`}>
                                                                                 {isActive ? "🔥 " : null}
                                                                                 {Math.ceil(unit.estimated_seconds / 60)}분
                                                                             </div>
@@ -594,7 +641,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 handleUnitClick,
                                 isEnrolled,
                                 setOpenEnrollWindow,
-                                setAfterEnrollNaviUrl
+                                setAfterEnrollNaviUrl,
+                                justOpenMajor
                             }}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
@@ -627,7 +675,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                             handleUnitClick,
                             isEnrolled,
                             setOpenEnrollWindow,
-                            setAfterEnrollNaviUrl
+                            setAfterEnrollNaviUrl,
+                            justOpenMajor
                         }}/>
                 </div>
             </div>
