@@ -2,8 +2,8 @@ import './tiptab-css.css'
 import 'katex/dist/katex.min.css'
 import { EditorContent, type JSONContent, useEditor, useEditorState } from "@tiptap/react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Quote, Heading1, Heading2, Calculator, Sigma, SquareSigma } from "lucide-react";
-import React, { useEffect, useCallback, useState, useRef } from "react";
+import { Quote, Heading1, Heading2, Sigma, SquareSigma } from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
 import Math, { migrateMathStrings } from '@tiptap/extension-mathematics'
 import Blockquote from "@tiptap/extension-blockquote";
 import Paragraph from "@tiptap/extension-paragraph";
@@ -12,11 +12,16 @@ import Heading from '@tiptap/extension-heading'
 import Text from "@tiptap/extension-text";
 import { Node } from "@tiptap/pm/model";
 import { UndoRedo } from '@tiptap/extensions'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-
+import { Textarea } from "@/components/ui/textarea";
 
 const Tiptap = ({
                     editable,
@@ -42,20 +47,25 @@ const Tiptap = ({
             Math.configure({
                 inlineOptions: {
                     onClick: (node: Node, pos: number) => {
-                        const katex = prompt('Enter new calculation:', node.attrs.latex)
-                        if (katex && editorRef.current)
-                            editorRef.current.chain().setNodeSelection(pos).updateInlineMath({ latex: katex }).focus().run()
+                        setLatex(node.attrs.latex)
+                        setIsInlin(true)
+                        setIsNode(true)
+                        setLatexDialogOpen(true)
+                        setPos(pos)
                     }
                 },
                 blockOptions: {
                     onClick: (node: Node, pos: number) => {
-                        const katex = prompt('Enter new calculation:', node.attrs.latex)
-                        if (katex && editorRef.current)
-                            editorRef.current.chain().setNodeSelection(pos).updateBlockMath({ latex: katex }).focus().run()
+                        setLatex(node.attrs.latex)
+                        setIsInlin(false)
+                        setIsNode(true)
+                        setLatexDialogOpen(true)
+                        setPos(pos)
                     }
                 },
                 katexOptions: {
-                    throwOnError: false, // don't throw an error if the LaTeX code is invalid
+                    throwOnError: false,
+                    strict: false, // 완벽하지 않은 것도 허용.
                 },
             }),
         ],
@@ -113,19 +123,41 @@ const Tiptap = ({
         },
     });
 
-
+    // 수식 입력.
     const [latexDialogOpen, setLatexDialogOpen] = useState(false)
+    const [latex, setLatex] = useState("")
+    const [isInlin, setIsInlin] = useState(false)
+    const [isNode, setIsNode] = useState(false)
+    const [pos, setPos] = useState(0)
 
     const onInsertInlineMath = () => {
-        const katex = prompt("latex 수식을 입력해주세요.")
-        if (katex && editorRef.current)
-            editorRef.current.chain().focus().insertInlineMath({ latex: katex }).run()
+        setLatex("")
+        setIsInlin(true)
+        setIsNode(false)
+        setLatexDialogOpen(true)
     }
 
     const onInsertBlockMath = () => {
-        const katex = prompt("latex 수식을 입력해주세요.")
-        if (katex && editorRef.current)
-            editorRef.current.chain().focus().insertBlockMath({ latex: katex }).run()
+        setLatex("")
+        setIsInlin(false)
+        setIsNode(false)
+        setLatexDialogOpen(true)
+    }
+
+    const confirmLatex = () => {
+        if (!editorRef.current) return
+        const editor = editorRef.current.chain()
+
+        // 노드 업데이트 vs 새로 삽입
+        const baseChain = isNode ? editor.setNodeSelection(pos) : editor.focus()
+
+        // 인라인 vs 블록
+        const action = isNode
+            ? (isInlin ? 'updateInlineMath' : 'updateBlockMath')
+            : (isInlin ? 'insertInlineMath' : 'insertBlockMath')
+
+        baseChain[action]({ latex }).focus().run()
+        setLatexDialogOpen(false)
     }
 
     if (!editor) {
@@ -134,8 +166,8 @@ const Tiptap = ({
 
     return (
         <div className="border border-gray-200 rounded-lg p-2">
-            {editable ?
-                <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
+            <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
+                {editable ?
                     <ToggleGroup
                         variant="outline"
                         type="multiple"
@@ -187,12 +219,46 @@ const Tiptap = ({
                             onClick={onInsertBlockMath}>
                             <SquareSigma className="h-4 w-4"/>
                         </ToggleGroupItem>
-
-
                     </ToggleGroup>
-                </Dialog>
-                : null
-            }
+                    : null
+                }
+
+                <DialogContent className={"w-full max-w-xl"}>
+                    <DialogHeader>
+                        <DialogTitle>LaTeX {isInlin ? " - 인라인" : " - 블록"}  </DialogTitle>
+                    </DialogHeader>
+                    {!isInlin
+                        ? <Textarea
+                            id="latex"
+                            value={latex}
+                            onChange={(e) => setLatex(e.target.value)}
+                            placeholder="예: x^2 + y^2 = z^2"
+                            className="font-mono min-h-[200px] max-w-xl resize-y"/>
+                        : <Input
+                            id="latex"
+                            value={latex}
+                            onChange={(e) => setLatex(e.target.value)}
+                            placeholder="예: x^2 + y^2 = z^2"
+                            className="font-mono"/>
+                    }
+                    {/* 미리보기 */}
+
+                    {/* ✅ 에디터 가로 길이 제한 */}
+                    {latex && (
+                        <div className="min-h-[200px] max-w-xl p-2 border rounded bg-gray-50">
+                            <SafeKatexRenderer latex={latex} displayMode={!isInlin}/>
+                        </div>
+                    )}
+                    {editable
+                        ? <DialogFooter>
+                            <Button variant="outline" onClick={() => setLatexDialogOpen(false)}>취소</Button>
+                            <Button onClick={() => confirmLatex()}>확인</Button>
+                        </DialogFooter>
+                        : null
+                    }
+                </DialogContent>
+            </Dialog>
+
             <EditorContent editor={editor}/>
 
         </div>
@@ -202,62 +268,42 @@ const Tiptap = ({
 
 export default Tiptap
 
-const LaTexInputDialog = ({
-                              initialValue = '',
-                              onConfirm,
-                              trigger
-                          }: {
-    initialValue?: string
-    onConfirm: (latex: string) => void
-    trigger: React.ReactNode
-}) => {
-    const [latex, setLatex] = useState(initialValue)
-    const [open, setOpen] = useState(false)
 
-    const handleConfirm = () => {
-        onConfirm(latex)
-        setOpen(false)
+const SafeKatexRenderer = ({ latex, displayMode }: { latex: string, displayMode: boolean }) => {
+    const [renderedHtml, setRenderedHtml] = useState<string>('')
+    const [error, setError] = useState<string>('')
+
+    useEffect(() => {
+        const renderLatex = async () => {
+            try {
+                // 동적 import 사용
+                const katex = await import('katex')
+                const html = katex.default.renderToString(latex, {
+                    throwOnError: false,
+                    strict: false,
+                    displayMode
+                })
+                setRenderedHtml(html)
+                setError('')
+            } catch (err) {
+                console.error('KaTeX rendering error:', err)
+                setError('수식 렌더링 오류')
+                setRenderedHtml(latex) // fallback
+            }
+        }
+
+        if (latex.trim()) {
+            void renderLatex()
+        } else {
+            setRenderedHtml('')
+        }
+    }, [latex])
+
+    if (error) {
+        return <span className="text-red-500 text-sm">{error}</span>
     }
 
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>{trigger}</DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                    <DialogTitle>LaTeX 수식 입력</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                    <div>
-                        <Label htmlFor="latex">수식</Label>
-                        <Input
-                            id="latex"
-                            value={latex}
-                            onChange={(e) => setLatex(e.target.value)}
-                            placeholder="예: x^2 + y^2 = z^2"
-                            className="font-mono"
-                        />
-                    </div>
-                    {/* 미리보기 */}
-                    {latex && (
-                        <div className="p-2 border rounded bg-gray-50">
-                            <Label className="text-xs text-gray-600">미리보기:</Label>
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: window.katex?.renderToString(latex, { throwOnError: false }) || latex
-                                }}
-                            />
-                        </div>
-                    )}
-                    <div className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={() => setOpen(false)}>
-                            취소
-                        </Button>
-                        <Button onClick={handleConfirm}>
-                            확인
-                        </Button>
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog>
-    )
+    return <div
+        className="max-w-full overflow-x-auto whitespace-nowrap"
+        dangerouslySetInnerHTML={{ __html: renderedHtml }}/>
 }
