@@ -1,0 +1,18 @@
+@reference "../../app.css";
+
+.tiptap {
+
+    :first-child {
+        @apply mt-0;
+    }
+
+    blockquote {
+        @apply ml-5 py-4 px-8 my-6 text-gray-600 relative;
+
+        &::before {
+            content: '';
+            @apply absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b to-primary from-emerald-50 rounded-full;
+        }
+
+    }
+}

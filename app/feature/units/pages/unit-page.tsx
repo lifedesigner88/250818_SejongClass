@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { useEffect, useMemo, useState } from "react";
 import type { OutletContextType } from "~/feature/textbooks/pages/textbook-page";
-import Tiptap from "~/src/Tiptap";
+import Tiptap from "@/editor/Tiptap";
 import type { JSONContent } from "@tiptap/react";
 import { getUserIsAdmin } from "~/feature/auth/useAuthUtil";
 
