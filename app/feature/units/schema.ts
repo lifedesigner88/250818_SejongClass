@@ -1,7 +1,7 @@
 import {
     boolean,
     check,
-    integer,
+    integer, json,
     pgPolicy,
     pgTable,
     serial,
@@ -14,6 +14,11 @@ import { relations, sql } from "drizzle-orm";
 import { dealingsTable } from "~/feature/dealings/schema";
 import { progressTable } from "~/feature/progress/schema";
 import { curriculumsTable } from "~/feature/curriculums/schema";
+import type { JSONContent } from "@tiptap/react";
+const EMPTY_EDITOR_CONTENT: JSONContent = {
+    type: 'doc',
+    content: []
+} as const;
 
 export const unitsTable = pgTable("units", {
     unit_id: serial().primaryKey(),
@@ -21,6 +26,7 @@ export const unitsTable = pgTable("units", {
     title: varchar({ length: 100 }).notNull(),
     youtube_video_id: varchar({ length: 20 }),
     readme_content: varchar({ length: 4000 }),
+    readme_json: json().$type<JSONContent>().default(EMPTY_EDITOR_CONTENT).notNull(),
     estimated_seconds: smallint().default(0).notNull(),
     sort_order: integer().default(1).notNull(),
     is_published: boolean().default(false).notNull(),

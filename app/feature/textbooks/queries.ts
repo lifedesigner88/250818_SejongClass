@@ -52,8 +52,10 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                                 columns: {
                                     unit_id: true,
                                     title: true,
+                                    is_free:true,
                                     is_published: true,
                                     estimated_seconds: true,
+                                    updated_at: true,
                                 },
                                 orderBy: (units, { asc }) => [asc(units.sort_order)],
                                 with: {

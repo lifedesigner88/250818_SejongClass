@@ -60,10 +60,9 @@ export interface TossPaymentResponse {
 
     // 메타데이터 (프로젝트별 커스텀)
     metadata: {
-        product_id: string;
-        start_date: string;
-        end_date: string;
-        total_days: string;
+        textbook_id: string,
+        user_id: string,
+        redirect_url: string,
         [key: string]: string; // 추가 메타데이터
     };
 }

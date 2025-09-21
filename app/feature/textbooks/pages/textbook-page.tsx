@@ -1,28 +1,37 @@
-import { useFetcher, useOutletContext } from "react-router";
-import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Target, Hash, TrendingUp, BarChart, BanIcon } from "lucide-react";
-import colors from "~/feature/textbooks/major-color";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Checkbox } from "@/components/ui/checkbox";
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
+import { Target, Hash, TrendingUp, BarChart, BanIcon } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useFetcher, useOutletContext } from "react-router";
+import colors from "~/feature/textbooks/major-color";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
 export type OutletContextType = {
+    isAdmin: boolean;
     textbookInfo: TextbookInfo;
-    handleUnitClick: (unitId: number) => void;
+    handleUnitClick: (unitId: number, isFree: boolean, isPublish: boolean) => void;
     isEnrolled: boolean
     setOpenEnrollWindow: (open: boolean) => void;
     setAfterEnrollNaviUrl: (url: string) => void;
+    justOpenMajor: (majorId: number) => void;
 };
 
 export default function TextbookPage() {
 
-    const { textbookInfo, handleUnitClick, isEnrolled, setOpenEnrollWindow } = useOutletContext<OutletContextType>();
+    const {
+        textbookInfo,
+        handleUnitClick,
+        isEnrolled,
+        setOpenEnrollWindow,
+        justOpenMajor
+    } = useOutletContext<OutletContextType>();
 
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
     if (!textbookInfo) return (<div> TextbookInfo 가 없습니다. </div>)
@@ -59,6 +68,8 @@ export default function TextbookPage() {
         unit_name: string;
         curriculum_id: number;
         isChecked: boolean;
+        isFree: boolean;
+        isPublished: boolean;
     }[] = [];
 
 
@@ -82,7 +93,9 @@ export default function TextbookPage() {
                             major_name: major.title,
                             unit_name: unit.title,
                             curriculum_id: curriculum.curriculum_id,
-                            isChecked: curriculum.checklists.length > 0
+                            isChecked: curriculum.checklists.length > 0,
+                            isFree: unit.is_free,
+                            isPublished: unit.is_published,
                         });
                     });
                 }
@@ -133,12 +146,15 @@ export default function TextbookPage() {
         }, {} as Record<string, number>)
     };
 
+    const getMajorIdFromName = (majorName: string) => {
+        if (majorName === "all") return 0;
+        return textbookInfo.majors.find(major => major.title === majorName)?.major_id;
+    }
 
     const unitProgress = (checkedUnitsCounter / unitCount) * 100;
     const curriculumProgress = (checkedCurriculums.length / curriculumList.length) * 100;
     const totalProgress = Math.floor((unitProgress * 0.5) + (curriculumProgress * 0.5));
     const price = textbookInfo!.price;
-
 
     return (
         <div className=" p-3 h-[calc(100vh-64px)] overflow-y-scroll">
@@ -175,9 +191,12 @@ export default function TextbookPage() {
                                 className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-full mb-2 md:mb-3">
                                 {unCheckedUnitsEstimatedSeconds === 0 ? (
                                     <div className="text-4xl">🎉</div>
-                                ) : (
-                                    <Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/>
-                                )}
+                                ) : <>
+                                    {isEnrolled
+                                        ? <><Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/></>
+                                        : <div className="text-3xl">✏️</div>
+                                    }
+                                </>}
                             </div>
                             {isEnrolled ? <>
                                 <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
@@ -188,13 +207,13 @@ export default function TextbookPage() {
                                 </div>
                             </> : <>
 
-                                <div className="text-xl md:text-2xl font-bold text-green-600 mb-1 truncate max-w-full">
+                                <div className="text-xs md:text-sm text-center truncate max-w-full text-green-600">
                                     {price === 0 ? "무료" : price.toLocaleString() + "원"}
                                 </div>
-                                <div className="text-xs md:text-sm text-center truncate max-w-full text-red-500">
-                                    {price === 0 ? "🚫 미등록" : "🚫 미결제"}
-
-                                </div>
+                                <Button
+                                    className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-red-600 cursor-pointer shadow-xl/10"}>
+                                    {price === 0 ? "등록하기" : "결제하기"}
+                                </Button>
                             </>
                             }
 
@@ -268,7 +287,8 @@ export default function TextbookPage() {
                 <Card className="border-0 shadow-none">
                     <CardContent className={"p-0 "}>
                         <Tabs value={selectedFilter} onValueChange={setSelectedFilter}
-                              className={"w-full overflow-x-auto rounded-lg bg-muted"}>
+                              className={"w-full overflow-x-auto rounded-lg bg-muted"}
+                              onClick={() => justOpenMajor(getMajorIdFromName(selectedFilter)!)}>
                             {/* 모바일에서 스크롤 가능한 탭 */}
                             <TabsList
                                 className="flex h-14 items-center justify-between text-muted-foreground w-full p-2">
@@ -337,7 +357,7 @@ export default function TextbookPage() {
                                     <Tooltip>
                                         <TooltipTrigger className={"w-full h-full"}>
                                             <Card
-                                                onClick={() => handleUnitClick(curriculum.unit_id)}
+                                                onClick={() => handleUnitClick(curriculum.unit_id, curriculum.isFree, curriculum.isPublished)}
                                                 className="hover:shadow-lg min-h-[200px] w-full cursor-zoom-in">
 
                                                 <CardHeader className="space-y-3">
@@ -350,12 +370,18 @@ export default function TextbookPage() {
                                                                     {curriculum.code}
                                                                 </Badge>
                                                             </div>
-                                                        </div>
 
+                                                        </div>
                                                         <div className="flex flex-col items-end gap-1">
-                                                            <Badge variant="outline" className="font-mono">
-                                                                {String(index + 1).padStart(2, '0')}
-                                                            </Badge>
+                                                            {curriculum.isPublished
+                                                                ? isEnrolled
+                                                                    ? ""
+                                                                    : curriculum.isFree
+                                                                        ? <Badge className={"ml-2 bg-sky-200"}
+                                                                                 variant={"outline"}>free</Badge>
+                                                                        : " 🔒"
+                                                                : " 🚫"
+                                                            }
                                                         </div>
                                                     </div>
                                                 </CardHeader>

@@ -25,13 +25,13 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const themeSlug = params['theme-slug'];
     const userId = await getUserIdForSever(request)
     const textbooks = await getTextbooksByTheamSlug(themeSlug, userId!);
-    console.dir(textbooks, { depth: null })
     if (!textbooks) throw redirect("/404")
     return { textbooks };
 };
 
 export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
     const { textbooks } = loaderData;
+
     const auth = useAuthOutletData()
     if (!(auth.isLoggedIn && auth.publicUserData)) {
         auth.setPendingUrlAfterLogin(`/theme/${textbooks.slug}`)
@@ -39,6 +39,7 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
         return <h1></h1>
     }
 
+    const isAdmin = auth.isAdmin
     return (
         <div className={"flex flex-col items-center h-[calc(100vh-64px)] overflow-auto"}>
             {/* 과목별 교재 섹션 */}
@@ -72,6 +73,7 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
                                                 textbook={textbook}
                                                 themeSlug={textbooks.slug}
                                                 subjectSlug={subject.slug}
+                                                isAdmin={isAdmin}
                                             />
                                         </CarouselItem>
                                     ))}
@@ -101,11 +103,13 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
 function TextbookCard({
                           textbook,
                           themeSlug,
-                          subjectSlug
+                          subjectSlug,
+                          isAdmin
                       }: {
     textbook: TextbooksType,
     themeSlug: string,
-    subjectSlug: string
+    subjectSlug: string,
+    isAdmin: boolean,
 }) {
 
     const isEnrolled = textbook.enrollments.length > 0;
@@ -128,7 +132,7 @@ function TextbookCard({
 
     // 카드 컨테이너
     const CardContainer = ({ children }: { children: React.ReactNode }) => {
-        if (!isClickable) {
+        if (!isClickable && !isAdmin) {
             return (
                 <div className="block group relative">
                     {children}
@@ -148,11 +152,13 @@ function TextbookCard({
             {/* 유튜브 썸네일 비율 (16:9) 카드 */}
             <AspectRatio ratio={16 / 9}>
                 <Card
-                    className={`relative w-full h-full transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden ${
-                        isClickable
-                            ? 'group-hover:shadow-lg group-hover:scale-[0.98] cursor-pointer'
-                            : 'opacity-75 cursor-not-allowed'
-                    }`}>
+                    className={`relative w-full h-full transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden 
+                    ${
+                        isClickable || isAdmin
+                            ? 'group-hover:shadow-lg group-hover:scale-[0.95] cursor-pointer'
+                            : 'cursor-not-allowed'
+                    }
+                    `}>
 
                     {/* 메인 커버 이미지 */}
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500">
@@ -190,20 +196,21 @@ function TextbookCard({
 
                     {/* 가격/무료 배지 */}
                     <div className="absolute top-3 left-3 z-10">
-                        {isEnrolled?
+                        {isEnrolled ?
                             <Badge variant="default" className="text-sm bg-orange-500/90 text-white backdrop-blur-sm">
                                 등록
                             </Badge> :
-                        isNotFree ? (
-                            <Badge variant="default" className="text-sm bg-green-600/90 text-white backdrop-blur-sm">
-                                {(textbook.price / 10000).toFixed(0)}만원
-                            </Badge>
-                        ) : isPublished ? (
-                            <Badge variant="default" className="text-sm bg-blue-600/90 text-white backdrop-blur-sm">
-                                무료
-                            </Badge>
-                        ) : null
-                    }
+                            isNotFree ? (
+                                <Badge variant="default"
+                                       className="text-sm bg-green-600/90 text-white backdrop-blur-sm">
+                                    {(textbook.price / 10000).toFixed(0)}만원
+                                </Badge>
+                            ) : isPublished ? (
+                                <Badge variant="default" className="text-sm bg-blue-600/90 text-white backdrop-blur-sm">
+                                    무료
+                                </Badge>
+                            ) : null
+                        }
 
                     </div>
 
@@ -212,16 +219,16 @@ function TextbookCard({
                         className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/50 to-transparent p-4 z-10">
 
                         <div className={"flex justify-between items-center"}>
-                        <h3 className={`text-2xl pt-6 pb-2 font-bold leading-tight line-clamp-2 text-white transition-colors ${
-                            isClickable ? 'group-hover:text-blue-200' : ''
-                        }`}>
-                            {textbook.title}
-                        </h3>
-                        {lastStudyDate && (
-                            <div className="flex items-center gap-1 text-white pt-5">
-                                {DateTime.fromJSDate(new Date(lastStudyDate)).toRelative({ locale: "ko" })}
-                            </div>
-                        )}
+                            <h3 className={`text-2xl pt-6 pb-2 font-bold leading-tight line-clamp-2 text-white transition-colors ${
+                                isClickable ? 'group-hover:text-blue-200' : ''
+                            }`}>
+                                {textbook.title}
+                            </h3>
+                            {lastStudyDate && (
+                                <div className="flex items-center gap-1 text-white pt-5">
+                                    {DateTime.fromJSDate(new Date(lastStudyDate)).toRelative({ locale: "ko" })}
+                                </div>
+                            )}
                         </div>
                         {/* 진도 표시 (발행된 교재만) */}
                         {isPublished && (
@@ -270,10 +277,6 @@ function TextbookCard({
 
                     </div>
 
-                    {/* 준비중일 때 전체 오버레이 */}
-                    {!isPublished && (
-                        <div className="absolute inset-0 bg-gray-500/10 z-10"/>
-                    )}
                 </Card>
             </AspectRatio>
         </CardContainer>

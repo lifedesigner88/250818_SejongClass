@@ -9,7 +9,7 @@ export default function HomePage() {
     return (
         <div className="min-h-screen bg-white h-[calc(100vh-64px)] overflow-auto">
             {/* Hero Section - Supabase Inspired */}
-            <div className="relative z-10 container mx-auto px-6 pt-17 pb-32 text-center">
+            <div className="relative z-10 container mx-auto px-6 pt-13 sm:pt-17 pb-32 text-center">
                 {/* Badge */}
                 <div className="mb-8">
                     <Badge variant="secondary"

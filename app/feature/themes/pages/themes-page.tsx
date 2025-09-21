@@ -28,12 +28,13 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
             auth.setShowLoginDialog(true);
         } else navigate(`/theme/${themesSlug}`);
     }
+    const isAdmin = auth.isAdmin;
 
     return (
         <div className={"flex flex-col sm:justify-center items-center h-[calc(100vh-64px)] overflow-auto"}>
             <div className="grid grid-cols-1 mt-10 sm:grid-cols-2 pb-20 gap-7">
                 {themes.map((t) => (
-                    t.is_active ? (
+                    t.is_active || isAdmin ? (
                         <div
                             key={t.themes_id}
                             onClick={() => handleThemeClick(t.slug)}

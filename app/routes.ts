@@ -28,6 +28,9 @@ export default [
         ...prefix("/cron", [
             route("/calculate-textbook", "api/cron/calculate-textbook.tsx")
         ]),
+        ...prefix("/email",[
+            route("/welcome", "api/email/welcome.tsx"),
+        ])
     ]),
 
     // - 임시 -

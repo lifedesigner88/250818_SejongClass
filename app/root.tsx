@@ -114,11 +114,14 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     const { data: supabaseAuthData, error } = await client.auth.getUser()
     if (error) return { supabaseAuthData }
     const user = supabaseAuthData.user;
+    const isAdmin = user.role === "admin";
 
     const loginedUuserProviderId = user.user_metadata.provider_id;
     const loginedUserDataFromProvider = user.identities?.filter(identity => identity.id === loginedUuserProviderId)[0];
 
     let publicUserData = await getPublicUserData(supabaseAuthData.user?.id)
+
+    // DB에 없는 사용자는 가입
     if (!publicUserData) {
         publicUserData = await createPublicUserData({
             user_id: user.id,
@@ -129,11 +132,28 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
                 ? user.user_metadata.profile_url.replace(/=s\d+-c$/, '') // 구글의 경우 뒤에 삭제.
                 : (user?.user_metadata.avatar_url || null),
         })
+
+        // 웰컴 이메일
+        const secretKey = process.env.SEJONG_SECRET_KEY;
+        const BASSE_URL = process.env.BASE_URL;
+
+        fetch(`${BASSE_URL}/api/email/welcome`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "X-SEJONG": secretKey!,
+            },
+            body: JSON.stringify({
+                username: publicUserData.username,
+                email: publicUserData.email,
+            })
+        }).catch(console.error);
     }
     console.timeEnd("⏳ Root Loader")
     return {
         publicUserData: {
             ...publicUserData,
+            isAdmin,
             provider: loginedUserDataFromProvider?.provider || null,
         },
     }
@@ -156,7 +176,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
     // 어떤 provider가 클릭되었는지 감지
     const submittedProvider = navigation.formData?.get("provider");
     const isWebView = isInAppBrowser()
-
+    const isAdmin = publicUserData?.isAdmin;
     return (
         <>
             {(isLoading || isSubmitting) && (
@@ -319,6 +339,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 </DialogContent>
             </Dialog>
             <Outlet context={{
+                isAdmin,
                 isLoggedIn,
                 publicUserData,
                 setShowLoginDialog,

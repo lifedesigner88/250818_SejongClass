@@ -6,6 +6,7 @@ import { updateEnrolledProgress } from "~/api/enrollments/mutation";
 export const action = async ({ request }: Route.ActionArgs) => {
 
     const userId = await getUserIdForSever(request)
+    if (!userId) return
     // JSON 데이터 파싱
     const data = await request.json();
     const progress = data.progress_rate;

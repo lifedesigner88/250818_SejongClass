@@ -19,6 +19,7 @@ import { progressRelations, progressTable, } from '~/feature/progress/schema';
 import { usersRelations, usersTable, } from '~/feature/users/schema';
 import { checklistsRelations, checklistsTable } from "~/feature/checklists/schema";
 import { curriculumsRelations, curriculumsTable } from "~/feature/curriculums/schema";
+import { paymentsRelations, paymentsTable } from "~/feature/payments/schema";
 
 const schema = {
     themesTable,
@@ -67,7 +68,11 @@ const schema = {
     curriculumsRelations,
 
     checklistsTable,
-    checklistsRelations
+    checklistsRelations,
+
+    paymentsTable,
+    paymentsRelations,
+
 }
 
 const pool = new Pool({

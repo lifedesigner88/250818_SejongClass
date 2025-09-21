@@ -1,5 +1,4 @@
 import {
-    boolean,
     pgTable,
     primaryKey,
     smallint,
@@ -8,11 +7,12 @@ import {
     integer,
     check,
     varchar,
-    pgPolicy,
+    pgPolicy, index,
 } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { textbooksTable } from "~/feature/textbooks/schema";
 import { relations, sql } from "drizzle-orm";
+import { paymentsTable } from "~/feature/payments/schema";
 
 export const enrollmentsTable = pgTable("enrollments", {
         user_id: uuid().references(() => usersTable.user_id,{
@@ -22,8 +22,10 @@ export const enrollmentsTable = pgTable("enrollments", {
             onDelete: "cascade"
         }).notNull(),
 
+        enrollment_type: varchar({ length: 20 }).default('FREE').notNull(), // PAID, FREE, TRIAL, PROMOTION
+        payment_status: varchar({ length: 20 }).default('PENDING').notNull(), // PENDING, COMPLETED, FAILED
+
         progress_rate: smallint().default(0).notNull(),
-        payment_status: boolean().default(false).notNull(),
         review: varchar({ length: 500 }),
         rating: smallint().default(0).notNull(),
 
@@ -38,6 +40,10 @@ export const enrollmentsTable = pgTable("enrollments", {
         }),
         check("completion_percentage_range", sql`progress_rate BETWEEN 0 AND 100`),
         check("rating_range", sql`rating >= 0 and rating <=10`),
+        check("enrollment_type_valid", sql`enrollment_type IN ('PAID', 'FREE', 'TRIAL', 'PROMOTION')`),
+        check("payment_status_valid", sql`payment_status IN ('PENDING', 'COMPLETED', 'FAILED')`),
+
+        index("idx_enrollments_user_id").on(table.user_id), // 사용자별 수강 목록 조회용
 
 
         // pgPolicy(`policy-public`, {
@@ -95,4 +101,10 @@ export const enrollmentsRelations = relations(enrollmentsTable, ({ one }) => ({
         fields: [enrollmentsTable.textbook_id],
         references: [textbooksTable.textbook_id],
     }),
+
+    payment: one(paymentsTable, {
+        fields: [enrollmentsTable.user_id, enrollmentsTable.textbook_id],
+        references: [paymentsTable.user_id, paymentsTable.textbook_id],
+    })
+
 }));
