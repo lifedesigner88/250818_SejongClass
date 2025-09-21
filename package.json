@@ -40,6 +40,8 @@
     "@supabase/supabase-js": "^2.56.1",
     "@tiptap/extension-blockquote": "^3.4.4",
     "@tiptap/extension-document": "^3.4.4",
+    "@tiptap/extension-heading": "^3.4.4",
+    "@tiptap/extension-mathematics": "^3.4.4",
     "@tiptap/extension-paragraph": "^3.4.4",
     "@tiptap/extension-text": "^3.4.4",
     "@tiptap/pm": "^3.4.4",
