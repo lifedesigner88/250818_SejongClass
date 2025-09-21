@@ -51,10 +51,8 @@
         display: block;
         text-align: center;
         margin: 16px 0;
-        padding: 12px;
-        background-color: #fafafa;
-        border: 1px solid #e5e7eb;
         border-radius: 8px;
+        @apply bg-emerald-50 text-2xl p-6;
     }
 
     .tiptap-mathematics-render[data-type="block-math"]:hover {
@@ -65,9 +63,8 @@
     /* 인라인 수학 노드 */
     .tiptap-mathematics-render[data-type="inline-math"] {
         display: inline;
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        margin: 0 2px;
+        @apply p-3 mx-1 bg-yellow-50;
+
     }
 
     .tiptap-mathematics-render[data-type="inline-math"]:hover {

@@ -69,10 +69,10 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
     const location = useLocation();
     const shouldHandleEnrollment = useMemo(() => {
-        if (isFree) return;
+        if (isFree || isAdmin) return false;
         if (!isPublished) return <h1> 강의 준비중 입니다. </h1>;
 
-        if (!isAdmin && !isEnrolled) {
+        if (!isEnrolled) {
             setAfterEnrollNaviUrl(location.pathname);
             setOpenEnrollWindow(true);
             return true;

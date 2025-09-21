@@ -146,7 +146,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     const handleUnitClick = (unitId: number, isFree: boolean, isPublished: boolean) => {
 
-        if (isFree) {
+        if (isFree || isAdmin) {
             navigate(`${unitId}`);
             if (window.innerWidth < 768) setIsMobileMenuOpen(false);
             return
