@@ -632,22 +632,21 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     </ResizablePanel>
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
-                        <Outlet
-                            context={{
-                                isAdmin,
-                                textbookInfo,
-                                handleUnitClick,
-                                isEnrolled,
-                                setOpenEnrollWindow,
-                                setAfterEnrollNaviUrl,
-                                justOpenMajor
-                            }}/>
+                            <Outlet
+                                context={{
+                                    isAdmin,
+                                    textbookInfo,
+                                    handleUnitClick,
+                                    isEnrolled,
+                                    setOpenEnrollWindow,
+                                    setAfterEnrollNaviUrl,
+                                    justOpenMajor
+                                }}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>
             {/* 모바일 - Sheet 레이아웃 */}
             <div className="md:hidden flex flex-col relative h-[calc(100vh-64px)] w-screen overflow-hidden">
-                {/* 플로팅 메뉴 버튼 */}
                 <div className="fixed left-4 bottom-20 z-50">
                     <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                         <SheetTrigger asChild>

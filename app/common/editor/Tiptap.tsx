@@ -1,17 +1,20 @@
 import './tiptab-css.css'
 import 'katex/dist/katex.min.css'
 import { EditorContent, type JSONContent, useEditor, useEditorState } from "@tiptap/react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Quote, Heading1, Heading2, Sigma, SquareSigma } from "lucide-react";
-import React, { useEffect, useState, useRef } from "react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Math, { migrateMathStrings } from '@tiptap/extension-mathematics'
+import React, { useEffect, useState, useRef } from "react";
 import Blockquote from "@tiptap/extension-blockquote";
+import { Textarea } from "@/components/ui/textarea";
 import Paragraph from "@tiptap/extension-paragraph";
-import Document from '@tiptap/extension-document'
-import Heading from '@tiptap/extension-heading'
+import Document from '@tiptap/extension-document';
+import Heading from '@tiptap/extension-heading';
+import { UndoRedo } from '@tiptap/extensions';
 import Text from "@tiptap/extension-text";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Node } from "@tiptap/pm/model";
-import { UndoRedo } from '@tiptap/extensions'
 import {
     Dialog,
     DialogContent,
@@ -19,9 +22,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 
 const Tiptap = ({
                     editable,
@@ -82,7 +82,7 @@ const Tiptap = ({
         },
         editorProps: {
             attributes: {
-                class: 'focus:outline-none min-h-[200px] p-4',
+                class: 'focus:outline-none min-h-[200px] p-0 sm:p-4',
             },
         },
         onCreate: ({ editor: currentEditor }) => {
@@ -160,70 +160,69 @@ const Tiptap = ({
         setLatexDialogOpen(false)
     }
 
-    if (!editor) {
-        return null
-    }
+    if (!editor) return null
 
     return (
-        <div className="border border-gray-200 rounded-lg p-2">
-            <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
-                {editable ?
-                    <ToggleGroup
-                        variant="outline"
-                        type="multiple"
-                        className="flex justify-center w-full p-4
+        <div className="border border-gray-200 rounded-lg px-0 sm:p-2">
+            {editable ?
+                <ToggleGroup
+                    variant="outline"
+                    type="multiple"
+                    className="flex justify-center w-full px-0 sm:p-4
                                 [&>button[data-state=on]]:bg-emerald-500
                                 [&>button[data-state=on]]:text-white ">
 
-                        <ToggleGroupItem
-                            value={"heading1"}
-                            aria-label="Toggle heading 1"
-                            disabled={!editorState?.heading1.canToggle}
-                            data-state={editorState?.heading1.isActive ? 'on' : 'off'}
-                            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
-                            <Heading1 className="h-4 w-4"/>
-                        </ToggleGroupItem>
+                    <ToggleGroupItem
+                        value={"heading1"}
+                        aria-label="Toggle heading 1"
+                        disabled={!editorState?.heading1.canToggle}
+                        data-state={editorState?.heading1.isActive ? 'on' : 'off'}
+                        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
+                        <Heading1 className="h-4 w-4"/>
+                    </ToggleGroupItem>
 
-                        <ToggleGroupItem
-                            value="heading2"
-                            aria-label="Toggle heading 2"
-                            disabled={!editorState?.heading2.canToggle}
-                            data-state={editorState?.heading2.isActive ? 'on' : 'off'}
-                            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
-                            <Heading2 className="h-4 w-4"/>
-                        </ToggleGroupItem>
+                    <ToggleGroupItem
+                        value="heading2"
+                        aria-label="Toggle heading 2"
+                        disabled={!editorState?.heading2.canToggle}
+                        data-state={editorState?.heading2.isActive ? 'on' : 'off'}
+                        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+                        <Heading2 className="h-4 w-4"/>
+                    </ToggleGroupItem>
 
 
-                        <ToggleGroupItem
-                            value="blockquote"
-                            aria-label="Toggle blockquote"
-                            disabled={!editorState?.blockquote.canToggle}
-                            data-state={editorState?.blockquote.isActive ? 'on' : 'off'}
-                            onClick={() => editor.chain().focus().toggleBlockquote().run()}>
-                            <Quote className="h-4 w-4"/>
-                            {/* Ctrl + Shift + B */}
-                        </ToggleGroupItem>
+                    <ToggleGroupItem
+                        value="blockquote"
+                        aria-label="Toggle blockquote"
+                        disabled={!editorState?.blockquote.canToggle}
+                        data-state={editorState?.blockquote.isActive ? 'on' : 'off'}
+                        onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+                        <Quote className="h-4 w-4"/>
+                        {/* Ctrl + Shift + B */}
+                    </ToggleGroupItem>
 
-                        <ToggleGroupItem
-                            value="inline-math"
-                            aria-label="인라인 수학 수식"
-                            data-state={"off"}
-                            onClick={onInsertInlineMath}>
-                            <Sigma className="h-4 w-4"/>
-                        </ToggleGroupItem>
+                    <ToggleGroupItem
+                        value="inline-math"
+                        aria-label="인라인 수학 수식"
+                        data-state={"off"}
+                        onClick={onInsertInlineMath}>
+                        <Sigma className="h-4 w-4"/>
+                    </ToggleGroupItem>
 
-                        <ToggleGroupItem
-                            value="block-math"
-                            aria-label="블록 수학 수식"
-                            data-state={"off"}
-                            onClick={onInsertBlockMath}>
-                            <SquareSigma className="h-4 w-4"/>
-                        </ToggleGroupItem>
-                    </ToggleGroup>
-                    : null
-                }
-
-                <DialogContent className={"w-full max-w-xl"}>
+                    <ToggleGroupItem
+                        value="block-math"
+                        aria-label="블록 수학 수식"
+                        data-state={"off"}
+                        onClick={onInsertBlockMath}>
+                        <SquareSigma className="h-4 w-4"/>
+                    </ToggleGroupItem>
+                </ToggleGroup>
+                : null
+            }
+            <EditorContent editor={editor}/>
+            
+            <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
+                <DialogContent className="w-full max-w-2xl max-h-screen overflow-y-auto ">
                     <DialogHeader>
                         <DialogTitle>LaTeX {isInlin ? " - 인라인" : " - 블록"}  </DialogTitle>
                     </DialogHeader>
@@ -233,22 +232,24 @@ const Tiptap = ({
                             value={latex}
                             onChange={(e) => setLatex(e.target.value)}
                             placeholder="예: x^2 + y^2 = z^2"
-                            className="font-mono min-h-[200px] max-w-xl resize-y"/>
+                            className="font-mono min-h-[200px] resize-y break-words overflow-wrap-anywhere"/>
                         : <Input
                             id="latex"
                             value={latex}
                             onChange={(e) => setLatex(e.target.value)}
                             placeholder="예: x^2 + y^2 = z^2"
-                            className="font-mono"/>
+                            className="font-mono break-words"/>
                     }
-                    {/* 미리보기 */}
 
-                    {/* ✅ 에디터 가로 길이 제한 */}
+                    {/* KaTeX 미리보기 - 가로 스크롤 방지 */}
                     {latex && (
-                        <div className="min-h-[200px] max-w-xl p-2 border rounded bg-gray-50">
-                            <SafeKatexRenderer latex={latex} displayMode={!isInlin}/>
+                        <div className="p-2 border rounded bg-gray-50 overflow-x-auto">
+                            <div className="min-w-0">
+                                <SafeKatexRenderer latex={latex} displayMode={!isInlin} />
+                            </div>
                         </div>
                     )}
+
                     {editable
                         ? <DialogFooter>
                             <Button variant="outline" onClick={() => setLatexDialogOpen(false)}>취소</Button>
@@ -258,9 +259,6 @@ const Tiptap = ({
                     }
                 </DialogContent>
             </Dialog>
-
-            <EditorContent editor={editor}/>
-
         </div>
 
     )
@@ -269,7 +267,10 @@ const Tiptap = ({
 export default Tiptap
 
 
-const SafeKatexRenderer = ({ latex, displayMode }: { latex: string, displayMode: boolean }) => {
+const SafeKatexRenderer = ({ latex, displayMode  }: {
+    latex: string,
+    displayMode: boolean,
+}) => {
     const [renderedHtml, setRenderedHtml] = useState<string>('')
     const [error, setError] = useState<string>('')
 
@@ -281,6 +282,8 @@ const SafeKatexRenderer = ({ latex, displayMode }: { latex: string, displayMode:
                 const html = katex.default.renderToString(latex, {
                     throwOnError: false,
                     strict: false,
+                    maxSize: 10,
+                    maxExpand: 1000,
                     displayMode
                 })
                 setRenderedHtml(html)
@@ -292,16 +295,11 @@ const SafeKatexRenderer = ({ latex, displayMode }: { latex: string, displayMode:
             }
         }
 
-        if (latex.trim()) {
-            void renderLatex()
-        } else {
-            setRenderedHtml('')
-        }
+        if (latex.trim()) void renderLatex()
+        else setRenderedHtml('')
     }, [latex])
 
-    if (error) {
-        return <span className="text-red-500 text-sm">{error}</span>
-    }
+    if (error) return <span className="text-red-500 text-sm">{error}</span>
 
     return <div
         className="max-w-full overflow-x-auto whitespace-nowrap"
