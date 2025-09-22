@@ -1,9 +1,10 @@
 import './tiptab-css.css'
 import 'katex/dist/katex.min.css'
 import { EditorContent, type JSONContent, useEditor, useEditorState } from "@tiptap/react";
-import { Quote, Heading1, Heading2, Sigma, SquareSigma } from "lucide-react";
+import { Quote, Heading1, Heading2, Sigma, SquareSigma, Code } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Math, { migrateMathStrings } from '@tiptap/extension-mathematics'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import React, { useEffect, useState, useRef } from "react";
 import Blockquote from "@tiptap/extension-blockquote";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,11 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import { all, createLowlight } from 'lowlight'
+import python from 'highlight.js/lib/languages/python'
+
+const lowlight = createLowlight(all)
+lowlight.register('python', python)
 
 const Tiptap = ({
                     editable,
@@ -31,7 +37,6 @@ const Tiptap = ({
     editable: boolean,
     content?: JSONContent | null,
     onChange?: (content: JSONContent) => void,
-
 }) => {
     const editor = useEditor({
         immediatelyRender: false,
@@ -69,6 +74,10 @@ const Tiptap = ({
                     maxSize: 10,
                     maxExpand: 1000,
                 },
+            }),
+            CodeBlockLowlight.configure({
+                lowlight,
+                defaultLanguage: 'python',
             }),
         ],
 
@@ -121,6 +130,10 @@ const Tiptap = ({
                     isActive: ctx.editor?.isActive('blockquote'),
                     canToggle: ctx.editor?.can().toggleBlockquote(),
                 },
+                codeBlock: {
+                    isActive: ctx.editor?.isActive('codeBlock'),
+                    canToggle: ctx.editor?.can().toggleCodeBlock(),
+                }
             };
         },
     });
@@ -204,6 +217,14 @@ const Tiptap = ({
                     </ToggleGroupItem>
 
                     <ToggleGroupItem
+                        value="python"
+                        aria-label="Python 코드"
+                        data-state={editorState?.codeBlock.isActive ? 'on' : 'off'}
+                        onClick={() => editor.chain().focus().toggleCodeBlock({ language: 'python' }).run()}>
+                        <Code className="h-4 w-4"/>
+                    </ToggleGroupItem>
+
+                    <ToggleGroupItem
                         value="inline-math"
                         aria-label="인라인 수학 수식"
                         data-state={"off"}
@@ -242,12 +263,11 @@ const Tiptap = ({
                             placeholder="KaTeX - (Latex 의 수식만 지원)"
                             className="font-mono break-words"/>
                     }
-
                     {/* KaTeX 미리보기 - 가로 스크롤 방지 */}
                     {latex && (
                         <div className="p-2 border rounded bg-gray-50 overflow-x-auto">
                             <div className="min-w-0">
-                                <SafeKatexRenderer latex={latex} displayMode={!isInlin} />
+                                <SafeKatexRenderer latex={latex} displayMode={!isInlin}/>
                             </div>
                         </div>
                     )}
@@ -269,7 +289,7 @@ const Tiptap = ({
 export default Tiptap
 
 
-const SafeKatexRenderer = ({ latex, displayMode  }: {
+const SafeKatexRenderer = ({ latex, displayMode }: {
     latex: string,
     displayMode: boolean,
 }) => {

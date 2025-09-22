@@ -76,4 +76,138 @@
         padding: 4px 8px;
     }
 
+    pre {
+        @apply bg-gray-900 border border-gray-700 rounded-md text-gray-100;
+        @apply font-mono text-sm leading-6 my-4 p-4 relative;
+
+        /* 데스크톱: 가로 스크롤 */
+        white-space: pre;
+        overflow-x: auto;
+
+        /* 모바일: 줄바꿈 */
+        @media (max-width: 768px) {
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-x: visible;
+        }
+
+        code {
+            @apply bg-transparent border-0 rounded-none text-inherit;
+            @apply inline font-mono text-sm leading-6 m-0 p-0;
+            white-space: inherit;
+        }
+
+        /* === GitHub Dark Theme - 정리된 색상 팔레트 === */
+
+        /* 주석 (회색) */
+        .hljs-comment,
+        .hljs-quote {
+            @apply text-gray-500 italic;
+        }
+
+        /* 키워드 - class, def, if, for 등 (보라색) */
+        .hljs-keyword,
+        .hljs-selector-tag,
+        .hljs-function .hljs-keyword,
+        .hljs-class .hljs-keyword {
+            @apply text-purple-400;
+        }
+
+        /* 함수명/클래스명 (노란색) */
+        .hljs-title,
+        .hljs-title.class_,
+        .hljs-title.function_,
+        .hljs-title.class_.inherited__,
+        .hljs-doctag {
+            @apply text-yellow-300 font-semibold;
+        }
+
+        /* 문자열 (초록색) */
+        .hljs-string,
+        .hljs-template-string {
+            @apply text-emerald-400;
+        }
+
+        /* 숫자 (청록색) */
+        .hljs-number,
+        .hljs-literal {
+            @apply text-cyan-400;
+        }
+
+        /* 변수/속성 (파란색) */
+        .hljs-variable,
+        .hljs-attr,
+        .hljs-attribute,
+        .hljs-property,
+        .hljs-params,
+        .hljs-variable.language_ {
+            @apply text-blue-300;
+        }
+
+        /* 내장함수/타입 (주황색) */
+        .hljs-built_in,
+        .hljs-builtin-name,
+        .hljs-type {
+            @apply text-orange-400;
+        }
+
+        /* 특수 기호/데코레이터 (핑크색) */
+        .hljs-meta,
+        .hljs-symbol,
+        .hljs-bullet,
+        .hljs-template-variable,
+        .hljs-template-tag {
+            @apply text-pink-400;
+        }
+
+        /* 모듈/네임스페이스 (청록색) */
+        .hljs-module,
+        .hljs-namespace {
+            @apply text-teal-400;
+        }
+
+        /* 태그/섹션 (빨간색) */
+        .hljs-section,
+        .hljs-name,
+        .hljs-tag {
+            @apply text-red-400;
+        }
+
+        /* 정규표현식/링크 (시안색) */
+        .hljs-regexp,
+        .hljs-link {
+            @apply text-cyan-300;
+        }
+
+        /* 연산자/기본 텍스트 (회색) */
+        .hljs-operator,
+        .hljs-subst {
+            @apply text-gray-300;
+        }
+
+        /* 변경사항 표시 */
+        .hljs-deletion {
+            @apply text-red-300;
+        }
+
+        .hljs-addition {
+            @apply text-green-400;
+        }
+
+        /* 텍스트 스타일 */
+        .hljs-emphasis {
+            @apply italic;
+        }
+
+        .hljs-strong {
+            @apply font-bold;
+        }
+
+        /* 수식 */
+        .hljs-formula {
+            @apply text-gray-100;
+            background: rgba(75, 85, 99, 0.4);
+        }
+    }
 }
+
