@@ -66,6 +66,8 @@ const Tiptap = ({
                 katexOptions: {
                     throwOnError: false,
                     strict: false, // 완벽하지 않은 것도 허용.
+                    maxSize: 10,
+                    maxExpand: 1000,
                 },
             }),
         ],
@@ -220,24 +222,24 @@ const Tiptap = ({
                 : null
             }
             <EditorContent editor={editor}/>
-            
+
             <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
-                <DialogContent className="w-full max-w-2xl max-h-screen overflow-y-auto ">
+                <DialogContent className="w-full !max-w-5xl max-h-screen overflow-y-auto ">
                     <DialogHeader>
-                        <DialogTitle>LaTeX {isInlin ? " - 인라인" : " - 블록"}  </DialogTitle>
+                        <DialogTitle>KaTeX {isInlin ? " - 인라인" : " - 블록"}  </DialogTitle>
                     </DialogHeader>
                     {!isInlin
                         ? <Textarea
                             id="latex"
                             value={latex}
                             onChange={(e) => setLatex(e.target.value)}
-                            placeholder="예: x^2 + y^2 = z^2"
+                            placeholder="KaTeX - (Latex 의 수식만 지원)"
                             className="font-mono min-h-[200px] resize-y break-words overflow-wrap-anywhere"/>
                         : <Input
                             id="latex"
                             value={latex}
                             onChange={(e) => setLatex(e.target.value)}
-                            placeholder="예: x^2 + y^2 = z^2"
+                            placeholder="KaTeX - (Latex 의 수식만 지원)"
                             className="font-mono break-words"/>
                     }
 

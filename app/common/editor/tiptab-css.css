@@ -45,7 +45,7 @@
         display: block;
         text-align: center;
         border-radius: 8px;
-        @apply bg-emerald-50 text-base sm:text-xl 2xl:text-2xl my-2 py-6 sm:p-6 text-wrap;
+        @apply bg-emerald-50 text-base sm:text-xl my-2 py-6 sm:p-6 text-wrap;
     }
 
     .tiptap-mathematics-render[data-type="block-math"]:hover {

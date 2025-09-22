@@ -15,14 +15,17 @@ export async function getUnitAndConceptsByUnitId(unit_id: number) {
             is_free: true,
             is_published: true,
             updated_at: true,
-
         },
         with: {
             middle: {
-                columns: {},
+                columns: {
+                    title: true,
+                },
                 with:{
                     major: {
-                        columns: {},
+                        columns: {
+                            title: true,
+                        },
                         with: {
                             textbook: {
                                 columns: {

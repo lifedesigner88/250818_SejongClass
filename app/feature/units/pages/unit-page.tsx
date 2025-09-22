@@ -1,10 +1,16 @@
-import { Form, redirect, useLocation, useOutletContext } from "react-router";
-import type { Route } from "./+types/unit-page";
-import { getUnitAndConceptsByUnitId, updateUnitReadmeContent } from "../queries";
-import { z } from "zod";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Play, BookOpen, Brain } from "lucide-react";
+import type { OutletContextType } from "~/feature/textbooks/pages/textbook-page";
+import { getUnitAndConceptsByUnitId, updateUnitReadmeContent } from "../queries";
+import { Form, redirect, useLocation, useOutletContext } from "react-router";
+import { getUserIsAdmin } from "~/feature/auth/useAuthUtil";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useEffect, useMemo, useState } from "react";
 import colors from "~/feature/textbooks/major-color";
+import { ChevronDown, Brain } from "lucide-react";
+import type { JSONContent } from "@tiptap/react";
+import type { Route } from "./+types/unit-page";
+import Tiptap from "@/editor/Tiptap";
+import { z } from "zod";
 import {
     Sheet,
     SheetContent,
@@ -12,12 +18,12 @@ import {
     SheetTitle,
     SheetTrigger
 } from "@/components/ui/sheet";
-import { useEffect, useMemo, useState } from "react";
-import type { OutletContextType } from "~/feature/textbooks/pages/textbook-page";
-import Tiptap from "@/editor/Tiptap";
-import type { JSONContent } from "@tiptap/react";
-import { getUserIsAdmin } from "~/feature/auth/useAuthUtil";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbSeparator
+} from "@/components/ui/breadcrumb";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const paramsSchema = z.object({
@@ -33,6 +39,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
         && data["textbook-id"] === unitData.middle.major.textbook.textbook_id))
         throw redirect("/404");
 
+    console.log("unitData", unitData)
     return { unitData }
 }
 
@@ -71,8 +78,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const location = useLocation();
     const shouldHandleEnrollment = useMemo(() => {
         if (isFree || isAdmin) return false;
-        if (!isPublished) return <h1> 강의 준비중 입니다. </h1>;
-
+        if (!isPublished) return true;
         if (!isEnrolled) {
             setAfterEnrollNaviUrl(location.pathname);
             setOpenEnrollWindow(true);
@@ -82,7 +88,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     }, []);
 
     if (shouldHandleEnrollment) {
-        return <h1></h1>;
+        return <h1>강의 준비중입니다.</h1>;
     }
 
     const [content, setContent] = useState<JSONContent>(
@@ -116,10 +122,23 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 {/* 콘텐츠 섹션 */}
                 <Collapsible defaultOpen>
                     <CollapsibleTrigger
-                        className={`flex items-center justify-between w-full mt-3 p-4 hover:opacity-80 transition-opacity`}>
-                        <div className="flex items-center space-x-2">
-                            <BookOpen className="h-5 w-5"/>
-                            <h2 className="text-xl font-semibold">{unitData.title}</h2>
+                        className={`cursor-pointer flex items-center justify-between w-full mt-3 p-4 sm:pl-6 hover:opacity-80 transition-opacity bg-orange-100 text-orange-700 rounded-b-lg`}>
+                        <div className="flex items-center space-x-2 ">
+                            <Breadcrumb>
+                                <BreadcrumbList className={"text-md text-orange-700"}>
+                                    <BreadcrumbItem>
+                                        {unitData.middle.major.title}
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator/>
+                                    <BreadcrumbItem>
+                                        {unitData.middle.title}
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator/>
+                                    <BreadcrumbItem className={"text-lg font-semibold "}>
+                                        🔥 {unitData.title}
+                                    </BreadcrumbItem>
+                                </BreadcrumbList>
+                            </Breadcrumb>
                         </div>
                         <ChevronDown
                             className="h-5 w-5 transition-transform duration-200 data-[state=closed]:rotate-180"/>
