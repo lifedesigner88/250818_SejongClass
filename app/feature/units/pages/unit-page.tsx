@@ -1,7 +1,7 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import type { OutletContextType } from "~/feature/textbooks/pages/textbook-page";
 import { getUnitAndConceptsByUnitId } from "../queries";
-import { Form, redirect, useFetcher, useLocation, useOutletContext } from "react-router";
+import { redirect, useFetcher, useLocation, useOutletContext } from "react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useMemo, useState } from "react";
 import colors from "~/feature/textbooks/major-color";
@@ -94,6 +94,18 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const fetcher = useFetcher()
 
+    console.log(unitData.notes.length)
+    console.log(unitData.notes)
+
+    const createFirstNote = () => {
+        if (unitData.notes.length == 0){
+            void fetcher.submit(
+                { unit_id: unitData.unit_id },
+                { action: "/api/notes/create-note", method: "post" }
+            )
+        }
+    }
+
     return (
         <ScrollArea className="p-0 w-full h-[calc(100vh-64px)] overflow-hidden">
             {/* 영상 섹션 */}
@@ -158,6 +170,50 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     </CollapsibleContent>
                 </Collapsible>
 
+                <Collapsible onOpenChange={createFirstNote}>
+                    <CollapsibleTrigger
+                        className={`cursor-pointer flex items-center justify-between w-full mt-3 p-4 sm:pl-6 hover:opacity-80 transition-opacity bg-indigo-100  text-indigo-700 rounded-t-lg`}>
+                        <div className="flex items-center space-x-2 ">
+                            <Breadcrumb>
+                                <BreadcrumbList className={"text-md text-indigo-700"}>
+                                    <BreadcrumbItem>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator/>
+                                    <BreadcrumbItem className={"text-lg font-semibold "}>
+                                        ✏️ 메모
+                                    </BreadcrumbItem>
+                                </BreadcrumbList>
+                            </Breadcrumb>
+                        </div>
+                        <ChevronDown
+                            className="h-5 w-5 transition-transform duration-200 data-[state=closed]:rotate-180"/>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-4">
+                        <Tiptap content={content ?? ""} editable={isAdmin} onChange={setContent}/>
+                        {isContentNeedSave ?
+                            <fetcher.Form method="post" className="space-y-4 flex justify-center "
+                                          action={'/api/units/update-readme'}>
+                                <input type="hidden" name="content" value={JSON.stringify(content)}/>
+                                <input type="hidden" name="unit_id" value={unitData.unit_id}/>
+                                {isAdmin &&
+                                    <Button
+                                        type="submit"
+                                        disabled={fetcher.state !== "idle"}
+                                        className="fixed bottom-0 w-full max-w-xl px-4 py-2 mb-10 mt-4">
+                                        {fetcher.state !== "idle" ? (
+                                            <div className="flex items-center justify-center">
+                                                <Loader2 className="size-5 mr-3 animate-spin"/>
+                                                저장 중...
+                                            </div>
+                                        ) : (
+                                            "저장"
+                                        )}
+                                    </Button>
+                                }
+                            </fetcher.Form> : null
+                        }
+                    </CollapsibleContent>
+                </Collapsible>
 
                 {/* 개념 보기 Sheet */}
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>

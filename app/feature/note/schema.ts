@@ -1,20 +1,25 @@
-import { boolean, integer, pgPolicy, pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
+import { integer, json, pgPolicy, pgTable, primaryKey, timestamp, uuid } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { unitsTable } from "~/feature/units/schema";
 import { relations, sql } from "drizzle-orm";
-export const progressTable = pgTable("progress", {
+import type { JSONContent } from "@tiptap/react";
+const EMPTY_EDITOR_CONTENT: JSONContent = {
+    type: 'doc',
+    content: []
+} as const;
+export const notesTable = pgTable("notes", {
         user_id: uuid().references(() => usersTable.user_id, {
             onDelete: "cascade",
         }).notNull(),
         unit_id: integer().references(() => unitsTable.unit_id, {
             onDelete: "cascade",
         }).notNull(),
-        completion_status: boolean().default(true).notNull(),
+        readme_json: json().$type<JSONContent>().default(EMPTY_EDITOR_CONTENT).notNull(),
         updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
     },
     (table) => [
         primaryKey({
-            name: 'pk_progress_user_unit',
+            name: 'pk_note_user_unit',
             columns: [table.user_id, table.unit_id]
         }),
 
@@ -61,16 +66,16 @@ export const progressTable = pgTable("progress", {
     ]
 );
 
-export const progressRelations = relations(progressTable, ({ one }) => ({
+export const notesRelations = relations(notesTable, ({ one }) => ({
     // 진행 상태를 가진 사용자
     user: one(usersTable, {
-        fields: [progressTable.user_id],
+        fields: [notesTable.user_id],
         references: [usersTable.user_id],
     }),
 
     // 진행 중인 단원
     unit: one(unitsTable, {
-        fields: [progressTable.unit_id],
+        fields: [notesTable.unit_id],
         references: [unitsTable.unit_id],
     }),
 }));

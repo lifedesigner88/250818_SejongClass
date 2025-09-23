@@ -1,7 +1,6 @@
 import db from "~/db";
 import { unitsTable } from "~/feature/units/schema";
 import { eq } from "drizzle-orm";
-import type { JSONContent } from "@tiptap/react";
 
 export async function getUnitAndConceptsByUnitId(unit_id: number) {
     return db.query.unitsTable.findFirst({
@@ -48,6 +47,12 @@ export async function getUnitAndConceptsByUnitId(unit_id: number) {
                             name_eng: true,
                         },
                     }
+                }
+            },
+            notes: {
+                columns: {
+                    readme_json: true,
+                    updated_at: true,
                 }
             }
         }

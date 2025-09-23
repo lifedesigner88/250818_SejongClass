@@ -15,6 +15,7 @@ import { dealingsTable } from "~/feature/dealings/schema";
 import { progressTable } from "~/feature/progress/schema";
 import { curriculumsTable } from "~/feature/curriculums/schema";
 import type { JSONContent } from "@tiptap/react";
+import { notesTable } from "~/feature/note/schema";
 const EMPTY_EDITOR_CONTENT: JSONContent = {
     type: 'doc',
     content: []
@@ -95,5 +96,7 @@ export const unitsRelations = relations(unitsTable, ({ one, many }) => ({
     progress: many(progressTable),
 
     curriculums: many(curriculumsTable),
+
+    notes: many(notesTable)
 
 }));

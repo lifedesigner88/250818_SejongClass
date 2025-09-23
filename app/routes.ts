@@ -19,11 +19,14 @@ export default [
         ...prefix("/units",[
             route("/toggle-unit", "api/units/toggle-unit.tsx"),
             route("/update-readme", "api/units/update-readme.tsx"),
+            route("/update-note", "api/units/update-note.tsx"),
+        ]),
+        ...prefix("/notes", [
+            route("/create-note", "api/notes/create-note.tsx"),
         ]),
         ...prefix("/enrollments",[
             route("/enroll", "api/enrollments/enroll.tsx"),
             route("/enroll-free", "api/enrollments/enroll-free.tsx"),
-            // route("/unenroll", "api/enrollments/unenroll.tsx"),
             route("/update-progress", "api/enrollments/update-progress.tsx"),
         ]),
         ...prefix("/cron", [
