@@ -32,6 +32,7 @@ import Bold from '@tiptap/extension-bold'
 import { Dropcursor } from '@tiptap/extensions'
 import ImageTipTap from '@tiptap/extension-image'
 import { Image } from 'lucide-react';
+
 const lowlight = createLowlight(all)
 lowlight.register('python', python)
 lowlight.register('latex', latex)
@@ -355,8 +356,6 @@ const Tiptap = ({
                         }}>
                         <Link2 className="h-4 w-4"/>
                     </ToggleGroupItem>
-
-
                 </ToggleGroup>
             </div> : null
             }
@@ -391,13 +390,10 @@ const Tiptap = ({
                         </div>
                     )}
 
-                    {editable
-                        ? <DialogFooter>
-                            <Button variant="outline" onClick={() => setLatexDialogOpen(false)}>취소</Button>
-                            <Button onClick={() => confirmLatex()}>확인</Button>
-                        </DialogFooter>
-                        : null
-                    }
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setLatexDialogOpen(false)}>취소</Button>
+                        {editable ? <Button onClick={() => confirmLatex()}>확인</Button> : null}
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>
@@ -406,7 +402,6 @@ const Tiptap = ({
 }
 
 export default Tiptap
-
 
 const SafeKatexRenderer = ({ latex, displayMode }: {
     latex: string,

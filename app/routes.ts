@@ -18,6 +18,7 @@ export default [
         ]),
         ...prefix("/units",[
             route("/toggle-unit", "api/units/toggle-unit.tsx"),
+            route("/update-readme", "api/units/update-readme.tsx"),
         ]),
         ...prefix("/enrollments",[
             route("/enroll", "api/enrollments/enroll.tsx"),

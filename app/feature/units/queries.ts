@@ -54,10 +54,6 @@ export async function getUnitAndConceptsByUnitId(unit_id: number) {
     });
 }
 
-export async function updateUnitReadmeContent(unit_id: number, readme_json: JSONContent) {
-    return db.update(unitsTable)
-        .set({ readme_json })
-        .where(eq(unitsTable.unit_id, unit_id));
-}
+
 
 

@@ -1,12 +1,11 @@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import type { OutletContextType } from "~/feature/textbooks/pages/textbook-page";
-import { getUnitAndConceptsByUnitId, updateUnitReadmeContent } from "../queries";
-import { Form, redirect, useLocation, useOutletContext } from "react-router";
-import { getUserIsAdmin } from "~/feature/auth/useAuthUtil";
+import { getUnitAndConceptsByUnitId } from "../queries";
+import { Form, redirect, useFetcher, useLocation, useOutletContext } from "react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useMemo, useState } from "react";
 import colors from "~/feature/textbooks/major-color";
-import { ChevronDown, Brain } from "lucide-react";
+import { ChevronDown, Brain, Loader2 } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import type { Route } from "./+types/unit-page";
 import Tiptap from "@/editor/Tiptap";
@@ -24,6 +23,7 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const paramsSchema = z.object({
@@ -42,30 +42,6 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     console.log("unitData", unitData)
     return { unitData }
 }
-
-export const action = async ({ request }: Route.ActionArgs) => {
-    const formData = await request.formData();
-    const schema = z.object({
-        content: z.string().min(1).transform((str) => {
-            try {
-                return JSON.parse(str) as JSONContent;
-            } catch {
-                throw new Error('Invalid JSON content');
-            }
-        }),
-        unit_id: z.coerce.number().min(1)
-    });
-
-
-    const { success, data } = schema.safeParse(Object.fromEntries(formData));
-    if (!success) throw new Error('Invalid form data');
-
-    // JSONContent 객체를 직접 전달
-    const isAdmin = await getUserIsAdmin(request);
-    if (isAdmin) await updateUnitReadmeContent(data.unit_id, data.content);
-
-    return { success: true };
-};
 
 
 export default function UnitPage({ loaderData }: Route.ComponentProps) {
@@ -98,6 +74,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         }
     );
 
+    const firstLodingUnitReadme = unitData.readme_json;
+    const [isContentNeedSave, setContentNeedSave] = useState(false);
 
     useEffect(() => {
         if (unitData.readme_json) {
@@ -105,7 +83,16 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         }
     }, [unitData.readme_json])
 
+    useEffect(() => {
+        if (JSON.stringify(content) !== JSON.stringify(firstLodingUnitReadme)) {
+            setContentNeedSave(true);
+        } else {
+            setContentNeedSave(false);
+        }
+    }, [content])
+
     const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const fetcher = useFetcher()
 
     return (
         <ScrollArea className="p-0 w-full h-[calc(100vh-64px)] overflow-hidden">
@@ -119,6 +106,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         allowFullScreen
                     />
                 </div>
+
                 {/* 콘텐츠 섹션 */}
                 <Collapsible defaultOpen>
                     <CollapsibleTrigger
@@ -143,20 +131,33 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         <ChevronDown
                             className="h-5 w-5 transition-transform duration-200 data-[state=closed]:rotate-180"/>
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-4 ">
+                    <CollapsibleContent className="mt-4">
                         <Tiptap content={content ?? ""} editable={isAdmin} onChange={setContent}/>
+                        {isContentNeedSave ?
+                            <fetcher.Form method="post" className="space-y-4 flex justify-center "
+                                          action={'/api/units/update-readme'}>
+                                <input type="hidden" name="content" value={JSON.stringify(content)}/>
+                                <input type="hidden" name="unit_id" value={unitData.unit_id}/>
+                                {isAdmin &&
+                                    <Button
+                                        type="submit"
+                                        disabled={fetcher.state !== "idle"}
+                                        className="fixed bottom-0 w-full max-w-xl px-4 py-2 mb-10 mt-4">
+                                        {fetcher.state !== "idle" ? (
+                                            <div className="flex items-center justify-center">
+                                                <Loader2 className="size-5 mr-3 animate-spin"/>
+                                                저장 중...
+                                            </div>
+                                        ) : (
+                                            "저장"
+                                        )}
+                                    </Button>
+                                }
+                            </fetcher.Form> : null
+                        }
                     </CollapsibleContent>
                 </Collapsible>
-                <Form method="post" className="space-y-4">
-                    <input type="hidden" name="content" value={JSON.stringify(content)}/>
-                    <input type="hidden" name="unit_id" value={unitData.unit_id}/>
-                    {isAdmin &&
-                        <button
-                            type="submit"
-                            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            콘텐츠 저장하기
-                        </button>}
-                </Form>
+
 
                 {/* 개념 보기 Sheet */}
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
