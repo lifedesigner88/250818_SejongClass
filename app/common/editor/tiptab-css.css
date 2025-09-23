@@ -102,6 +102,21 @@
         @apply content-['↗'] ml-1 text-xs opacity-60;
     }
 
+
+    img {
+        display: block;
+        height: auto;
+        margin: 1.5rem auto;
+        max-width: 100%;
+
+        &.ProseMirror-selectednode {
+            @apply cursor-pointer ;
+            @apply outline-3 outline-emerald-600;
+        }
+    }
+
+
+
     /* KaTeX 수학 노드 스타일링 */
 
     .tiptap-mathematics-render {

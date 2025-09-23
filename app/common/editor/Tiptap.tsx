@@ -28,7 +28,10 @@ import python from 'highlight.js/lib/languages/python'
 import latex from 'highlight.js/lib/languages/latex'
 import { BulletList, ListItem, OrderedList, TaskItem, TaskList } from '@tiptap/extension-list'
 import Link from '@tiptap/extension-link'
-
+import Bold from '@tiptap/extension-bold'
+import { Dropcursor } from '@tiptap/extensions'
+import ImageTipTap from '@tiptap/extension-image'
+import { Image } from 'lucide-react';
 const lowlight = createLowlight(all)
 lowlight.register('python', python)
 lowlight.register('latex', latex)
@@ -47,7 +50,10 @@ const Tiptap = ({
         extensions: [
             Blockquote,
             BulletList,
+            Bold,
             OrderedList,
+            Dropcursor,
+            ImageTipTap,
             ListItem,
             Paragraph,
             Document,
@@ -87,10 +93,9 @@ const Tiptap = ({
             }),
             CodeBlockLowlight.configure({
                 lowlight,
-                defaultLanguage: 'python'
+                defaultLanguage: 'python',
             }),
         ],
-
         autofocus: false,
         injectCSS: true,
         editable,
@@ -111,6 +116,27 @@ const Tiptap = ({
         },
     })
 
+    // 텝키 관련 이벤트 방지.
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Tab' && editor?.isFocused) {
+            e.preventDefault() // 브라우저 기본 Tab 동작 방지
+
+            if (e.shiftKey) {
+                // Shift + Tab
+                if (editor.isActive('listItem')) {
+                    editor.commands.liftListItem('listItem')
+                }
+            } else {
+                // Tab
+                if (editor.isActive('listItem')) {
+                    editor.commands.sinkListItem('listItem')
+                } else {
+                    editor.commands.insertContent('    ')
+                }
+            }
+        }
+    }
+
     const editorRef = useRef(editor)
 
     useEffect(() => {
@@ -128,6 +154,10 @@ const Tiptap = ({
         editor,
         selector: ctx => {
             return {
+                bold: {
+                    isActive: ctx.editor?.isActive('bold'),
+                    canToggle: ctx.editor?.can().toggleBold(),
+                },
                 heading1: {
                     isActive: ctx.editor?.isActive('heading', { level: 1 }),
                     canToggle: ctx.editor?.can().toggleHeading({ level: 1 }),
@@ -196,13 +226,22 @@ const Tiptap = ({
 
     return (
         <div className="border border-gray-200 rounded-lg px-0 sm:p-2">
-            {editable ? <>
+            {editable ? <div className={"sticky top-0 z-10 py-1 bg-white"}>
                 <ToggleGroup
                     variant="outline"
                     type="multiple"
-                    className="sticky top-4 z-10 flex justify-center w-full px-0 sm:px-4 my-4 bg-white
+                    className="flex justify-center w-full px-0 sm:px-4 my-4 bg-white
                                 [&>button[data-state=on]]:bg-emerald-500
                                 [&>button[data-state=on]]:text-white ">
+                    <ToggleGroupItem
+                        value="bold"
+                        aria-label="Toggle bold"
+                        disabled={!editorState?.bold.canToggle}
+                        data-state={editorState?.bold.isActive ? 'on' : 'off'}
+                        onClick={() => editor.chain().focus().toggleBold().run()}>
+                        <span className="font-bold">B</span>
+                    </ToggleGroupItem>
+
 
                     <ToggleGroupItem
                         value={"heading1"}
@@ -232,12 +271,23 @@ const Tiptap = ({
                         <Quote className="h-4 w-4"/>
                         {/* Ctrl + Shift + B */}
                     </ToggleGroupItem>
-                </ToggleGroup>
 
+                    <ToggleGroupItem
+                        value="image"
+                        data-state={"off"}
+                        aria-label="이미지 삽입"
+                        onClick={() => {
+                            const url = window.prompt('이미지 URL을 입력해주세요.')
+                            if (url) editor.commands.setImage({ src: url })
+                        }}>
+                        <Image className="h-4 w-4"/>
+                    </ToggleGroupItem>
+
+                </ToggleGroup>
                 <ToggleGroup
                     variant="outline"
                     type="multiple"
-                    className="sticky top-16 z-10 flex justify-center w-full px-0 sm:px-4 my-4 bg-white
+                    className="flex justify-center w-full px-0 sm:px-4 my-4 bg-white
                                 [&>button[data-state=on]]:bg-emerald-500
                                 [&>button[data-state=on]]:text-white ">
 
@@ -308,10 +358,10 @@ const Tiptap = ({
 
 
                 </ToggleGroup>
-            </> : null
+            </div> : null
             }
 
-            < EditorContent editor={editor}/>
+            < EditorContent onKeyDown={handleKeyDown} editor={editor}/>
 
             <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
                 <DialogContent className="w-full !max-w-5xl max-h-screen overflow-y-auto ">
