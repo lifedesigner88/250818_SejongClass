@@ -1,7 +1,7 @@
 import './tiptab-css.css'
 import 'katex/dist/katex.min.css'
 import { EditorContent, type JSONContent, useEditor, useEditorState } from "@tiptap/react";
-import { Quote, Heading1, Heading2, Sigma, SquareSigma, Code } from "lucide-react";
+import { Quote, Heading1, Heading2, Sigma, SquareSigma } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Math, { migrateMathStrings } from '@tiptap/extension-mathematics'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
@@ -25,9 +25,11 @@ import {
 } from "@/components/ui/dialog";
 import { all, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
+import latex from 'highlight.js/lib/languages/latex'
 
 const lowlight = createLowlight(all)
 lowlight.register('python', python)
+lowlight.register('latex', latex)
 
 const Tiptap = ({
                     editable,
@@ -77,7 +79,7 @@ const Tiptap = ({
             }),
             CodeBlockLowlight.configure({
                 lowlight,
-                defaultLanguage: 'python',
+                defaultLanguage: 'python'
             }),
         ],
 
@@ -130,10 +132,14 @@ const Tiptap = ({
                     isActive: ctx.editor?.isActive('blockquote'),
                     canToggle: ctx.editor?.can().toggleBlockquote(),
                 },
-                codeBlock: {
-                    isActive: ctx.editor?.isActive('codeBlock'),
-                    canToggle: ctx.editor?.can().toggleCodeBlock(),
-                }
+                pythonCodeBlock: {
+                    isActive: ctx.editor?.isActive('codeBlock', { language: 'python' }),
+                    canToggle: ctx.editor?.can().toggleCodeBlock({ language: 'python' }),
+                },
+                latexCodeBlock: {
+                    isActive: ctx.editor?.isActive('codeBlock', { language: 'latex' }),
+                    canToggle: ctx.editor?.can().toggleCodeBlock({ language: 'latex' }),
+                },
             };
         },
     });
@@ -183,7 +189,7 @@ const Tiptap = ({
                 <ToggleGroup
                     variant="outline"
                     type="multiple"
-                    className="flex justify-center w-full px-0 sm:p-4
+                    className="sticky top-4 z-10 flex justify-center w-full px-0 sm:px-4 my-4 bg-white
                                 [&>button[data-state=on]]:bg-emerald-500
                                 [&>button[data-state=on]]:text-white ">
 
@@ -216,33 +222,68 @@ const Tiptap = ({
                         {/* Ctrl + Shift + B */}
                     </ToggleGroupItem>
 
-                    <ToggleGroupItem
-                        value="python"
-                        aria-label="Python 코드"
-                        data-state={editorState?.codeBlock.isActive ? 'on' : 'off'}
-                        onClick={() => editor.chain().focus().toggleCodeBlock({ language: 'python' }).run()}>
-                        <Code className="h-4 w-4"/>
-                    </ToggleGroupItem>
 
-                    <ToggleGroupItem
-                        value="inline-math"
-                        aria-label="인라인 수학 수식"
-                        data-state={"off"}
-                        onClick={onInsertInlineMath}>
-                        <Sigma className="h-4 w-4"/>
-                    </ToggleGroupItem>
-
-                    <ToggleGroupItem
-                        value="block-math"
-                        aria-label="블록 수학 수식"
-                        data-state={"off"}
-                        onClick={onInsertBlockMath}>
-                        <SquareSigma className="h-4 w-4"/>
-                    </ToggleGroupItem>
                 </ToggleGroup>
                 : null
             }
-            <EditorContent editor={editor}/>
+            {/* 기본 유저도 사용 가능. */}
+            <ToggleGroup
+                variant="outline"
+                type="multiple"
+                className="sticky top-16 z-10 flex justify-center w-full px-0 sm:px-4 my-4 bg-white
+                                [&>button[data-state=on]]:bg-emerald-500
+                                [&>button[data-state=on]]:text-white ">
+
+                <ToggleGroupItem
+                    value="python"
+                    aria-label="Python 코드"
+                    data-state={editorState?.pythonCodeBlock.isActive ? 'on' : 'off'}
+                    disabled={!editorState?.pythonCodeBlock.canToggle}
+                    onClick={() => editor.chain().focus().toggleCodeBlock({ language: 'python' }).run()}>
+                    <img
+                        src="/svg/code/python-svgrepo-com.svg"
+                        alt="Python"
+                        width={20}
+                        height={20}
+                        className="inline-block"
+                    />
+                    
+                </ToggleGroupItem>
+
+                <ToggleGroupItem
+                    value="latex"
+                    aria-label="LaTeX 코드"
+                    data-state={editorState?.latexCodeBlock.isActive ? 'on' : 'off'}
+                    disabled={!editorState?.latexCodeBlock.canToggle}
+                    onClick={() => editor.chain().focus().toggleCodeBlock({ language: 'latex' }).run()}>
+                    <img
+                        src="/svg/code/latex-svgrepo-com.svg"
+                        alt="Python"
+                        width={50}
+                        height={20}
+                        className="inline-block"
+                    />
+                </ToggleGroupItem>
+
+                <ToggleGroupItem
+                    value="inline-math"
+                    aria-label="인라인 수학 수식"
+                    data-state={"off"}
+                    onClick={onInsertInlineMath}>
+                    <Sigma className="h-4 w-4"/>
+                </ToggleGroupItem>
+
+                <ToggleGroupItem
+                    value="block-math"
+                    aria-label="블록 수학 수식"
+                    data-state={"off"}
+                    onClick={onInsertBlockMath}>
+                    <SquareSigma className="h-4 w-4"/>
+                </ToggleGroupItem>
+
+            </ToggleGroup>
+
+            < EditorContent editor={editor}/>
 
             <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
                 <DialogContent className="w-full !max-w-5xl max-h-screen overflow-y-auto ">
@@ -283,7 +324,7 @@ const Tiptap = ({
             </Dialog>
         </div>
 
-    )
+    );
 }
 
 export default Tiptap

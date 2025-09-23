@@ -84,17 +84,31 @@
         white-space: pre;
         overflow-x: auto;
 
-        /* 모바일: 줄바꿈 */
-        @media (max-width: 768px) {
-            white-space: pre-wrap;
-            word-break: break-word;
-            overflow-x: visible;
-        }
 
         code {
             @apply bg-transparent border-0 rounded-none text-inherit;
             @apply inline font-mono text-sm leading-6 m-0 p-0;
             white-space: inherit;
+        }
+
+        .language-latex {
+            &::before {
+                content: "[LaTeX]\A";
+                @apply text-orange-300 font-medium;
+            }
+        }
+
+        .language-python {
+            &::before {
+                content: "[Python]\A";
+                @apply text-blue-300 font-medium;
+            }
+        }
+
+        pre::before {
+            content: "기본 코드 내용입니다.";
+            color: #888;
+            font-style: italic;
         }
 
         /* === GitHub Dark Theme - 정리된 색상 팔레트 === */

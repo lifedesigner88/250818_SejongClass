@@ -163,8 +163,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     <SheetTrigger asChild>
                         <button
                             className="fixed bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
-                            aria-label="개념 보기"
-                        >
+                            aria-label="개념 보기">
                             <Brain className="h-6 w-6"/>
                         </button>
                     </SheetTrigger>
