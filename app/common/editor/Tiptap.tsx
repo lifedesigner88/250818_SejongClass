@@ -1,7 +1,7 @@
 import './tiptab-css.css'
 import 'katex/dist/katex.min.css'
 import { EditorContent, type JSONContent, useEditor, useEditorState } from "@tiptap/react";
-import { Quote, Heading1, Heading2, Sigma, SquareSigma } from "lucide-react";
+import { Quote, Heading1, Heading2, Sigma, SquareSigma, Link2 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import Math, { migrateMathStrings } from '@tiptap/extension-mathematics'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
@@ -26,6 +26,8 @@ import {
 import { all, createLowlight } from 'lowlight'
 import python from 'highlight.js/lib/languages/python'
 import latex from 'highlight.js/lib/languages/latex'
+import { BulletList, ListItem, OrderedList, TaskItem, TaskList } from '@tiptap/extension-list'
+import Link from '@tiptap/extension-link'
 
 const lowlight = createLowlight(all)
 lowlight.register('python', python)
@@ -44,10 +46,16 @@ const Tiptap = ({
         immediatelyRender: false,
         extensions: [
             Blockquote,
+            BulletList,
+            OrderedList,
+            ListItem,
             Paragraph,
             Document,
+            TaskItem,
+            TaskList,
             Text,
             UndoRedo,
+            Link,
             Heading.configure({
                 levels: [1, 2],
             }),
@@ -140,6 +148,9 @@ const Tiptap = ({
                     isActive: ctx.editor?.isActive('codeBlock', { language: 'latex' }),
                     canToggle: ctx.editor?.can().toggleCodeBlock({ language: 'latex' }),
                 },
+                link: {
+                    isActive: ctx.editor?.isActive('link'),
+                }
             };
         },
     });
@@ -185,7 +196,7 @@ const Tiptap = ({
 
     return (
         <div className="border border-gray-200 rounded-lg px-0 sm:p-2">
-            {editable ?
+            {editable ? <>
                 <ToggleGroup
                     variant="outline"
                     type="multiple"
@@ -221,67 +232,84 @@ const Tiptap = ({
                         <Quote className="h-4 w-4"/>
                         {/* Ctrl + Shift + B */}
                     </ToggleGroupItem>
-
-
                 </ToggleGroup>
-                : null
-            }
-            {/* 기본 유저도 사용 가능. */}
-            <ToggleGroup
-                variant="outline"
-                type="multiple"
-                className="sticky top-16 z-10 flex justify-center w-full px-0 sm:px-4 my-4 bg-white
+
+                <ToggleGroup
+                    variant="outline"
+                    type="multiple"
+                    className="sticky top-16 z-10 flex justify-center w-full px-0 sm:px-4 my-4 bg-white
                                 [&>button[data-state=on]]:bg-emerald-500
                                 [&>button[data-state=on]]:text-white ">
 
-                <ToggleGroupItem
-                    value="python"
-                    aria-label="Python 코드"
-                    data-state={editorState?.pythonCodeBlock.isActive ? 'on' : 'off'}
-                    disabled={!editorState?.pythonCodeBlock.canToggle}
-                    onClick={() => editor.chain().focus().toggleCodeBlock({ language: 'python' }).run()}>
-                    <img
-                        src="/svg/code/python-svgrepo-com.svg"
-                        alt="Python"
-                        width={20}
-                        height={20}
-                        className="inline-block"
-                    />
-                    
-                </ToggleGroupItem>
+                    <ToggleGroupItem
+                        value="python"
+                        aria-label="Python 코드"
+                        data-state={editorState?.pythonCodeBlock.isActive ? 'on' : 'off'}
+                        disabled={!editorState?.pythonCodeBlock.canToggle}
+                        onClick={() => editor.chain().focus().toggleCodeBlock({ language: 'python' }).run()}>
+                        <img
+                            src="/svg/code/python-svgrepo-com.svg"
+                            alt="Python"
+                            width={20}
+                            height={20}
+                            className="inline-block"
+                        />
 
-                <ToggleGroupItem
-                    value="latex"
-                    aria-label="LaTeX 코드"
-                    data-state={editorState?.latexCodeBlock.isActive ? 'on' : 'off'}
-                    disabled={!editorState?.latexCodeBlock.canToggle}
-                    onClick={() => editor.chain().focus().toggleCodeBlock({ language: 'latex' }).run()}>
-                    <img
-                        src="/svg/code/latex-svgrepo-com.svg"
-                        alt="Python"
-                        width={50}
-                        height={20}
-                        className="inline-block"
-                    />
-                </ToggleGroupItem>
+                    </ToggleGroupItem>
 
-                <ToggleGroupItem
-                    value="inline-math"
-                    aria-label="인라인 수학 수식"
-                    data-state={"off"}
-                    onClick={onInsertInlineMath}>
-                    <Sigma className="h-4 w-4"/>
-                </ToggleGroupItem>
+                    <ToggleGroupItem
+                        value="latex"
+                        aria-label="LaTeX 코드"
+                        data-state={editorState?.latexCodeBlock.isActive ? 'on' : 'off'}
+                        disabled={!editorState?.latexCodeBlock.canToggle}
+                        onClick={() => editor.chain().focus().toggleCodeBlock({ language: 'latex' }).run()}>
+                        <img
+                            src="/svg/code/latex-svgrepo-com.svg"
+                            alt="Python"
+                            width={50}
+                            height={20}
+                            className="inline-block"
+                        />
+                    </ToggleGroupItem>
 
-                <ToggleGroupItem
-                    value="block-math"
-                    aria-label="블록 수학 수식"
-                    data-state={"off"}
-                    onClick={onInsertBlockMath}>
-                    <SquareSigma className="h-4 w-4"/>
-                </ToggleGroupItem>
+                    <ToggleGroupItem
+                        value="inline-math"
+                        aria-label="인라인 수학 수식"
+                        data-state={"off"}
+                        onClick={onInsertInlineMath}>
+                        <Sigma className="h-4 w-4"/>
+                    </ToggleGroupItem>
 
-            </ToggleGroup>
+                    <ToggleGroupItem
+                        value="block-math"
+                        aria-label="블록 수학 수식"
+                        data-state={"off"}
+                        onClick={onInsertBlockMath}>
+                        <SquareSigma className="h-4 w-4"/>
+                    </ToggleGroupItem>
+
+                    <ToggleGroupItem
+                        value="link"
+                        aria-label="링크 삽입"
+                        data-state={"off"}
+                        disabled={editor.isActive('link')}
+                        onClick={() => {
+                            const url = window.prompt('텍스트 선택 후 링크를 넣어주세요')
+                            if (url) {
+                                const normalizedUrl = url.trim().match(/^https?:\/\/|^mailto:|^tel:/)
+                                    ? url.trim()
+                                    : `https://${url.trim()}`;
+
+                                editor.commands.setLink({ href: normalizedUrl, target: '_blank' })
+                            }
+                        }}>
+                        <Link2 className="h-4 w-4"/>
+                    </ToggleGroupItem>
+
+
+                </ToggleGroup>
+            </> : null
+            }
 
             < EditorContent editor={editor}/>
 
