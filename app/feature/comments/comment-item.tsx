@@ -5,52 +5,30 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Heart, MoreHorizontal, Reply } from 'lucide-react';
-
-interface Comment {
-    id: string;
-    author: {
-        name: string;
-        avatar?: string;
-    };
-    content: string;
-    timestamp: string;
-    likes: number;
-    isLiked: boolean;
-    replies?: Reply[];
-}
-
-interface Reply {
-    id: string;
-    author: {
-        name: string;
-        avatar?: string;
-    };
-    content: string;
-    timestamp: string;
-    likes: number;
-    isLiked: boolean;
-}
+import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
+import { DateTime } from 'luxon';
+type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
 interface CommentItemProps {
-    comment: Comment;
-    onReply: (commentId: string, content: string) => void;
-    onLike: (commentId: string) => void;
-    onReplyLike: (commentId: string, replyId: string) => void;
+    comment: SubCommentsType;
+    onReply: (commentId: number, content: string) => void;
+    onLike: (commentId: number) => void;
+    onReplyLike: (commentId: number, replyId: number) => void;
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({
-                                                     comment,
-                                                     onReply,
-                                                     onLike,
-                                                     onReplyLike,
-                                                 }) => {
+const CommentItem = ({
+                         comment,
+                         onReply,
+                         onLike,
+                         onReplyLike,
+                     }: CommentItemProps) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [showReplies, setShowReplies] = useState(false);
 
     const handleReplySubmit = () => {
         if (replyContent.trim()) {
-            onReply(comment.id, replyContent);
+            onReply(comment.comment_id, replyContent);
             setReplyContent('');
             setShowReplyForm(false);
             setShowReplies(true);
@@ -63,18 +41,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 {/* 메인 댓글 */}
                 <div className="flex space-x-3">
                     <Avatar className="w-8 h-8">
-                        <AvatarImage src={comment.author.avatar} />
+                        <AvatarImage src={comment.user.profile_url || ""}/>
                         <AvatarFallback>
-                            {comment.author.name.charAt(0).toUpperCase()}
+                            {comment.user.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
 
                     <div className="flex-1 space-y-2">
                         <div className="flex items-center space-x-2">
-                            <span className="font-medium text-sm">{comment.author.name}</span>
+                            <span className="font-medium text-sm">{comment.user.username}</span>
                             <span className="text-xs text-muted-foreground">
-                {comment.timestamp}
-              </span>
+                            {DateTime.fromJSDate(comment.updated_at!).setLocale("ko").toRelative()}
+                            </span>
                         </div>
 
                         <p className="text-sm leading-relaxed">{comment.content}</p>
@@ -85,14 +63,14 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                 variant="ghost"
                                 size="sm"
                                 className="h-8 px-2 text-xs"
-                                onClick={() => onLike(comment.id)}
+                                onClick={() => onLike(comment.comment_id)}
                             >
                                 <Heart
                                     className={`w-3 h-3 mr-1 ${
-                                        comment.isLiked ? 'fill-red-500 text-red-500' : ''
+                                        comment.likes.length > 0 ? 'fill-red-500 text-red-500' : ''
                                     }`}
                                 />
-                                {comment.likes > 0 && comment.likes}
+                                {comment.likes_count > 0 && comment.likes_count}
                             </Button>
 
                             <Button
@@ -101,24 +79,24 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                 className="h-8 px-2 text-xs"
                                 onClick={() => setShowReplyForm(!showReplyForm)}
                             >
-                                <Reply className="w-3 h-3 mr-1" />
+                                <Reply className="w-3 h-3 mr-1"/>
                                 답글
                             </Button>
 
-                            {comment.replies && comment.replies.length > 0 && (
+                            {comment.comments && comment.comments.length > 0 && (
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     className="h-8 px-2 text-xs"
                                     onClick={() => setShowReplies(!showReplies)}
                                 >
-                                    <MessageCircle className="w-3 h-3 mr-1" />
-                                    답글 {comment.replies.length}개 {showReplies ? '숨기기' : '보기'}
+                                    <MessageCircle className="w-3 h-3 mr-1"/>
+                                    답글 {comment.comments.length}개 {showReplies ? '숨기기' : '보기'}
                                 </Button>
                             )}
 
                             <Button variant="ghost" size="sm" className="h-8 px-2">
-                                <MoreHorizontal className="w-3 h-3" />
+                                <MoreHorizontal className="w-3 h-3"/>
                             </Button>
                         </div>
                     </div>
@@ -158,24 +136,24 @@ const CommentItem: React.FC<CommentItemProps> = ({
                 )}
 
                 {/* 답글 목록 */}
-                {showReplies && comment.replies && comment.replies.length > 0 && (
+                {showReplies && comment.comments && comment.comments.length > 0 && (
                     <div className="mt-4 ml-11 space-y-4">
-                        <Separator />
-                        {comment.replies.map((reply) => (
-                            <div key={reply.id} className="flex space-x-3">
+                        <Separator/>
+                        {comment.comments.map((reply) => (
+                            <div key={reply.comment_id} className="flex space-x-3">
                                 <Avatar className="w-7 h-7">
-                                    <AvatarImage src={reply.author.avatar} />
+                                    <AvatarImage src={reply.user.profile_url || ""}/>
                                     <AvatarFallback className="text-xs">
-                                        {reply.author.name.charAt(0).toUpperCase()}
+                                        {reply.user.username.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
 
                                 <div className="flex-1 space-y-2">
                                     <div className="flex items-center space-x-2">
-                                        <span className="font-medium text-xs">{reply.author.name}</span>
+                                        <span className="font-medium text-xs">{reply.user.username}</span>
                                         <span className="text-xs text-muted-foreground">
-                      {reply.timestamp}
-                    </span>
+                                          {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
+                                        </span>
                                     </div>
 
                                     <p className="text-xs leading-relaxed">{reply.content}</p>
@@ -185,18 +163,18 @@ const CommentItem: React.FC<CommentItemProps> = ({
                                             variant="ghost"
                                             size="sm"
                                             className="h-7 px-2 text-xs"
-                                            onClick={() => onReplyLike(comment.id, reply.id)}
+                                            onClick={() => onReplyLike(comment.comment_id, reply.comment_id)}
                                         >
                                             <Heart
                                                 className={`w-3 h-3 mr-1 ${
-                                                    reply.isLiked ? 'fill-red-500 text-red-500' : ''
+                                                    reply.likes.length > 0 ? 'fill-red-500 text-red-500' : ''
                                                 }`}
                                             />
-                                            {reply.likes > 0 && reply.likes}
+                                            {reply.likes_count > 0 && reply.likes_count}
                                         </Button>
 
                                         <Button variant="ghost" size="sm" className="h-7 px-2">
-                                            <MoreHorizontal className="w-3 h-3" />
+                                            <MoreHorizontal className="w-3 h-3"/>
                                         </Button>
                                     </div>
                                 </div>
@@ -210,20 +188,20 @@ const CommentItem: React.FC<CommentItemProps> = ({
 };
 
 interface CommentsSectionProps {
-    comments: Comment[];
+    comments: UnitCommentsType;
     onNewComment: (content: string) => void;
-    onReply: (commentId: string, content: string) => void;
-    onLike: (commentId: string) => void;
-    onReplyLike: (commentId: string, replyId: string) => void;
+    onReply: (commentId: number, content: string) => void;
+    onLike: (commentId: number) => void;
+    onReplyLike: (commentId: number, replyId: number) => void;
 }
 
-const CommentsSection: React.FC<CommentsSectionProps> = ({
-                                                             comments,
-                                                             onNewComment,
-                                                             onReply,
-                                                             onLike,
-                                                             onReplyLike,
-                                                         }) => {
+const CommentsSection = ({
+                             comments,
+                             onNewComment,
+                             onReply,
+                             onLike,
+                             onReplyLike,
+                         }: CommentsSectionProps) => {
     const [newComment, setNewComment] = useState('');
 
     const handleNewCommentSubmit = () => {
@@ -234,11 +212,11 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto space-y-6">
+        <div className="w-full mx-auto space-y-6">
             {/* 새 댓글 작성 */}
             <Card>
                 <CardContent className="p-4">
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                         <h3 className="text-lg font-semibold">댓글 {comments.length}개</h3>
                         <div className="space-y-3">
                             <Textarea
@@ -264,7 +242,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({
             <div className="space-y-4">
                 {comments.map((comment) => (
                     <CommentItem
-                        key={comment.id}
+                        key={comment.comment_id}
                         comment={comment}
                         onReply={onReply}
                         onLike={onLike}

@@ -26,6 +26,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { DateTime } from "luxon";
+import CommentsSection from "~/feature/comments/comment-item";
+
+type UnitDataType = Awaited<ReturnType<typeof getUnitAndConceptsByUnitId>>;
+export type UnitCommentsType = NonNullable<UnitDataType>['comments'];
+
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const paramsSchema = z.object({
@@ -52,6 +57,10 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const { unitData } = loaderData;
     const isFree = unitData.is_free;
     const isPublished = unitData.is_published;
+
+    const unitComments = unitData.comments
+    console.dir(unitComments, { depth: null })
+    console.log(typeof unitComments)
 
     const location = useLocation();
     const shouldHandleEnrollment = useMemo(() => {
@@ -137,6 +146,25 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         setNoteOpen(isNoteExists);
     }, [unitData])
 
+
+    // 댓글 관련
+
+    const handleNewComment = () => {
+        console.log("New Comment")
+    }
+
+    const handleReply = () => {
+        console.log("Reply")
+    }
+
+    const handleLike = () => {
+        console.log("Like")
+    }
+
+    const handleReplyLike = () => {
+        console.log("Reply Like")
+    }
+
     // 개념보기 시트
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -208,7 +236,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     </CollapsibleContent>
                 </Collapsible>
 
-
                 {/* Memo */}
                 <Collapsible open={noteOpen} onOpenChange={createFirstNote} className={"relative"}>
                     <CollapsibleTrigger
@@ -261,6 +288,17 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         </CollapsibleContent> : null
                     }
                 </Collapsible>
+
+                {/* 댓글 */}
+                <div className="container mx-auto py-8">
+                    <CommentsSection
+                        comments={unitComments}
+                        onNewComment={handleNewComment}
+                        onReply={handleReply}
+                        onLike={handleLike}
+                        onReplyLike={handleReplyLike}
+                    />
+                </div>
 
                 {/* 개념 보기 Sheet */}
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>

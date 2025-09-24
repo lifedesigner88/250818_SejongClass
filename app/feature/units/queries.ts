@@ -1,7 +1,8 @@
 import db from "~/db";
 import { unitsTable } from "~/feature/units/schema";
-import { eq } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
 import { notesTable } from "~/feature/note/schema";
+import { commentLikesTable, commentsTable } from "~/feature/comments/schema";
 
 export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: string) {
     return db.query.unitsTable.findFirst({
@@ -21,7 +22,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                 columns: {
                     title: true,
                 },
-                with:{
+                with: {
                     major: {
                         columns: {
                             title: true,
@@ -55,9 +56,62 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                     readme_json: true,
                     updated_at: true,
                 },
-                where:eq(notesTable.user_id, user_id),
+                where: eq(notesTable.user_id, user_id),
+            },
+
+            comments: {
+                columns: {
+                    comment_id: true,
+                    content: true,
+                    likes_count: true,
+                    is_deleted: true,
+                    is_edited: true,
+                    updated_at: true,
+                },
+                where: isNull(commentsTable.parent_comment_id),
+                with: {
+                    comments:{
+                        columns: {
+                            comment_id: true,
+                            content: true,
+                            likes_count: true,
+                            is_deleted: true,
+                            is_edited: true,
+                            updated_at: true,
+                        },
+                        with:{
+                            user: {
+                                columns: {
+                                    user_id: true,
+                                    username: true,
+                                    profile_url: true,
+                                }
+                            },
+                            likes:{
+                                columns: {
+                                    comment_id: true,
+                                },
+                                where: eq(commentLikesTable.user_id, user_id),
+                            }
+                        }
+                    },
+                    user: {
+                        columns: {
+                            user_id: true,
+                            username: true,
+                            profile_url: true,
+                        }
+                    },
+                    likes:{
+                        columns: {
+                            comment_id: true,
+                        },
+                        where: eq(commentLikesTable.user_id, user_id),
+                    }
+                }
             }
-        }
+        },
+
     });
 }
 
