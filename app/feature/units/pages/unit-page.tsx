@@ -24,7 +24,7 @@ import {
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { getUserIdForSever } from "~/feature/auth/useAuthUtil";
+import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { DateTime } from "luxon";
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -36,7 +36,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const { success, data } = paramsSchema.safeParse(params);
     if (!success) throw redirect("/404");
 
-    const getUserId = await getUserIdForSever(request);
+    const getUserId = await getUserIdForServer(request);
     const unitData = await getUnitAndConceptsByUnitId(data["unit-id"], getUserId!);
     if (!(unitData
         && data["textbook-id"] === unitData.middle.major.textbook.textbook_id))
@@ -111,11 +111,15 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 { action: "/api/notes/create-note", method: "POST" }
             )
         else if (JSON.stringify(noteData) === JSON.stringify(EMPTY_NOTE) && !isNoteNeedSave)
-            void fetcher.submit(
-                { unit_id: unitData.unit_id },
-                { action: "/api/notes/delete-note", method: "DELETE" }
-            )
-
+            fetch("/api/notes/delete-note", {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    unit_id: unitData.unit_id
+                })
+            }).catch(console.error);
         setNoteOpen(pre => !pre);
     }
 

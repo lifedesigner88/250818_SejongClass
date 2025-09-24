@@ -1,10 +1,10 @@
 import type { Route } from "./+types/toggle-unit"
-import { getUserIdForSever } from "~/feature/auth/useAuthUtil";
+import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { toggleUnit } from "~/api/units/mutation";
 
 
 export const action = async ({ request }: Route.ActionArgs) => {
-    const userId = await getUserIdForSever(request)
+    const userId = await getUserIdForServer(request)
     if (!userId) return { error: "userId_required" }
     const formData = await request.formData();
     const unitId = formData.get('unit_id') as string;

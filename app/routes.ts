@@ -12,11 +12,11 @@ export default [
     route("/terms-of-service", "common/pages/terms-of-service.tsx"),
 
 
-    ...prefix("/api",[
-        ...prefix("/curriculums",[
+    ...prefix("/api", [
+        ...prefix("/curriculums", [
             route("/toggle-curriculum", "api/curriculums/toggle-curriculum.tsx"),
         ]),
-        ...prefix("/units",[
+        ...prefix("/units", [
             route("/toggle-unit", "api/units/toggle-unit.tsx"),
             route("/update-readme", "api/units/update-readme.tsx"),
         ]),
@@ -25,7 +25,7 @@ export default [
             route("/update-note", "api/notes/update-note.tsx"),
             route("/delete-note", "api/notes/delete-note.tsx"),
         ]),
-        ...prefix("/enrollments",[
+        ...prefix("/enrollments", [
             route("/enroll", "api/enrollments/enroll.tsx"),
             route("/enroll-free", "api/enrollments/enroll-free.tsx"),
             route("/update-progress", "api/enrollments/update-progress.tsx"),
@@ -33,10 +33,12 @@ export default [
         ...prefix("/cron", [
             route("/calculate-textbook", "api/cron/calculate-textbook.tsx")
         ]),
-        ...prefix("/email",[
+        ...prefix("/email", [
             route("/welcome", "api/email/welcome.tsx"),
         ])
     ]),
+
+    route("/test2", "feature/comments/page/test-page.tsx"),
 
     // - 임시 -
     route("/curriculums", "feature/curriculums/pages/curriculums-page.tsx"),

@@ -7,7 +7,7 @@ import {
     insertPaymentData,
     saveTossPaymentLog,
 } from "~/api/enrollments/mutation";
-import { getUserIdForSever } from "~/feature/auth/useAuthUtil";
+import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { ArrowRight, BookOpen, CheckCircle, Clock, CreditCard } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#app/common/components/ui/card.js";
 import { useEffect, useState } from "react";
@@ -52,7 +52,7 @@ export const loader = async ({ request }: Route.ActionArgs) => {
     // 1. 먼저 토스 로그 저장
     const tossLog = await saveTossPaymentLog(responseData);
 
-    const sessionUserId = await getUserIdForSever(request);
+    const sessionUserId = await getUserIdForServer(request);
     if (!sessionUserId) console.log("sessionUserId is null");
 
     const textbookId = Number(responseData.metadata.textbook_id);

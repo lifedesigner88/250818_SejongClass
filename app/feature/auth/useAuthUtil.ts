@@ -76,7 +76,7 @@ export const getInAppBrowserType = (): string | null => {
 };
 
 
-export const getUserIdForSever = async (request: Request) => {
+export const getUserIdForServer = async (request: Request) => {
     let userId = getUserIdFromCookieSync(request);
     if (userId) return userId;
     userId = await getUserIdFromSession(request);

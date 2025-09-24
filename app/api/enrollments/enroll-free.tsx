@@ -1,5 +1,5 @@
 import type { Route } from "./+types/enroll-free";
-import { getUserIdForSever } from "~/feature/auth/useAuthUtil";
+import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { enrollFreeTextbook, getTextbookPrice, incrementEnrolledStudents } from "~/api/enrollments/mutation";
 
 
@@ -13,7 +13,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
         // 무료인지 체크
         const { price: DBPrice }: any = await getTextbookPrice(textbook_id);
-        const userId = await getUserIdForSever(request)
+        const userId = await getUserIdForServer(request)
 
         if (Number(requestPrice) === DBPrice && userId !== null) {
             await enrollFreeTextbook(textbook_id, userId!);

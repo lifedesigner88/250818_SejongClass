@@ -20,7 +20,7 @@ import colors from "~/feature/textbooks/major-color";
 import { z } from "zod";
 
 import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import { getUserIdForSever, useAuthOutletData } from "~/feature/auth/useAuthUtil";
+import { getUserIdForServer, useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { calculateTotalProgressOptimized } from "~/feature/textbooks/total-progress";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -46,7 +46,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const { success, data } = paramsSchema.safeParse({ textbookId });
     if (!success) throw redirect("/404");
 
-    const userId = await getUserIdForSever(request)
+    const userId = await getUserIdForServer(request)
     if (!userId) return { themeSlug, subjectSlug, textbookId, textbookInfo: null }
 
     const textbookInfo = await getTextbookInfobyTextBookId(data?.textbookId, userId);

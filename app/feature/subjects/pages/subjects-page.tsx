@@ -15,7 +15,7 @@ import { AspectRatio } from "~/common/components/ui/aspect-ratio";
 import { BookOpen, Clock, Star, Users2 } from "lucide-react";
 import React from "react";
 import { DateTime } from "luxon"
-import { getUserIdForSever, useAuthOutletData } from "~/feature/auth/useAuthUtil";
+import { getUserIdForServer, useAuthOutletData } from "~/feature/auth/useAuthUtil";
 
 type ThemeWithTextbooks = Awaited<ReturnType<typeof getTextbooksByTheamSlug>>;
 type TextbooksType = NonNullable<ThemeWithTextbooks>["subjects"][number]["textbooks"][number];
@@ -23,7 +23,7 @@ type TextbooksType = NonNullable<ThemeWithTextbooks>["subjects"][number]["textbo
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const themeSlug = params['theme-slug'];
-    const userId = await getUserIdForSever(request)
+    const userId = await getUserIdForServer(request)
     const textbooks = await getTextbooksByTheamSlug(themeSlug, userId!);
     if (!textbooks) throw redirect("/404")
     return { textbooks };
