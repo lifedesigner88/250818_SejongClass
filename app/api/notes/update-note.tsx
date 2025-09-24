@@ -1,12 +1,15 @@
-import type { Route } from "./+types/update-note"
 
-import { updateUserNote } from "~/api/units/mutation";
+import type { Route } from "./+types/update-note";
 import z from "zod";
 import { getUserIdForSever } from "~/feature/auth/useAuthUtil";
 import type { JSONContent } from "@tiptap/react";
+import { updateUserNote } from "~/api/notes/mutation";
 
 
 export const action = async ({ request }: Route.ActionArgs) => {
+    if (request.method !== "POST") {
+        throw new Error('Method not allowed');
+    }
     const formData = await request.formData();
     const schema = z.object({
         content: z.string().min(1).transform((str) => {

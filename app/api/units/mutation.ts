@@ -1,8 +1,7 @@
 import type { JSONContent } from "@tiptap/react";
-import { and, eq, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import db from "~/db";
 import { unitsTable } from "~/feature/units/schema";
-import { notesTable } from "~/feature/note/schema";
 
 export const toggleUnit = async (unitId: number, userId: string | null) => {
     await db.execute(sql`
@@ -23,11 +22,3 @@ export async function updateUnitReadmeContent(unit_id: number, readme_json: JSON
         .where(eq(unitsTable.unit_id, unit_id));
 }
 
-export async function updateUserNote(userId: string, unit_id: number, readme_json: JSONContent) {
-    return db.update(notesTable)
-        .set({ readme_json })
-        .where(and(
-            eq(notesTable.user_id, userId),
-            eq(notesTable.unit_id, unit_id)
-        ));
-}

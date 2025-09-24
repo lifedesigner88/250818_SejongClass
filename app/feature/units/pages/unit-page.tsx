@@ -86,10 +86,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const fetcher = useFetcher()
 
 
-    const noteFetcher = useFetcher()
     // Note
-
-
+    const noteFetcher = useFetcher()
     const isNoteExists = unitData.notes.length > 0;
 
     const [noteData, setNoteData] = useState<JSONContent>(EMPTY_NOTE)
@@ -107,12 +105,17 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
     // 노트가 없는경우 생성
     const createFirstNote = () => {
-        if (unitData.notes.length == 0) {
+        if (unitData.notes.length == 0)
             void fetcher.submit(
                 { unit_id: unitData.unit_id },
-                { action: "/api/notes/create-note", method: "post" }
+                { action: "/api/notes/create-note", method: "POST" }
             )
-        }
+        else if (JSON.stringify(noteData) === JSON.stringify(EMPTY_NOTE) && !isNoteNeedSave)
+            void fetcher.submit(
+                { unit_id: unitData.unit_id },
+                { action: "/api/notes/delete-note", method: "DELETE" }
+            )
+
         setNoteOpen(pre => !pre);
     }
 
@@ -177,7 +180,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     <CollapsibleContent className="mt-4">
                         <Tiptap content={content} editable={isAdmin} onChange={setContent}/>
                         {isContentNeedSave ?
-                            <fetcher.Form method="post" className="space-y-4 flex justify-center "
+                            <fetcher.Form method="POST" className="space-y-4 flex justify-center "
                                           action={'/api/units/update-readme'}>
                                 <input type="hidden" name="content" value={JSON.stringify(content)}/>
                                 <input type="hidden" name="unit_id" value={unitData.unit_id}/>
@@ -228,7 +231,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     </CollapsibleTrigger>
                     {isNoteNeedSave ?
                         <noteFetcher.Form method="post" className=" space-y-4 flex justify-center  "
-                                          action={'/api/units/update-note'}>
+                                          action={'/api/notes/update-note'}>
                             <input type="hidden" name="content" value={JSON.stringify(noteData)}/>
                             <input type="hidden" name="unit_id" value={unitData.unit_id}/>
                             <Button
