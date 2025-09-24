@@ -38,8 +38,6 @@ export default [
         ])
     ]),
 
-    route("/test2", "feature/comments/page/test-page.tsx"),
-
     // - 임시 -
     route("/curriculums", "feature/curriculums/pages/curriculums-page.tsx"),
     route("/monaco-demo", "common/components/pages/monaco-demo.tsx"),
