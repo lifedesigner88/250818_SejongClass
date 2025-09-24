@@ -1,8 +1,9 @@
 import db from "~/db";
 import { unitsTable } from "~/feature/units/schema";
 import { eq } from "drizzle-orm";
+import { notesTable } from "~/feature/note/schema";
 
-export async function getUnitAndConceptsByUnitId(unit_id: number) {
+export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: string) {
     return db.query.unitsTable.findFirst({
         where: eq(unitsTable.unit_id, unit_id),
         columns: {
@@ -53,7 +54,8 @@ export async function getUnitAndConceptsByUnitId(unit_id: number) {
                 columns: {
                     readme_json: true,
                     updated_at: true,
-                }
+                },
+                where:eq(notesTable.user_id, user_id),
             }
         }
     });

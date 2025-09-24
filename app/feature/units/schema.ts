@@ -16,10 +16,7 @@ import { progressTable } from "~/feature/progress/schema";
 import { curriculumsTable } from "~/feature/curriculums/schema";
 import type { JSONContent } from "@tiptap/react";
 import { notesTable } from "~/feature/note/schema";
-const EMPTY_EDITOR_CONTENT: JSONContent = {
-    type: 'doc',
-    content: []
-} as const;
+const EMPTY_NOTE: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const
 
 export const unitsTable = pgTable("units", {
     unit_id: serial().primaryKey(),
@@ -27,7 +24,7 @@ export const unitsTable = pgTable("units", {
     title: varchar({ length: 100 }).notNull(),
     youtube_video_id: varchar({ length: 20 }),
     readme_content: varchar({ length: 4000 }),
-    readme_json: json().$type<JSONContent>().default(EMPTY_EDITOR_CONTENT).notNull(),
+    readme_json: json().$type<JSONContent>().default(EMPTY_NOTE).notNull(),
     estimated_seconds: smallint().default(0).notNull(),
     sort_order: integer().default(1).notNull(),
     is_published: boolean().default(false).notNull(),

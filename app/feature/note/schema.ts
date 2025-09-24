@@ -3,10 +3,7 @@ import { usersTable } from "~/feature/users/schema";
 import { unitsTable } from "~/feature/units/schema";
 import { relations, sql } from "drizzle-orm";
 import type { JSONContent } from "@tiptap/react";
-const EMPTY_EDITOR_CONTENT: JSONContent = {
-    type: 'doc',
-    content: []
-} as const;
+const EMPTY_EDITOR_CONTENT: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const;
 export const notesTable = pgTable("notes", {
         user_id: uuid().references(() => usersTable.user_id, {
             onDelete: "cascade",
