@@ -7,6 +7,12 @@ import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Heart, MoreHorizontal, Reply } from 'lucide-react';
 import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
 import { DateTime } from 'luxon';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from '#app/common/components/ui/dropdown-menu.js';
 
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
@@ -14,12 +20,16 @@ interface CommentItemProps {
     comment: SubCommentsType;
     onReply: (commentId: number, content: string) => void;
     onLike: (commentId: number) => void;
+    deleteComment: (commentId: number) => void;
+    loginUserId: string
 }
 
 const CommentItem = ({
                          comment,
                          onReply,
                          onLike,
+                         deleteComment,
+                         loginUserId
                      }: CommentItemProps) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
@@ -48,7 +58,7 @@ const CommentItem = ({
 
                     <div className="flex-1 space-y-2">
                         <div className="flex items-center space-x-2">
-                            <span className="font-medium text-sm">{comment.user.username}</span>
+                            <span className="font-medium text-sm text-muted-foreground">{comment.user.username}</span>
                             <span className="text-xs text-muted-foreground">
                             {DateTime.fromJSDate(comment.updated_at!).setLocale("ko").toRelative()}
                             </span>
@@ -65,7 +75,7 @@ const CommentItem = ({
                                     onClick={() => onLike(comment.comment_id)}
                                 >
                                     <Heart
-                                        className={`size-5 sm:size-5 mr-1 ${
+                                        className={`size-4 mr-1 ${
                                             comment.likes.length > 0 ? 'fill-red-500 text-red-500' : ''
                                         }`}
                                     />
@@ -94,9 +104,21 @@ const CommentItem = ({
                                     </Button>
                                 )}
 
-                                <Button variant="ghost" size="sm" className="h-8 px-2">
-                                    <MoreHorizontal className="w-3 h-3"/>
-                                </Button>
+                                <DropdownMenu>
+                                    {
+                                        comment.user.user_id === loginUserId && comment.comments.length === 0 ?
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="sm" className="h-8 px-2">
+                                                    <MoreHorizontal className="w-3 h-3"/>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            : null
+                                    }
+                                    <DropdownMenuContent>
+                                        <DropdownMenuItem className={"flex justify-center"}
+                                                          onClick={() => deleteComment(comment.comment_id)}>삭제</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                             </div>
                         </div>
                     </div>
@@ -137,7 +159,7 @@ const CommentItem = ({
 
                 {/* 답글 목록 */}
                 {showReplies && comment.comments && comment.comments.length > 0 && (
-                    <div className="mt-4 ml-11 space-y-4">
+                    <div className="mt-4 pl-11 space-y-4 bg-emerald-50 rounded-lg">
                         <Separator/>
                         {comment.comments.map((reply) => (
                             <div key={reply.comment_id} className="flex space-x-3">
@@ -150,7 +172,7 @@ const CommentItem = ({
 
                                 <div className="flex-1 space-y-2">
                                     <div className="flex items-center space-x-2">
-                                        <span className="font-medium text-xs">{reply.user.username}</span>
+                                        <span className="font-medium text-xs text-muted-foreground">{reply.user.username}</span>
                                         <span className="text-xs text-muted-foreground">
                                           {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
                                         </span>
@@ -166,16 +188,28 @@ const CommentItem = ({
                                             onClick={() => onLike(reply.comment_id)}
                                         >
                                             <Heart
-                                                className={`w-3 h-3 mr-1 ${
+                                                className={`size-4 mr-1 ${
                                                     reply.likes.length > 0 ? 'fill-red-500 text-red-500' : ''
                                                 }`}
                                             />
                                             {reply.likes_count > 0 && reply.likes_count}
                                         </Button>
 
-                                        <Button variant="ghost" size="sm" className="h-7 px-2">
-                                            <MoreHorizontal className="w-3 h-3"/>
-                                        </Button>
+                                        <DropdownMenu>
+                                            {reply.user.user_id === loginUserId ?
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="sm" className="h-8 px-2">
+                                                        <MoreHorizontal className="w-3 h-3"/>
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                : null
+                                            }
+                                            <DropdownMenuContent>
+                                                <DropdownMenuItem className={"flex justify-center"}
+                                                                  onClick={() => deleteComment(reply.comment_id)}>삭제</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+
                                     </div>
                                 </div>
                             </div>
@@ -192,6 +226,8 @@ interface CommentsSectionProps {
     onNewComment: (content: string) => void;
     onReply: (commentId: number, content: string) => void;
     onLike: (commentId: number) => void;
+    deleteComment: (commentId: number) => void;
+    loginUserId: string
 }
 
 const CommentsSection = ({
@@ -199,6 +235,8 @@ const CommentsSection = ({
                              onNewComment,
                              onReply,
                              onLike,
+                             deleteComment,
+                             loginUserId,
                          }: CommentsSectionProps) => {
     const [newComment, setNewComment] = useState('');
 
@@ -244,6 +282,8 @@ const CommentsSection = ({
                         comment={comment}
                         onReply={onReply}
                         onLike={onLike}
+                        deleteComment={deleteComment}
+                        loginUserId={loginUserId}
                     />
                 ))}
             </div>

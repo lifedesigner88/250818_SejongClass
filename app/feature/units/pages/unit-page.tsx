@@ -41,12 +41,12 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const { success, data } = paramsSchema.safeParse(params);
     if (!success) throw redirect("/404");
 
-    const getUserId = await getUserIdForServer(request);
-    const unitData = await getUnitAndConceptsByUnitId(data["unit-id"], getUserId!);
+    const userId = await getUserIdForServer(request);
+    const unitData = await getUnitAndConceptsByUnitId(data["unit-id"], userId!);
     if (!(unitData
         && data["textbook-id"] === unitData.middle.major.textbook.textbook_id))
         throw redirect("/404");
-    return { unitData }
+    return { unitData, userId }
 }
 
 
@@ -54,7 +54,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
     const { isAdmin, isEnrolled, setOpenEnrollWindow, setAfterEnrollNaviUrl } = useOutletContext<OutletContextType>();
     const EMPTY_NOTE: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const
-    const { unitData } = loaderData;
+    const { unitData, userId } = loaderData;
     const isFree = unitData.is_free;
     const isPublished = unitData.is_published;
 
@@ -162,7 +162,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
             method: 'POST',
             action: '/api/comments/create-comment',
         })
-        console.log("New Comment")
     }
 
     const handleReply = (parent_comment_id: number, content: string) => {
@@ -176,7 +175,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
             method: 'POST',
             action: '/api/comments/create-comment',
         })
-        console.log("Reply")
     }
 
     const handleLike = (comment_id: number) => {
@@ -186,7 +184,17 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
             method: 'POST',
             action: '/api/comments/like-comment',
         })
-        console.log("Like")
+    }
+
+    const deleteFetcher = useFetcher()
+    const deleteComment = (comment_id: number) => {
+        deleteFetcher.submit({
+            comment_id,
+        }, {
+            method: 'POST',
+            action: '/api/comments/delete-comment',
+        })
+        console.log("Delete")
     }
 
 
@@ -321,6 +329,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         onNewComment={handleNewComment}
                         onReply={handleReply}
                         onLike={handleLike}
+                        deleteComment={deleteComment}
+                        loginUserId={userId!}
                     />
                 </div>
 

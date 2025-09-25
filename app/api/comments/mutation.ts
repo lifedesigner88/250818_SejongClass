@@ -65,3 +65,11 @@ export const updateCommentLike = async (comment_id: number, userId: string) => {
     `)
     }
 }
+
+export const deleteComment = async (comment_id: number, userId: string) => {
+    await db.delete(commentsTable)
+        .where(and(
+            eq(commentsTable.comment_id, comment_id),
+            eq(commentsTable.user_id, userId)
+        ));
+}

@@ -39,6 +39,7 @@ export default [
         ...prefix("/comments", [
             route("/create-comment", "api/comments/create-comment.tsx"),
             route("/like-comment", "api/comments/like-comment.tsx"),
+            route("/delete-comment", "api/comments/delete-comment.tsx"),
         ])
     ]),
 

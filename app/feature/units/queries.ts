@@ -71,6 +71,19 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                 orderBy: (comments, { desc }) => [desc(comments.created_at)],
                 where: isNull(commentsTable.parent_comment_id),
                 with: {
+                    user: {
+                        columns: {
+                            user_id: true,
+                            username: true,
+                            profile_url: true,
+                        }
+                    },
+                    likes:{
+                        columns: {
+                            comment_id: true,
+                        },
+                        where: eq(commentLikesTable.user_id, user_id),
+                    },
                     comments:{
                         columns: {
                             comment_id: true,
@@ -97,19 +110,6 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                             }
                         },
                     },
-                    user: {
-                        columns: {
-                            user_id: true,
-                            username: true,
-                            profile_url: true,
-                        }
-                    },
-                    likes:{
-                        columns: {
-                            comment_id: true,
-                        },
-                        where: eq(commentLikesTable.user_id, user_id),
-                    }
                 }
             }
         },
