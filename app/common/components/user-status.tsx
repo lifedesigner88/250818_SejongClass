@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { User, LogIn, LogOut, Loader2, UserRoundCog } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import { User, LogIn, LogOut, Loader2, UserRoundCog, LibraryBig } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { FaGithub } from "react-icons/fa";
@@ -29,6 +30,7 @@ export function UserStatus({
                                publicUserData
                            }: UserStatusProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
 
     const handleLoginClick = () => {
         setIsOpen(false);
@@ -139,9 +141,16 @@ export function UserStatus({
                             </div>
                             <Button
                                 variant="ghost"
-                                className="w-full justify-start text-gray-600  hover:text-green-700 hover:bg-green-100 ">
-                                <UserRoundCog className="size-5 mx-2" />
-                                정보보기
+                                className="w-full justify-start text-gray-600 hover:text-green-700 hover:bg-green-100"
+                                onClick={() => navigate('/mypage')}>
+                            <UserRoundCog className="size-5 mx-2"/>
+                                나의정보
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start text-gray-600 hover:text-blue-700 hover:bg-blue-100 ">
+                                <LibraryBig className="size-5 mx-2"/>
+                                강의목록
                             </Button>
                             <Button
                                 variant="ghost"
