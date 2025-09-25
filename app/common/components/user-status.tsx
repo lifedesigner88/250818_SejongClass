@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, LogIn, LogOut, Loader2 } from 'lucide-react';
+import { User, LogIn, LogOut, Loader2, UserRoundCog } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { FaGithub } from "react-icons/fa";
@@ -139,28 +139,21 @@ export function UserStatus({
                             </div>
                             <Button
                                 variant="ghost"
+                                className="w-full justify-start text-gray-600  hover:text-green-700 hover:bg-green-100 ">
+                                <UserRoundCog className="size-5 mx-2" />
+                                정보보기
+                            </Button>
+                            <Button
+                                variant="ghost"
                                 className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
                                 onClick={handleLogoutClick}
                             >
-                                <LogOut className="size-4 mr-2"/>
+                                <LogOut className="size-5 mx-2"/>
                                 로그아웃
                             </Button>
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex items-center space-x-3">
-                                <div
-                                    className="size-8 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center">
-                                    <User className="size-4 text-white"/>
-                                </div>
-                                <div>
-                                    <p className="font-medium text-gray-900">Sign In Required</p>
-                                    <p className="text-xs text-gray-500">
-                                        로그인이 필요합니다.
-                                    </p>
-                                </div>
-                            </div>
-
                             <Button
                                 className="w-full justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                 onClick={handleLoginClick}>

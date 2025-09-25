@@ -206,13 +206,12 @@ export default function TextbookPage() {
                                     남은 강의
                                 </div>
                             </> : <>
-
                                 <div className="text-xs md:text-sm text-center truncate max-w-full text-green-600">
                                     {price === 0 ? "무료" : price.toLocaleString() + "원"}
                                 </div>
                                 <Button
                                     className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-red-600 cursor-pointer shadow-xl/10"}>
-                                    {price === 0 ? "등록하기" : "결제하기"}
+                                    강의등록
                                 </Button>
                             </>
                             }

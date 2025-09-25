@@ -50,7 +50,6 @@ const CommentItem = ({
 
     const isLikeidle = likeFetcher.state === 'idle'
     const likefetcherId = likeFetcher.formData?.get('comment_id')
-    console.log('likefetcherId🔥🔥🔥', likefetcherId);
 
     return (
         <Card className="w-full">
