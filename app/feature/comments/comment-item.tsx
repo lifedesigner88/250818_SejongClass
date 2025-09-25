@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Heart, MoreHorizontal, Reply } from 'lucide-react';
 import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
 import { DateTime } from 'luxon';
+
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
 interface CommentItemProps {
@@ -38,7 +39,7 @@ const CommentItem = ({
             <CardContent className="p-4">
                 {/* 메인 댓글 */}
                 <div className="flex space-x-3">
-                    <Avatar className="w-8 h-8">
+                    <Avatar className="size-9 sm:size-11">
                         <AvatarImage src={comment.user.profile_url || ""}/>
                         <AvatarFallback>
                             {comment.user.username.charAt(0).toUpperCase()}
@@ -55,47 +56,48 @@ const CommentItem = ({
 
                         <p className="text-sm leading-relaxed">{comment.content}</p>
 
-                        {/* 액션 버튼들 */}
                         <div className="flex items-center space-x-4">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 px-2 text-xs"
-                                onClick={() => onLike(comment.comment_id)}
-                            >
-                                <Heart
-                                    className={`w-3 h-3 mr-1 ${
-                                        comment.likes.length > 0 ? 'fill-red-500 text-red-500' : ''
-                                    }`}
-                                />
-                                {comment.likes_count > 0 && comment.likes_count}
-                            </Button>
-
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 px-2 text-xs"
-                                onClick={() => setShowReplyForm(!showReplyForm)}
-                            >
-                                <Reply className="w-3 h-3 mr-1"/>
-                                답글
-                            </Button>
-
-                            {comment.comments && comment.comments.length > 0 && (
+                            <div>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     className="h-8 px-2 text-xs"
-                                    onClick={() => setShowReplies(!showReplies)}
+                                    onClick={() => onLike(comment.comment_id)}
                                 >
-                                    <MessageCircle className="w-3 h-3 mr-1"/>
-                                    답글 {comment.comments.length}개 {showReplies ? '숨기기' : '보기'}
+                                    <Heart
+                                        className={`size-5 sm:size-5 mr-1 ${
+                                            comment.likes.length > 0 ? 'fill-red-500 text-red-500' : ''
+                                        }`}
+                                    />
+                                    {comment.likes_count > 0 && comment.likes_count}
                                 </Button>
-                            )}
 
-                            <Button variant="ghost" size="sm" className="h-8 px-2">
-                                <MoreHorizontal className="w-3 h-3"/>
-                            </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 px-2 text-xs"
+                                    onClick={() => setShowReplyForm(!showReplyForm)}
+                                >
+                                    <Reply className="w-3 h-3 mr-1"/>
+                                    답글
+                                </Button>
+
+                                {comment.comments && comment.comments.length > 0 && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 px-2 text-xs"
+                                        onClick={() => setShowReplies(!showReplies)}
+                                    >
+                                        <MessageCircle className={`size-4 mr-1 fill-emerald-500 text-emerald-500`}/>
+                                        답글 {comment.comments.length}개 {showReplies ? '닫기' : '보기'}
+                                    </Button>
+                                )}
+
+                                <Button variant="ghost" size="sm" className="h-8 px-2">
+                                    <MoreHorizontal className="w-3 h-3"/>
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -139,7 +141,7 @@ const CommentItem = ({
                         <Separator/>
                         {comment.comments.map((reply) => (
                             <div key={reply.comment_id} className="flex space-x-3">
-                                <Avatar className="w-7 h-7">
+                                <Avatar className="size-9 sm:size-11">
                                     <AvatarImage src={reply.user.profile_url || ""}/>
                                     <AvatarFallback className="text-xs">
                                         {reply.user.username.charAt(0).toUpperCase()}
@@ -208,7 +210,7 @@ const CommentsSection = ({
     };
 
     return (
-        <div className="w-full mx-auto space-y-6">
+        <div className="w-full space-y-6">
             {/* 새 댓글 작성 */}
             <Card>
                 <CardContent className="p-4">

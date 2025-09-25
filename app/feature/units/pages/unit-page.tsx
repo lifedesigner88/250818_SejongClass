@@ -253,7 +253,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                                                 저장 중...
                                             </div>
                                         ) : (
-                                            "저장"
+                                            "교재저장"
                                         )}
                                     </Button>
                                 }
@@ -286,31 +286,30 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         <ChevronDown
                             className={`h-5 w-5 transition-transform duration-200 ${!noteOpen ? "rotate-90" : ""}`}/>
                     </CollapsibleTrigger>
-                    {isNoteNeedSave ?
-                        <noteFetcher.Form method="post" className=" space-y-4 flex justify-center  "
-                                          action={'/api/notes/update-note'}>
-                            <input type="hidden" name="content" value={JSON.stringify(noteData)}/>
-                            <input type="hidden" name="unit_id" value={unitData.unit_id}/>
-                            <Button
-                                type="submit"
-                                disabled={noteFetcher.state !== "idle"}
-                                className=" w-full max-w-xl px-4 py-2 mt-4 bg-indigo-100 font-bold text-indigo-700 hover:text-white">
-                                {noteFetcher.state !== "idle" ? (
-                                    <div className="flex items-center justify-center">
-                                        <Loader2 className="size-5 mr-3 animate-spin"/>
-                                        저장 중...
-                                    </div>
-                                ) : (
-                                    "저장 ❌"
-                                )}
-                            </Button>
-                        </noteFetcher.Form> : null
-                    }
+
                     {isNoteExists ?
                         <CollapsibleContent className="mt-4 mb-20">
-
                             <Tiptap content={noteData} editable={true} onChange={setNoteData}/>
-
+                            {isNoteNeedSave ?
+                                <noteFetcher.Form method="post" className="flex justify-center  "
+                                                  action={'/api/notes/update-note'}>
+                                    <input type="hidden" name="content" value={JSON.stringify(noteData)}/>
+                                    <input type="hidden" name="unit_id" value={unitData.unit_id}/>
+                                    <Button
+                                        type="submit"
+                                        disabled={noteFetcher.state !== "idle"}
+                                        className="fixed bottom-0 z-50 w-full max-w-xl px-4 py-2 mb-10 mt-4 bg-indigo-100 font-bold text-indigo-700 hover:text-white">
+                                        {noteFetcher.state !== "idle" ? (
+                                            <div className="flex items-center justify-center">
+                                                <Loader2 className="size-5 mr-3 animate-spin"/>
+                                                저장 중...
+                                            </div>
+                                        ) : (
+                                            "노트저장"
+                                        )}
+                                    </Button>
+                                </noteFetcher.Form> : null
+                            }
                         </CollapsibleContent> : null
                     }
                 </Collapsible>
