@@ -79,9 +79,9 @@ const CommentItem = ({
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-8 px-2 text-xs"
+                                    className={`h-8 px-2 text-xs disabled:opacity-100`}
                                     onClick={() => onLike(comment.comment_id)}
-                                    disabled={!isLikeidle && comment.comment_id === Number(likefetcherId)}
+                                    disabled={!isLikeidle}
                                 >
                                     <Heart
                                         className={`size-4 mr-1 ${
@@ -96,12 +96,12 @@ const CommentItem = ({
                                     />
                                     {
                                         comment.likes.length > 0
-                                        ? !isLikeidle && comment.comment_id === Number(likefetcherId)
-                                            ? comment.likes_count - 1
-                                            : comment.likes_count
-                                        : !isLikeidle && Number(likefetcherId) === comment.comment_id
-                                            ? comment.likes_count + 1
-                                            : comment.likes_count
+                                            ? !isLikeidle && comment.comment_id === Number(likefetcherId)
+                                                ? comment.likes_count - 1
+                                                : comment.likes_count
+                                            : !isLikeidle && Number(likefetcherId) === comment.comment_id
+                                                ? comment.likes_count + 1
+                                                : comment.likes_count
                                     }
                                 </Button>
 
@@ -208,15 +208,30 @@ const CommentItem = ({
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            className="h-7 px-2 text-xs"
+                                            className={`h-8 px-2 text-xs disabled:opacity-100`}
                                             onClick={() => onLike(reply.comment_id)}
+                                            disabled={!isLikeidle}
                                         >
                                             <Heart
                                                 className={`size-4 mr-1 ${
-                                                    reply.likes.length > 0 ? 'fill-red-500 text-red-500' : ''
+                                                    reply.likes.length > 0
+                                                        ? !isLikeidle && reply.comment_id === Number(likefetcherId)
+                                                            ? ''
+                                                            : 'fill-red-500 text-red-500'
+                                                        : !isLikeidle && Number(likefetcherId) === reply.comment_id
+                                                            ? 'fill-red-500 text-red-500'
+                                                            : ''
                                                 }`}
                                             />
-                                            {reply.likes_count > 0 && reply.likes_count}
+                                            {
+                                                reply.likes.length > 0
+                                                    ? !isLikeidle && reply.comment_id === Number(likefetcherId)
+                                                        ? reply.likes_count - 1
+                                                        : reply.likes_count
+                                                    : !isLikeidle && Number(likefetcherId) === reply.comment_id
+                                                        ? reply.likes_count + 1
+                                                        : reply.likes_count
+                                            }
                                         </Button>
 
                                         <DropdownMenu>
@@ -276,8 +291,8 @@ const CommentsSection = ({
     return (
         <div className="w-full space-y-6">
             {/* 새 댓글 작성 */}
-            <Card>
-                <CardContent className="p-4">
+            <Card className={"bg-emerald-50 text-emerald-700"}>
+                <CardContent className="p-4 ">
                     <div className="space-y-2">
                         <h3 className="text-lg font-semibold">댓글 {comments.length}개</h3>
                         <div className="space-y-3">
