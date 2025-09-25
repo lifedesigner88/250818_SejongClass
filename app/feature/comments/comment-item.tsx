@@ -81,7 +81,7 @@ const CommentItem = ({
                                     size="sm"
                                     className="h-8 px-2 text-xs"
                                     onClick={() => onLike(comment.comment_id)}
-                                    disabled={!isLikeidle}
+                                    disabled={!isLikeidle && comment.comment_id === Number(likefetcherId)}
                                 >
                                     <Heart
                                         className={`size-4 mr-1 ${
