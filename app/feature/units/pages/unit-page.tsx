@@ -149,29 +149,55 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
     // 댓글 관련
 
-    const handleNewComment = () => {
+    const commentFetcher = useFetcher()
+    const likeFetcher = useFetcher()
+
+    const handleNewComment = (content: string) => {
+        if (!content) return;
+        commentFetcher.submit({
+            content,
+            unit_id: unitData.unit_id,
+            type: 'comment',
+        }, {
+            method: 'POST',
+            action: '/api/comments/create-comment',
+        })
         console.log("New Comment")
     }
 
-    const handleReply = () => {
+    const handleReply = (parent_comment_id: number, content: string) => {
+        if (!content || !parent_comment_id) return;
+        commentFetcher.submit({
+            content,
+            unit_id: unitData.unit_id,
+            type: 'reply',
+            parent_comment_id,
+        }, {
+            method: 'POST',
+            action: '/api/comments/create-comment',
+        })
         console.log("Reply")
     }
 
-    const handleLike = () => {
+    const handleLike = (comment_id: number) => {
+        likeFetcher.submit({
+            comment_id,
+        }, {
+            method: 'POST',
+            action: '/api/comments/like-comment',
+        })
         console.log("Like")
     }
 
-    const handleReplyLike = () => {
-        console.log("Reply Like")
-    }
 
     // 개념보기 시트
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
     return (
         <ScrollArea className="p-0 w-full h-[calc(100vh-64px)] overflow-hidden">
-            {/* 영상 섹션 */}
             <div className={"max-w-[1280px] mx-auto mb-200"}>
+
+                {/* 영상 섹션 */}
                 <div className="aspect-video">
                     <iframe
                         src={`https://www.youtube.com/embed/${unitData.youtube_video_id}`}
@@ -296,7 +322,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         onNewComment={handleNewComment}
                         onReply={handleReply}
                         onLike={handleLike}
-                        onReplyLike={handleReplyLike}
                     />
                 </div>
 

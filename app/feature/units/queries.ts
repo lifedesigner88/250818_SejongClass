@@ -68,6 +68,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                     is_edited: true,
                     updated_at: true,
                 },
+                orderBy: (comments, { desc }) => [desc(comments.created_at)],
                 where: isNull(commentsTable.parent_comment_id),
                 with: {
                     comments:{
@@ -79,6 +80,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                             is_edited: true,
                             updated_at: true,
                         },
+                        orderBy: (comments, { desc }) => [desc(comments.created_at)],
                         with:{
                             user: {
                                 columns: {
@@ -93,7 +95,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                                 },
                                 where: eq(commentLikesTable.user_id, user_id),
                             }
-                        }
+                        },
                     },
                     user: {
                         columns: {

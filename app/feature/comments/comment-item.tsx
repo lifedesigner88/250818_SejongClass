@@ -13,14 +13,12 @@ interface CommentItemProps {
     comment: SubCommentsType;
     onReply: (commentId: number, content: string) => void;
     onLike: (commentId: number) => void;
-    onReplyLike: (commentId: number, replyId: number) => void;
 }
 
 const CommentItem = ({
                          comment,
                          onReply,
                          onLike,
-                         onReplyLike,
                      }: CommentItemProps) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
@@ -163,7 +161,7 @@ const CommentItem = ({
                                             variant="ghost"
                                             size="sm"
                                             className="h-7 px-2 text-xs"
-                                            onClick={() => onReplyLike(comment.comment_id, reply.comment_id)}
+                                            onClick={() => onLike(reply.comment_id)}
                                         >
                                             <Heart
                                                 className={`w-3 h-3 mr-1 ${
@@ -192,7 +190,6 @@ interface CommentsSectionProps {
     onNewComment: (content: string) => void;
     onReply: (commentId: number, content: string) => void;
     onLike: (commentId: number) => void;
-    onReplyLike: (commentId: number, replyId: number) => void;
 }
 
 const CommentsSection = ({
@@ -200,7 +197,6 @@ const CommentsSection = ({
                              onNewComment,
                              onReply,
                              onLike,
-                             onReplyLike,
                          }: CommentsSectionProps) => {
     const [newComment, setNewComment] = useState('');
 
@@ -246,7 +242,6 @@ const CommentsSection = ({
                         comment={comment}
                         onReply={onReply}
                         onLike={onLike}
-                        onReplyLike={onReplyLike}
                     />
                 ))}
             </div>

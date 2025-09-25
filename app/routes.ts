@@ -35,6 +35,10 @@ export default [
         ]),
         ...prefix("/email", [
             route("/welcome", "api/email/welcome.tsx"),
+        ]),
+        ...prefix("/comments", [
+            route("/create-comment", "api/comments/create-comment.tsx"),
+            route("/like-comment", "api/comments/like-comment.tsx"),
         ])
     ]),
 
