@@ -59,8 +59,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const isPublished = unitData.is_published;
 
     const unitComments = unitData.comments
-    console.dir(unitComments, { depth: null })
-    console.log(typeof unitComments)
 
     const location = useLocation();
     const shouldHandleEnrollment = useMemo(() => {
@@ -150,9 +148,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     // 댓글 관련
 
     const commentFetcher = useFetcher()
-    const likeFetcher = useFetcher()
-
     const handleNewComment = (content: string) => {
+
         if (!content) return;
         commentFetcher.submit({
             content,
@@ -163,7 +160,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
             action: '/api/comments/create-comment',
         })
     }
-
     const handleReply = (parent_comment_id: number, content: string) => {
         if (!content || !parent_comment_id) return;
         commentFetcher.submit({
@@ -177,6 +173,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         })
     }
 
+    const likeFetcher = useFetcher()
     const handleLike = (comment_id: number) => {
         likeFetcher.submit({
             comment_id,
@@ -194,7 +191,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
             method: 'POST',
             action: '/api/comments/delete-comment',
         })
-        console.log("Delete")
     }
 
 
@@ -331,6 +327,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         onLike={handleLike}
                         deleteComment={deleteComment}
                         loginUserId={userId!}
+                        likeFetcher={likeFetcher}
                     />
                 </div>
 

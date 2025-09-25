@@ -13,6 +13,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from '#app/common/components/ui/dropdown-menu.js';
+import type { FetcherWithComponents } from 'react-router';
 
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
@@ -21,7 +22,8 @@ interface CommentItemProps {
     onReply: (commentId: number, content: string) => void;
     onLike: (commentId: number) => void;
     deleteComment: (commentId: number) => void;
-    loginUserId: string
+    loginUserId: string;
+    likeFetcher: FetcherWithComponents<any>
 }
 
 const CommentItem = ({
@@ -29,8 +31,10 @@ const CommentItem = ({
                          onReply,
                          onLike,
                          deleteComment,
-                         loginUserId
+                         loginUserId,
+                         likeFetcher
                      }: CommentItemProps) => {
+
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [showReplies, setShowReplies] = useState(false);
@@ -43,6 +47,10 @@ const CommentItem = ({
             setShowReplies(true);
         }
     };
+
+    const isLikeidle = likeFetcher.state === 'idle'
+    const likefetcherId = likeFetcher.formData?.get('comment_id')
+    console.log('likefetcherId🔥🔥🔥', likefetcherId);
 
     return (
         <Card className="w-full">
@@ -73,13 +81,28 @@ const CommentItem = ({
                                     size="sm"
                                     className="h-8 px-2 text-xs"
                                     onClick={() => onLike(comment.comment_id)}
+                                    disabled={!isLikeidle}
                                 >
                                     <Heart
                                         className={`size-4 mr-1 ${
-                                            comment.likes.length > 0 ? 'fill-red-500 text-red-500' : ''
+                                            comment.likes.length > 0
+                                                ? !isLikeidle && comment.comment_id === Number(likefetcherId)
+                                                    ? ''
+                                                    : 'fill-red-500 text-red-500'
+                                                : !isLikeidle && Number(likefetcherId) === comment.comment_id
+                                                    ? 'fill-red-500 text-red-500'
+                                                    : ''
                                         }`}
                                     />
-                                    {comment.likes_count > 0 && comment.likes_count}
+                                    {
+                                        comment.likes.length > 0
+                                        ? !isLikeidle && comment.comment_id === Number(likefetcherId)
+                                            ? comment.likes_count - 1
+                                            : comment.likes_count
+                                        : !isLikeidle && Number(likefetcherId) === comment.comment_id
+                                            ? comment.likes_count + 1
+                                            : comment.likes_count
+                                    }
                                 </Button>
 
                                 <Button
@@ -172,7 +195,8 @@ const CommentItem = ({
 
                                 <div className="flex-1 space-y-2">
                                     <div className="flex items-center space-x-2">
-                                        <span className="font-medium text-xs text-muted-foreground">{reply.user.username}</span>
+                                        <span
+                                            className="font-medium text-xs text-muted-foreground">{reply.user.username}</span>
                                         <span className="text-xs text-muted-foreground">
                                           {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
                                         </span>
@@ -228,6 +252,7 @@ interface CommentsSectionProps {
     onLike: (commentId: number) => void;
     deleteComment: (commentId: number) => void;
     loginUserId: string
+    likeFetcher: FetcherWithComponents<any>
 }
 
 const CommentsSection = ({
@@ -237,6 +262,7 @@ const CommentsSection = ({
                              onLike,
                              deleteComment,
                              loginUserId,
+                             likeFetcher
                          }: CommentsSectionProps) => {
     const [newComment, setNewComment] = useState('');
 
@@ -284,6 +310,7 @@ const CommentsSection = ({
                         onLike={onLike}
                         deleteComment={deleteComment}
                         loginUserId={loginUserId}
+                        likeFetcher={likeFetcher}
                     />
                 ))}
             </div>
