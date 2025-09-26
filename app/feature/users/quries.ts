@@ -53,3 +53,42 @@ export async function createPublicUserData(userData: {
 }
 
 
+export const getActiveStamps = async (userId: string) => {
+
+    return db.query.usersTable.findFirst({
+        where: eq(usersTable.user_id, userId),
+        columns: {
+            role: false,
+            user_id: false,
+            nickname: false,
+        },
+        with: {
+            comments: {
+                columns: {
+                    comment_id: true,
+                    updated_at: true,
+                }
+            },
+            progress: {
+                columns: {
+                    unit_id: true,
+                    updated_at: true,
+                },
+                with: {
+                    unit: {
+                        columns: {
+                            estimated_seconds: true,
+                        }
+                    },
+                },
+            },
+            checklists: {
+                columns: {
+                    curriculum_id: true,
+                    updated_at: true,
+                }
+            }
+        }
+    })
+
+}

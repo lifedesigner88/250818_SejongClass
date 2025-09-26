@@ -3,6 +3,8 @@ import { relations, sql } from "drizzle-orm";
 import { mastersTable } from "~/feature/masters/schema";
 import { enrollmentsTable } from "~/feature/enrollments/schema";
 import { progressTable } from "~/feature/progress/schema";
+import { commentsTable } from "~/feature/comments/schema";
+import { checklistsTable } from "~/feature/checklists/schema";
 
 export const userRoleEnum = pgEnum('user_role', ['user', 'admin']);
 
@@ -70,5 +72,9 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
 
     // 사용자의 단원별 학습 진도
     progress: many(progressTable),
+
+    comments: many(commentsTable),
+
+    checklists: many(checklistsTable),
 
 }));

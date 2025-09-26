@@ -11,7 +11,7 @@ export default [
     route("/privacy-policy", "common/pages/privacy-policy.tsx"),
     route("/terms-of-service", "common/pages/terms-of-service.tsx"),
 
-    route("/mypage", "feature/users/pages/my-page.tsx"),
+    route("/my-page", "feature/users/pages/my-page.tsx"),
 
 
 
