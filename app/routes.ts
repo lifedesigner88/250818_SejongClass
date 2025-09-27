@@ -12,6 +12,7 @@ export default [
     route("/terms-of-service", "common/pages/terms-of-service.tsx"),
 
     route("/profile/:username", "feature/users/pages/profile-page.tsx"),
+    route("/textbooks", "feature/textbooks/pages/my-textbooks.tsx"),
 
 
     ...prefix("/api", [

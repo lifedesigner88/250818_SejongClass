@@ -142,13 +142,21 @@ export function UserStatus({
                             <Button
                                 variant="ghost"
                                 className="w-full justify-start text-gray-600 hover:text-green-700 hover:bg-green-100"
-                                onClick={() => navigate(`/profile/${publicUserData?.username}`)}>
+                                onClick={() => {
+                                    navigate(`/profile/${publicUserData?.username}`)
+                                    setIsOpen(false);
+                                }}>
                             <UserRoundCog className="size-5 mx-2"/>
                                 나의정보
                             </Button>
                             <Button
                                 variant="ghost"
-                                className="w-full justify-start text-gray-600 hover:text-blue-700 hover:bg-blue-100 ">
+                                className="w-full justify-start text-gray-600 hover:text-blue-700 hover:bg-blue-100 "
+                                onClick={() => {
+                                    navigate('/textbooks')
+                                    setIsOpen(false);
+                                }}
+                            >
                                 <LibraryBig className="size-5 mx-2"/>
                                 강의목록
                             </Button>
