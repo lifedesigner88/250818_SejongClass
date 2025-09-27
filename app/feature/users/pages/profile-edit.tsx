@@ -9,8 +9,9 @@ import { DateTime } from 'luxon';
 import { UsernameInput } from "~/feature/users/pages/username-input";
 import { useFetcher, useNavigate } from 'react-router';
 import { NicknameInput } from "~/feature/users/pages/nickname-input";
+import AvatarUploader from "~/feature/users/pages/avatar-uploader";
 
-interface UserProfile {
+export interface UserProfile {
     username: string;
     profile_url: string | null;
     created_at: Date | null;
@@ -28,6 +29,9 @@ interface MyPageProps {
     totalCommentsCount: number;
     canEdit: boolean;
 }
+export const getUserInitials = (username: string) => {
+    return username.substring(0, 2).toUpperCase();
+};
 
 export default function profileEdit({
                                         userProfile,
@@ -80,9 +84,6 @@ export default function profileEdit({
         setIsEditing(false);
     };
 
-    const getUserInitials = (username: string) => {
-        return username.substring(0, 2).toUpperCase();
-    };
 
     const [isCanUsername, setIsCanUsername] = useState(false);
     const [isCanNickname, setIsCanNickname] = useState(false);
@@ -97,13 +98,21 @@ export default function profileEdit({
                 <Card className="border-0 shadow-sm">
                     <CardContent className="p-6">
                         <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-6 md:space-y-0">
-                            <Avatar className="h-20 w-20 md:h-24 md:w-24">
-                                <AvatarImage src={userProfile.profile_url || undefined} alt={userProfile.nickname}/>
-                                <AvatarFallback className="bg-primary/10 text-lg font-semibold">
-                                    {getUserInitials(userProfile.username)}
-                                </AvatarFallback>
-                            </Avatar>
 
+                            {canEdit
+                                ?
+                                <AvatarUploader
+                                    userProfile={userProfile}
+                                    userId={"hi"}
+                                />
+                                :
+                                <Avatar className="h-20 w-20 md:h-30 md:w-30">
+                                    <AvatarImage src={userProfile.profile_url || undefined} alt={userProfile.nickname}/>
+                                    <AvatarFallback className="bg-primary/10 text-lg font-semibold">
+                                        {getUserInitials(userProfile.username)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            }
                             <div className="flex-1 text-center md:text-left">
                                 <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
                                     <h1 className="ml-1 text-2xl font-bold">{userProfile.nickname}</h1>
