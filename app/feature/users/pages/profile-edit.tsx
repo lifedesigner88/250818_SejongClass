@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,6 +85,31 @@ export default function profileEdit({
         return username.substring(0, 2).toUpperCase();
     };
 
+    const checkUniqueness = async (nickname: string): Promise<boolean> => {
+        const response = await fetch('/api/users/is-exist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nickname,
+            })
+        })
+        const data = await response.json();
+        return !data
+    }
+
+    const [isUnique, setIsUnique] = useState(false);
+
+    useEffect(() => {
+        const timeout = async () => {
+            setIsUnique(await checkUniqueness(editNickname))
+        }
+        const debounceTimer = setTimeout(timeout, 500);
+        return () => clearTimeout(debounceTimer);
+    }, [editNickname])
+
+
     return (
         <div className="bg-gray-50/50 p-4 md:p-6">
             <div className="mx-auto space-y-6">
@@ -139,20 +164,40 @@ export default function profileEdit({
 
                                                     {/* 경고 메시지 */}
                                                     {editNickname.length > MAX_NICKNAME_LENGTH && (
-                                                        <p className="text-xs text-yellow-600">
+                                                        <p className="text-sm text-yellow-600">
                                                             최대 {MAX_NICKNAME_LENGTH}자
                                                         </p>
                                                     )}
                                                     {editNickname.length < MIN_NICKNAME_LENGTH && (
-                                                        <p className="text-xs text-yellow-600">
+                                                        <p className="text-sm text-yellow-600">
                                                             최소 {MIN_NICKNAME_LENGTH}자 이상
                                                         </p>
                                                     )}
+                                                    <div className={"flex"}>
+                                                        {editNickname === userProfile.nickname &&
+                                                            <div className="text-sm text-emerald-700">
+                                                                {`지금_`}
+                                                            </div>
+                                                        }
+                                                        {!isUnique &&
+                                                            <div className="text-sm text-emerald-700">
+                                                                사용 중인 username입니다.
+                                                            </div>
+                                                        }
+
+                                                        {isUnique && (
+                                                            <p className="text-sm text-emerald-700">
+                                                                변경가능
+                                                            </p>
+                                                        )}
+                                                    </div>
+
                                                 </div>
                                                 <div className={'relative mt-8'}>
                                                     <UsernameInput
                                                         value={editUsername}
                                                         onChange={setEditUsername}
+                                                        beforeUserName={userProfile.username}
                                                     />
                                                     <div
                                                         className="absolute right-4 top-18 -translate-y-1/2 text-xs text-muted-foreground">

@@ -45,6 +45,7 @@ export default [
         ]),
         ...prefix("/users", [
             route("/update-profile", "api/users/update-profile.tsx"),
+            route("/is-exist", "api/users/is-exist.tsx"),
         ])
     ]),
 
