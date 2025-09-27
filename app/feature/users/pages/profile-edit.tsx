@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -10,6 +8,7 @@ import { Edit3, Calendar, CheckCircle, MessageCircle, Clock, User, ChartNoAxesCo
 import { DateTime } from 'luxon';
 import { UsernameInput } from "~/feature/users/pages/username-input";
 import { useFetcher, useNavigate } from 'react-router';
+import { NicknameInput } from "~/feature/users/pages/nickname-input";
 
 interface UserProfile {
     username: string;
@@ -45,7 +44,6 @@ export default function profileEdit({
     const [editNickname, setEditNickname] = useState(userProfile.nickname);
     const [editProfileUrl, setEditProfileUrl] = useState(userProfile.profile_url || '');
     const MAX_NICKNAME_LENGTH = 20;
-    const MIN_NICKNAME_LENGTH = 3;
 
 
     const formatDuration = (seconds: number) => {
@@ -76,6 +74,7 @@ export default function profileEdit({
     };
 
     const handleCancel = () => {
+        setEditNickname(userProfile.nickname);
         setEditUsername(userProfile.username);
         setEditProfileUrl(userProfile.profile_url || '');
         setIsEditing(false);
@@ -85,29 +84,10 @@ export default function profileEdit({
         return username.substring(0, 2).toUpperCase();
     };
 
-    const checkUniqueness = async (nickname: string): Promise<boolean> => {
-        const response = await fetch('/api/users/is-exist', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                nickname,
-            })
-        })
-        const data = await response.json();
-        return !data
-    }
-
-    const [isUnique, setIsUnique] = useState(false);
-
-    useEffect(() => {
-        const timeout = async () => {
-            setIsUnique(await checkUniqueness(editNickname))
-        }
-        const debounceTimer = setTimeout(timeout, 500);
-        return () => clearTimeout(debounceTimer);
-    }, [editNickname])
+    const [isCanUsername, setIsCanUsername] = useState(false);
+    const [isCanNickname, setIsCanNickname] = useState(false);
+    const [validationUser, setValidationUser] = useState<{ isValid: boolean; error?: string }>({ isValid: true });
+    const [validationNick, setValidationNick] = useState<{ isValid: boolean; error?: string }>({ isValid: true });
 
 
     return (
@@ -129,7 +109,10 @@ export default function profileEdit({
                                     <h1 className="ml-1 text-2xl font-bold">{userProfile.nickname}</h1>
                                     <Dialog open={isEditing} onOpenChange={setIsEditing}>
                                         {canEdit && <DialogTrigger asChild>
-                                            <Button variant="outline" size="sm" className="gap-2">
+                                            <Button variant="outline" size="sm" className="gap-2" onClick={() => {
+                                                setEditNickname(userProfile.nickname);
+                                                setEditUsername(userProfile.username);
+                                            }}>
                                                 <Edit3 className="h-4 w-4"/>
                                             </Button>
                                         </DialogTrigger>
@@ -138,66 +121,31 @@ export default function profileEdit({
                                             <DialogHeader>
                                                 <DialogTitle>수정</DialogTitle>
                                             </DialogHeader>
-                                            <div className="space-y-4">
-                                                <div className="space-y-2 mt-3">
-                                                    <Label htmlFor="nickname"
-                                                           className={"text-muted-foreground"}>nickname</Label>
-                                                    <div className="relative ">
-                                                        <Input
-                                                            id="nickname"
-                                                            value={editNickname}
-                                                            onChange={(e) => {
-                                                                const value = e.target.value;
-                                                                if (value.length <= MAX_NICKNAME_LENGTH) {
-                                                                    setEditNickname(value);
-                                                                }
-                                                            }}
-                                                            placeholder="닉네임을 입력하세요"
-                                                            className={editNickname.length >= MAX_NICKNAME_LENGTH ? 'border-yellow-500' : ''}
-                                                        />
-                                                        {/* 글자 수 표시 */}
-                                                        <div
-                                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                                                            {editNickname.length}/{MAX_NICKNAME_LENGTH}
-                                                        </div>
+                                            <div className="space-y-4 ">
+                                                <div className={'relative mt-8'}>
+                                                    <NicknameInput
+                                                        value={editNickname.trim()}
+                                                        onChange={setEditNickname}
+                                                        beforeNickName={userProfile.nickname}
+                                                        isUnique={isCanNickname}
+                                                        setIsUnique={setIsCanNickname}
+                                                        validation={validationNick}
+                                                        setValidation={setValidationNick}
+                                                    />
+                                                    <div
+                                                        className="absolute right-4 top-18 -translate-y-1/2 text-xs text-muted-foreground">
+                                                        {editNickname.length}/{MAX_NICKNAME_LENGTH}
                                                     </div>
-
-                                                    {/* 경고 메시지 */}
-                                                    {editNickname.length > MAX_NICKNAME_LENGTH && (
-                                                        <p className="text-sm text-yellow-600">
-                                                            최대 {MAX_NICKNAME_LENGTH}자
-                                                        </p>
-                                                    )}
-                                                    {editNickname.length < MIN_NICKNAME_LENGTH && (
-                                                        <p className="text-sm text-yellow-600">
-                                                            최소 {MIN_NICKNAME_LENGTH}자 이상
-                                                        </p>
-                                                    )}
-                                                    <div className={"flex"}>
-                                                        {editNickname === userProfile.nickname &&
-                                                            <div className="text-sm text-emerald-700">
-                                                                {`지금_`}
-                                                            </div>
-                                                        }
-                                                        {!isUnique &&
-                                                            <div className="text-sm text-emerald-700">
-                                                                사용 중인 username입니다.
-                                                            </div>
-                                                        }
-
-                                                        {isUnique && (
-                                                            <p className="text-sm text-emerald-700">
-                                                                변경가능
-                                                            </p>
-                                                        )}
-                                                    </div>
-
                                                 </div>
                                                 <div className={'relative mt-8'}>
                                                     <UsernameInput
-                                                        value={editUsername}
+                                                        value={editUsername.trim()}
                                                         onChange={setEditUsername}
                                                         beforeUserName={userProfile.username}
+                                                        isUnique={isCanUsername}
+                                                        setIsUnique={setIsCanUsername}
+                                                        validation={validationUser}
+                                                        setValidation={setValidationUser}
                                                     />
                                                     <div
                                                         className="absolute right-4 top-18 -translate-y-1/2 text-xs text-muted-foreground">
@@ -209,8 +157,11 @@ export default function profileEdit({
                                                     <Button variant="outline" onClick={handleCancel} className="flex-1">
                                                         취소
                                                     </Button>
-                                                    <Button onClick={handleSave} className="flex-1">
-                                                        저장
+                                                    <Button onClick={handleSave} className="flex-1"
+                                                            disabled={
+                                                                !(validationUser.isValid && isCanUsername || userProfile.username === editUsername) ||
+                                                                !(validationNick.isValid && isCanNickname || userProfile.nickname === editNickname)}>
+                                                        수정
                                                     </Button>
 
                                                 </div>

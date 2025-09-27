@@ -6,19 +6,17 @@ import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 interface UsernameInputProps {
     value: string;
     onChange: (value: string) => void;
-    beforeUserName: string;
+    beforeNickName: string;
     isUnique: boolean;
     setIsUnique: (value: boolean) => void;
     validation: { isValid: boolean; error?: string };
     setValidation: (value: { isValid: boolean; error?: string }) => void;
 }
 
-export const advancedUsernameRegex = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|[_-](?![_-])){1,18}[a-zA-Z0-9]$/;
-
-export function UsernameInput({
+export function NicknameInput({
                                   value,
                                   onChange,
-                                  beforeUserName,
+                                  beforeNickName,
                                   isUnique,
                                   setIsUnique,
                                   validation,
@@ -28,45 +26,23 @@ export function UsernameInput({
     const MAX_USER_NAME = 20;
     const MIN_USER_NAME = 3
 
-    const validateUsername = (username: string): { isValid: boolean; error?: string } => {
+    const validateNickname = (nickname: string): { isValid: boolean; error?: string } => {
         // 길이 체크
-        if (username.length < MIN_USER_NAME || username.length > MAX_USER_NAME) {
-            return { isValid: false, error: `사용자명은 ${MIN_USER_NAME}-${MAX_USER_NAME}자 사이여야 합니다.` };
-        }
-
-        // 기본 패턴 체크
-        if (!advancedUsernameRegex.test(username)) {
-            return { isValid: false, error: '영문, 숫자, (-), (_)만 사용 가능' };
-        }
-
-
-        // 첫 글자와 마지막 글자 체크
-        if (/^[_-]|[_-]$/.test(username)) {
-            return { isValid: false, error: '첫 & 마지막 글자 영문 또는 숫자' };
-        }
-
-        // 연속된 특수문자 체크
-        if (/[_-]{2,}/.test(username)) {
-            return { isValid: false, error: '특수문자 연속 불가' };
-        }
-
-        // 예약어 체크 (선택사항)
-        const reservedWords = ['admin', 'api', 'www', 'mail', 'support', 'help', 'about', 'contact'];
-        if (reservedWords.includes(username.toLowerCase())) {
-            return { isValid: false, error: '사용할 수 없는 예약어 입니다.' };
+        if (nickname.length < MIN_USER_NAME || nickname.length > MAX_USER_NAME) {
+            return { isValid: false, error: `닉네임은 ${MIN_USER_NAME}-${MAX_USER_NAME}자 사이` };
         }
 
         return { isValid: true };
     };
 
-    const checkUniqueness = async (username: string): Promise<boolean> => {
+    const checkUniqueness = async (nickname: string): Promise<boolean> => {
         const response = await fetch('/api/users/is-exist', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username,
+                nickname,
             })
         })
         const data = await response.json();
@@ -75,7 +51,7 @@ export function UsernameInput({
 
     useEffect(() => {
         const checkUsername = async () => {
-            const localValidation = validateUsername(value);
+            const localValidation = validateNickname(value);
             setValidation(localValidation);
 
             if (localValidation.isValid) {
@@ -86,13 +62,13 @@ export function UsernameInput({
                     const unique = await checkUniqueness(value);
                     setIsUnique(unique);
                     if (!unique) {
-                        if (beforeUserName === value)
-                            setValidation({ isValid: true, error: '기존 username 입니다.' });
+                        if (beforeNickName === value)
+                            setValidation({ isValid: true, error: '기존 nickname 입니다.' });
                         else
-                            setValidation({ isValid: false, error: '이미 사용 중인 username입니다.' });
+                            setValidation({ isValid: false, error: '이미 사용 중인 nickname입니다.' });
                     }
                 } catch (error) {
-                    setValidation({ isValid: false, error: 'username 확인 중 오류가 발생했습니다.' });
+                    setValidation({ isValid: false, error: 'nickname 확인 중 오류가 발생했습니다.' });
                 } finally {
                     setIsChecking(false);
                 }
@@ -111,19 +87,19 @@ export function UsernameInput({
     const getStatusIcon = () => {
         if (isChecking) return <Loader2 className="h-4 w-4 animate-spin text-blue-500"/>;
         if (!validation.isValid) return <XCircle className="h-4 w-4 text-red-500"/>;
-        if (validation.isValid && isUnique || beforeUserName === value) return <CheckCircle className="h-4 w-4 text-green-500"/>;
+        if (validation.isValid && isUnique || beforeNickName === value) return <CheckCircle className="h-4 w-4 text-green-500"/>;
         return null;
     };
 
     const getStatusColor = () => {
         if (!validation.isValid) return 'border-red-500 focus-visible:ring-red-500';
-        if (validation.isValid && isUnique || beforeUserName === value) return 'border-green-500 focus-visible:ring-green-500';
+        if (validation.isValid && isUnique || beforeNickName === value) return 'border-green-500 focus-visible:ring-green-500';
         return '';
     };
 
     return (
-        <div className="flex flex-col justify-start space-y-2 min-h-[220px]">
-        <Label htmlFor="username" className={"text-muted-foreground"}>@username</Label>
+        <div className="flex flex-col justify-start space-y-2 min-h-[100px]">
+            <Label htmlFor="username" className={"text-muted-foreground"}>nickname</Label>
             <div className="relative">
                 <Input
                     id="username"
@@ -144,19 +120,10 @@ export function UsernameInput({
                 </div>
             </div>
 
-            {/* 안내문 */}
-            <div className="text-xs text-muted-foreground space-y-2">
-                <p>• {` ${MIN_USER_NAME}-${MAX_USER_NAME}`}자 사이의 길이</p>
-                <p>• 영문, 숫자, (-), (_)만 사용 가능</p>
-                <p>• 첫 & 마지막 글자 영문 또는 숫자</p>
-                <p>• 특수문자 연속 불가</p>
-                <p>• <code className="bg-muted px-1 rounded">/profile/{value || 'username'}</code></p>
-            </div>
-
             {/* 에러 메시지 */}
             {
                 validation.error && (
-                    <p className={`text-sm ${beforeUserName === value ? 'text-emerald-700' : 'text-red-500'}`}>{validation.error}</p>
+                    <p className={`text-sm ${beforeNickName === value ? 'text-emerald-700' : 'text-red-500'}`}>{validation.error}</p>
                 )
             }
         </div>
