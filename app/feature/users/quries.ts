@@ -1,8 +1,10 @@
 import db from "~/db";
 import { usersTable } from "~/feature/users/schema";
 import { eq } from "drizzle-orm";
+import { advancedUsernameRegex } from "~/feature/users/pages/username-input";
 
-function generateRandomString(length: number = 6): string {
+
+function generateRandomString(length: number = 8): string {
     return Math.random().toString(36).substring(2, length + 2);
 }
 
@@ -16,35 +18,36 @@ export async function createPublicUserData(userData: {
     user_id: string;
     email: string;
     username: string;
-    nickname: string | null;
+    nickname: string;
     profile_url: string | null;
 }) {
-    let finalUsername = userData.username;
-    let finalEmail = userData.email;
+    let finalUsername = userData.username.substring(0,19);
+    let finalNickname = userData.nickname.substring(0,19);
 
-    // Check for existing username
-    const existingUsername = await db.query.usersTable.findFirst({
-        where: eq(usersTable.username, userData.username)
-    });
-
-    if (existingUsername) {
-        finalUsername = `${userData.username}_${generateRandomString()}`;
+    while (true) {
+        const existingUsername = await db.query.usersTable.findFirst({
+            where: eq(usersTable.username, finalUsername)
+        });
+        const regex = advancedUsernameRegex.test(finalUsername)
+        if (existingUsername || !regex) {
+            finalUsername = `${generateRandomString()}`;
+        } else break;
     }
-    // Check for existing email
-    const existingEmail = await db.query.usersTable.findFirst({
-        where: eq(usersTable.email, userData.email)
-    });
 
-    if (existingEmail) {
-        const [localPart, domain] = userData.email.split('@');
-        finalEmail = `${localPart}_${generateRandomString()}@${domain}`;
+    while (true) {
+        const existingNickname = await db.query.usersTable.findFirst({
+            where: eq(usersTable.nickname, userData.nickname)
+        })
+        if (existingNickname) {
+            finalNickname = `${finalNickname.substring(0, 8)}_${generateRandomString()}`;
+        } else break;
     }
 
     const newUser = await db.insert(usersTable)
         .values({
             ...userData,
             username: finalUsername,
-            email: finalEmail
+            nickname: finalNickname,
         })
         .returning();
 
@@ -53,14 +56,14 @@ export async function createPublicUserData(userData: {
 }
 
 
-export const getActiveStamps = async (userId: string) => {
+export const getActiveStamps = async (username: string) => {
 
     return db.query.usersTable.findFirst({
-        where: eq(usersTable.user_id, userId),
+        where: eq(usersTable.username, username),
         columns: {
             role: false,
+            email: false,
             user_id: false,
-            nickname: false,
         },
         with: {
             comments: {

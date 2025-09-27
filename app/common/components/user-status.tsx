@@ -142,7 +142,7 @@ export function UserStatus({
                             <Button
                                 variant="ghost"
                                 className="w-full justify-start text-gray-600 hover:text-green-700 hover:bg-green-100"
-                                onClick={() => navigate('/my-page')}>
+                                onClick={() => navigate(`/profile/${publicUserData?.username}`)}>
                             <UserRoundCog className="size-5 mx-2"/>
                                 나의정보
                             </Button>

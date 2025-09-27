@@ -12,14 +12,16 @@ export const usersTable = pgTable("users", {
     user_id: uuid().primaryKey().notNull(),
     email: varchar({ length: 255 }).notNull().unique(),
     username: varchar({ length: 100 }).notNull().unique(),
+    nickname: varchar({ length: 100 }).notNull().unique(),
     role: userRoleEnum().default('user').notNull(),
-    nickname: varchar({ length: 100 }),
     profile_url: varchar({ length: 500 }),
 
     created_at: timestamp().defaultNow(),
     updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
 }, () => [
 
+    
+    
     // pgPolicy(`policy-public`, {
     //     for: 'select',
     //     to: 'anon',  // 익명 사용자도 가능

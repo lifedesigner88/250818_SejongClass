@@ -127,7 +127,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
             user_id: user.id,
             email: user.email as string,
             username: user.user_metadata.user_name || user.user_metadata.preferred_username || user?.user_metadata.full_name || "anon",
-            nickname: user?.user_metadata.full_name || user?.user_metadata.name || null,
+            nickname: user?.user_metadata.full_name || user?.user_metadata.name || "anon",
             profile_url: user?.user_metadata.profile_url
                 ? user.user_metadata.profile_url.replace(/=s\d+-c$/, '') // 구글의 경우 뒤에 삭제.
                 : (user?.user_metadata.avatar_url || null),

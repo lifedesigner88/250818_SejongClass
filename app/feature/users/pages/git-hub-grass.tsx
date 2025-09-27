@@ -57,7 +57,7 @@ export default function GitHubGrass({
     return (
         <Card className="p-4 border-0 shadow-none">
             {dayMap && (
-                <div className="flex gap-1 items-start justify-center max-w-screen overflow-x-auto">
+                <div className="flex gap-1 items-start justify-center max-w-screen overflow-x-auto py-3">
                     {weeks.map((col, i) => (
                         <div key={i} className="grid grid-rows-7 gap-1">
                             {col.map((d) => {

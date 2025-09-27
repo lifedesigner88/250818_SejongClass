@@ -11,8 +11,7 @@ export default [
     route("/privacy-policy", "common/pages/privacy-policy.tsx"),
     route("/terms-of-service", "common/pages/terms-of-service.tsx"),
 
-    route("/my-page", "feature/users/pages/my-page.tsx"),
-
+    route("/profile/:username", "feature/users/pages/profile-page.tsx"),
 
 
     ...prefix("/api", [
@@ -43,6 +42,9 @@ export default [
             route("/create-comment", "api/comments/create-comment.tsx"),
             route("/like-comment", "api/comments/like-comment.tsx"),
             route("/delete-comment", "api/comments/delete-comment.tsx"),
+        ]),
+        ...prefix("/users", [
+            route("/update-profile", "api/users/update-profile.tsx"),
         ])
     ]),
 
