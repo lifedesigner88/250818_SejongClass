@@ -76,6 +76,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                             user_id: true,
                             username: true,
                             profile_url: true,
+                            nickname: true,
                         }
                     },
                     likes:{
@@ -100,6 +101,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                                     user_id: true,
                                     username: true,
                                     profile_url: true,
+                                    nickname: true,
                                 }
                             },
                             likes:{

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Edit3, Calendar, CheckCircle, MessageCircle, Clock, User, ChartNoAxesCombined } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { UsernameInput } from "~/feature/users/pages/username-input";
-import { useFetcher } from 'react-router';
+import { useFetcher, useNavigate } from 'react-router';
 
 interface UserProfile {
     username: string;
@@ -27,6 +27,7 @@ interface MyPageProps {
     totalUnitSecond: number;
     totalCheckListCount: number;
     totalCommentsCount: number;
+    canEdit: boolean;
 }
 
 export default function profileEdit({
@@ -37,6 +38,7 @@ export default function profileEdit({
                                         totalUnitSecond,
                                         totalCheckListCount,
                                         totalCommentsCount,
+                                        canEdit
                                     }: MyPageProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editUsername, setEditUsername] = useState(userProfile.username);
@@ -58,6 +60,7 @@ export default function profileEdit({
     };
 
     const fetcher = useFetcher()
+    const navigate = useNavigate()
     const handleSave = () => {
         void fetcher.submit({
             beforeUserName: userProfile.username,
@@ -69,6 +72,7 @@ export default function profileEdit({
             action: "/api/users/update-profile",
         });
         setIsEditing(false);
+        navigate(`/profile/${editUsername}`)
     };
 
     const handleCancel = () => {
@@ -99,14 +103,15 @@ export default function profileEdit({
                                 <div className="flex flex-col items-center gap-2 md:flex-row md:gap-4">
                                     <h1 className="ml-1 text-2xl font-bold">{userProfile.nickname}</h1>
                                     <Dialog open={isEditing} onOpenChange={setIsEditing}>
-                                        <DialogTrigger asChild>
+                                        {canEdit && <DialogTrigger asChild>
                                             <Button variant="outline" size="sm" className="gap-2">
                                                 <Edit3 className="h-4 w-4"/>
                                             </Button>
                                         </DialogTrigger>
+                                        }
                                         <DialogContent className="w-full sm:max-w-md max-h-screen overflow-y-auto">
                                             <DialogHeader>
-                                                <DialogTitle>사용자명</DialogTitle>
+                                                <DialogTitle>수정</DialogTitle>
                                             </DialogHeader>
                                             <div className="space-y-4">
                                                 <div className="space-y-2 mt-3">

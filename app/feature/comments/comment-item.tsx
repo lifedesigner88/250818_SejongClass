@@ -13,7 +13,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from '#app/common/components/ui/dropdown-menu.js';
-import type { FetcherWithComponents } from 'react-router';
+import { useNavigate, type FetcherWithComponents } from 'react-router';
 
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
@@ -48,28 +48,36 @@ const CommentItem = ({
         }
     };
 
+
     const isLikeidle = likeFetcher.state === 'idle'
     const likefetcherId = likeFetcher.formData?.get('comment_id')
+
+    const navigate = useNavigate();
 
     return (
         <Card className="w-full">
             <CardContent className="p-4">
                 {/* 메인 댓글 */}
                 <div className="flex space-x-3">
-                    <Avatar className="size-9 sm:size-11">
+                    <Avatar className="size-9 sm:size-11 cursor-pointer"
+                            onClick={() => navigate(`/profile/${comment.user.username}`)}>
                         <AvatarImage src={comment.user.profile_url || ""}/>
                         <AvatarFallback>
                             {comment.user.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
 
-                    <div className="flex-1 space-y-2">
-                        <div className="flex items-center space-x-2">
-                            <span className="font-medium text-sm text-muted-foreground">{comment.user.username}</span>
+                    <div className="flex-1">
+
+                        <div className="flex items-center space-x-2 cursor-pointer"
+                             onClick={() => navigate(`/profile/${comment.user.username}`)}>
+                            <span className="font-medium text-sm text-muted-foreground">{comment.user.nickname}</span>
                             <span className="text-xs text-muted-foreground">
                             {DateTime.fromJSDate(comment.updated_at!).setLocale("ko").toRelative()}
                             </span>
                         </div>
+
+                        <div className={"text-xs text-muted-foreground/50 mb-3"}>@{comment.user.username}</div>
 
                         <p className="text-sm leading-relaxed">{comment.content}</p>
 
@@ -185,21 +193,26 @@ const CommentItem = ({
                         <Separator/>
                         {comment.comments.map((reply) => (
                             <div key={reply.comment_id} className="flex space-x-3">
-                                <Avatar className="size-9 sm:size-11">
+
+                                <Avatar className="size-9 sm:size-11 cursor-pointer"
+                                        onClick={() => navigate(`/profile/${reply.user.username}`)}>
                                     <AvatarImage src={reply.user.profile_url || ""}/>
                                     <AvatarFallback className="text-xs">
                                         {reply.user.username.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
 
-                                <div className="flex-1 space-y-2">
-                                    <div className="flex items-center space-x-2">
+                                <div className="flex-1">
+                                    <div className="flex items-center space-x-2 cursor-pointer"
+                                         onClick={() => navigate(`/profile/${reply.user.username}`)}>
                                         <span
-                                            className="font-medium text-xs text-muted-foreground">{reply.user.username}</span>
+                                            className="font-medium text-xs text-muted-foreground">{reply.user.nickname}</span>
                                         <span className="text-xs text-muted-foreground">
                                           {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
                                         </span>
                                     </div>
+                                    <div
+                                        className={"text-xs text-muted-foreground/50 mb-3"}>@{reply.user.username}</div>
 
                                     <p className="text-xs leading-relaxed">{reply.content}</p>
 

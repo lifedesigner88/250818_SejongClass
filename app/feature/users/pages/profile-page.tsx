@@ -5,6 +5,7 @@ import { DateTime } from "luxon";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProfileEdit from "~/feature/users/pages/profile-edit";
+import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const { username } = params
@@ -18,6 +19,9 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
     if (!activeStamps) {
         return <h1 className={"p-5"}>존재하지 않는 유저 입니다. </h1>
     }
+
+    const auth = useAuthOutletData()
+    const canEdit = auth.isLoggedIn && auth.publicUserData.username === activeStamps.username
 
     const { username, profile_url, created_at, updated_at, nickname } = activeStamps
     const userPofile = { username, profile_url, created_at, updated_at, nickname }
@@ -69,6 +73,7 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
                 totalUnitSecond={totalUnitSceond}
                 totalCheckListCount={totalCheckListCount}
                 totalCommentsCount={totalCommentsCount}
+                canEdit={canEdit}
             />
 
             <div className={"mt-3 flex gap-1"}>
