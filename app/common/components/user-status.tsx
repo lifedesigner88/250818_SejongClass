@@ -184,7 +184,8 @@ export function UserStatus({
                     ) : (
                         <div className="space-y-4">
                             <Button
-                                className="w-full justify-start bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                className="w-full justify-start hoever:text-gray-600 hover:text-blue-700 hover:bg-blue-100 cursor-pointer"
+
                                 onClick={handleLoginClick}>
                                 <LogIn className="size-4 mr-2"/>
                                 로그인

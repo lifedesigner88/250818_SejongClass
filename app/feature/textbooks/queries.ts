@@ -3,6 +3,7 @@ import { textbooksTable } from "~/feature/textbooks/schema";
 import { eq } from "drizzle-orm";
 import { checklistsTable } from "~/feature/checklists/schema";
 import { enrollmentsTable } from "~/feature/enrollments/schema";
+import { usersTable } from "~/feature/users/schema";
 
 export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: string) {
     return db.query.textbooksTable.findFirst({
@@ -52,7 +53,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                                 columns: {
                                     unit_id: true,
                                     title: true,
-                                    is_free:true,
+                                    is_free: true,
                                     is_published: true,
                                     estimated_seconds: true,
                                     updated_at: true,
@@ -87,5 +88,52 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                 }
             }
         }
+    })
+}
+
+export const getEnrolledTextbooksByUserId = async (user_id: string) => {
+    return db.query.usersTable.findFirst({
+        where: eq(usersTable.user_id, user_id),
+        columns: {
+            username: true,
+        },
+        with: {
+            enrollments: {
+                columns: {
+                    review: true,
+                    rating: true,
+                    updated_at: true,
+                    created_at: true,
+                    progress_rate: true,
+                },
+                with: {
+                    textbook: {
+                        columns: {
+                            title: true,
+                            textbook_id: true,
+                        },
+                        with: {
+                            subject: {
+                                columns: {
+                                    name: true,
+                                    slug: true,
+                                },
+                                with: {
+                                    theme: {
+                                        columns: {
+                                            name: true,
+                                            slug: true,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    payment: true
+                },
+                orderBy: (enrollments, { asc }) => [asc(enrollments.progress_rate)],
+            },
+        },
+
     })
 }
