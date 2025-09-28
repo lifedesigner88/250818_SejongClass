@@ -109,7 +109,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
 // loader
 export const loader = async ({ request }: Route.LoaderArgs) => {
 
-    console.time("⏳ Root Loader")
     const { client } = makeSSRClient(request)
     const { data: supabaseAuthData, error } = await client.auth.getUser()
     if (error) return { supabaseAuthData }
@@ -149,7 +148,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
         }).catch(console.error);
     }
     const isAdmin = publicUserData?.role === "admin";
-    console.timeEnd("⏳ Root Loader")
     return {
         publicUserData: {
             ...publicUserData,

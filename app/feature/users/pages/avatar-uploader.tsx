@@ -55,11 +55,9 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
     const uploadAvatar = async (file: File) => {
         try {
             setUploading(true)
-            console.log(file)
 
             // 1. 정사각형 크롭
             const croppedFile = await cropToSquare(file)
-            console.log(croppedFile)
 
             // 2. 250kb 이하 압축
             const compressedFile = await imageCompression(croppedFile, {

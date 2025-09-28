@@ -9,9 +9,8 @@ export async function getThemes() {
 
 
 export async function getThemesWithSubjectsANDTextbooksANDMajorsANDMiddlesANDUnitsANDDealings() {
-    const startTime = performance.now();
 
-    const result = await db.query.themesTable.findMany({
+    return await db.query.themesTable.findMany({
         columns: {
             themes_id: true,
             name: true,
@@ -92,13 +91,6 @@ export async function getThemesWithSubjectsANDTextbooksANDMajorsANDMiddlesANDUni
             }
         }
     });
-
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-
-    console.log(`🚀 Query execution time: ${duration.toFixed(2)}ms`);
-
-    return result;
 }
 
 
