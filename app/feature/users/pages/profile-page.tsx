@@ -22,6 +22,7 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
 
     const auth = useAuthOutletData()
     const canEdit = auth.isLoggedIn && auth.publicUserData.username === activeStamps.username
+    const loginUserId = auth.publicUserData.user_id;
 
     const { username, profile_url, created_at, updated_at, nickname } = activeStamps
     const userPofile = { username, profile_url, created_at, updated_at, nickname }
@@ -74,6 +75,7 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
                 totalCheckListCount={totalCheckListCount}
                 totalCommentsCount={totalCommentsCount}
                 canEdit={canEdit}
+                loginUserId={loginUserId}
             />
 
             <div className={"mt-3 flex gap-1"}>

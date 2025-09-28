@@ -28,6 +28,7 @@ interface MyPageProps {
     totalCheckListCount: number;
     totalCommentsCount: number;
     canEdit: boolean;
+    loginUserId: string;
 }
 export const getUserInitials = (username: string) => {
     return username.substring(0, 2).toUpperCase();
@@ -41,7 +42,8 @@ export default function profileEdit({
                                         totalUnitSecond,
                                         totalCheckListCount,
                                         totalCommentsCount,
-                                        canEdit
+                                        canEdit,
+                                        loginUserId
                                     }: MyPageProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [editUsername, setEditUsername] = useState(userProfile.username);
@@ -84,12 +86,10 @@ export default function profileEdit({
         setIsEditing(false);
     };
 
-
     const [isCanUsername, setIsCanUsername] = useState(false);
     const [isCanNickname, setIsCanNickname] = useState(false);
     const [validationUser, setValidationUser] = useState<{ isValid: boolean; error?: string }>({ isValid: true });
     const [validationNick, setValidationNick] = useState<{ isValid: boolean; error?: string }>({ isValid: true });
-
 
     return (
         <div className="bg-gray-50/50 p-4 md:p-6">
@@ -103,7 +103,7 @@ export default function profileEdit({
                                 ?
                                 <AvatarUploader
                                     userProfile={userProfile}
-                                    userId={"hi"}
+                                    loginUserId={loginUserId}
                                 />
                                 :
                                 <Avatar className="h-20 w-20 md:h-30 md:w-30">

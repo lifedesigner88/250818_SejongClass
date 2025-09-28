@@ -4,20 +4,22 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { makePublicClient } from "~/supa-clents";
 import { getUserInitials, type UserProfile } from "~/feature/users/pages/profile-edit";
 import { SquarePen } from "lucide-react";
+import { useFetcher } from "react-router";
 
 const supabase = makePublicClient
 
 type AvatarUploaderProps = {
     userProfile: UserProfile
-    userId: string
+    loginUserId: string
 }
 
-export default function AvatarUploader({ userId, userProfile }: AvatarUploaderProps) {
+export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploaderProps) {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(userProfile.profile_url)
     const [uploading, setUploading] = useState(false)
     const fileInputRef = useRef<HTMLInputElement | null>(null)
 
     const bucket = "avatars"
+    const fetcher = useFetcher();
 
     // 🔹 정사각형 크롭 함수
     const cropToSquare = (file: File): Promise<File> => {
@@ -53,28 +55,47 @@ export default function AvatarUploader({ userId, userProfile }: AvatarUploaderPr
     const uploadAvatar = async (file: File) => {
         try {
             setUploading(true)
+            console.log(file)
 
             // 1. 정사각형 크롭
             const croppedFile = await cropToSquare(file)
+            console.log(croppedFile)
 
-            // 2. 300kb 이하 압축
+            // 2. 250kb 이하 압축
             const compressedFile = await imageCompression(croppedFile, {
-                maxSizeMB: 0.3,
+                maxSizeMB: 0.25,
                 maxWidthOrHeight: 512,
                 useWebWorker: true,
             })
 
-            const fileExt = "jpg"
-            const filePath = `${userId}.${fileExt}`
+            const filePath = `${loginUserId}/${Date.now()}`
+
 
             // Supabase Storage 업로드
-            await supabase.storage
+            const { error } = await supabase.storage
                 .from(bucket)
-                .upload(filePath, compressedFile, { upsert: true })
+                .upload(filePath, compressedFile, {
+                    contentType: compressedFile.type,
+                    upsert: false
+                })
 
-            // Public URL 가져오기
-            const { data } = supabase.storage.from(bucket).getPublicUrl(filePath)
-            setAvatarUrl(data.publicUrl)
+            if (!error) {
+                const { data } = supabase.storage.from(bucket).getPublicUrl(filePath)
+                setAvatarUrl(data.publicUrl)
+                void fetcher.submit({
+                        beforeUserName: userProfile.username,
+                        nickname: userProfile.nickname,
+                        username: userProfile.username,
+                        profileUrl: data.publicUrl,
+                    }, {
+                        method: "POST",
+                        action: "/api/users/update-profile",
+                    }
+                );
+            } else {
+                setAvatarUrl(userProfile.profile_url)
+                console.log(error, "파일 업로드 실패")
+            }
 
         } catch (err) {
             console.error("Upload error:", err)
@@ -98,8 +119,7 @@ export default function AvatarUploader({ userId, userProfile }: AvatarUploaderPr
                 className={`relative cursor-pointer group ${
                     uploading ? "opacity-50" : "hover:opacity-80"
                 }`}
-                onClick={() => fileInputRef.current?.click()}
-            >
+                onClick={() => fileInputRef.current?.click()}>
                 <SquarePen
                     className="opacity-0 group-hover:opacity-80 z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white size-9"/>
                 <Avatar className="h-20 w-20 md:h-30 md:w-30">
