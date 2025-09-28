@@ -31,7 +31,7 @@ export const enrollmentsTable = pgTable("enrollments", {
 
         last_study_date: timestamp().defaultNow().notNull(),
         created_at: timestamp().defaultNow().notNull(),
-        updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
+        updated_at: timestamp().defaultNow().$onUpdate(() => new Date()).notNull(),
     },
     (table) => [
         primaryKey({

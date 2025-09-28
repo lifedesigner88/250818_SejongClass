@@ -2,6 +2,7 @@ import db from "~/db";
 import { usersTable } from "~/feature/users/schema";
 import { eq } from "drizzle-orm";
 import { advancedUsernameRegex } from "~/feature/users/pages/username-input";
+import { enrollmentsTable } from "~/feature/enrollments/schema";
 
 
 function generateRandomString(length: number = 8): string {
@@ -68,13 +69,11 @@ export const getActiveStamps = async (username: string) => {
         with: {
             comments: {
                 columns: {
-                    comment_id: true,
                     updated_at: true,
                 }
             },
             progress: {
                 columns: {
-                    unit_id: true,
                     updated_at: true,
                 },
                 with: {
@@ -87,8 +86,40 @@ export const getActiveStamps = async (username: string) => {
             },
             checklists: {
                 columns: {
-                    curriculum_id: true,
                     updated_at: true,
+                }
+            },
+            enrollments: {
+                columns: {
+                    review: true,
+                    rating: true,
+                    updated_at: true,
+                    created_at: true,
+                },
+                where: eq(enrollmentsTable.progress_rate, 100),
+                with: {
+                    textbook: {
+                        columns: {
+                            title: true,
+                            textbook_id: true,
+                        },
+                        with: {
+                            subject: {
+                                columns: {
+                                    name: true,
+                                    slug: true,
+                                },
+                                with: {
+                                    theme: {
+                                        columns: {
+                                            name: true,
+                                            slug: true,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

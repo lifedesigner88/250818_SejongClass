@@ -6,6 +6,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ProfileEdit from "~/feature/users/pages/profile-edit";
 import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
+import { CompletedCoursesGrid } from "~/feature/users/pages/completed-course-card";
+import { Card, CardContent } from "@/components/ui/card";
+
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
     const { username } = params
@@ -13,28 +16,29 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     return { activeStamps }
 }
 
+type ActiveStampType = Awaited<ReturnType<typeof getActiveStamps>>;
+export type myPageEnrollmentsType = NonNullable<ActiveStampType>['enrollments'];
 
 export default function ProfilePage({ loaderData }: Route.ComponentProps) {
     const { activeStamps } = loaderData
     if (!activeStamps) {
         return <h1 className={"p-5"}>존재하지 않는 유저 입니다. </h1>
     }
-
     const auth = useAuthOutletData()
     const canEdit = auth.isLoggedIn && auth.publicUserData.username === activeStamps.username
-    const loginUserId = auth.publicUserData.user_id;
+    const loginUserId = auth.publicUserData?.user_id || "public";
 
     const { username, profile_url, created_at, updated_at, nickname } = activeStamps
     const userPofile = { username, profile_url, created_at, updated_at, nickname }
     const createUserDay = activeStamps.created_at
     const profileUpdateDay = activeStamps.updated_at
 
+
     const totalUnitConut = activeStamps.progress.length;
     const totalUnitSceond = activeStamps.progress.reduce((acc, cur) => cur.unit.estimated_seconds + acc, 0)
 
     const totalCheckListCount = activeStamps.checklists.length;
     const totalCommentsCount = activeStamps.comments.length;
-
 
     const countMap = new Map<string, number>();
     const yearSet = new Set<number>();
@@ -43,10 +47,9 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
         ...activeStamps.checklists,
         ...activeStamps.progress,
         ...activeStamps.comments,
-        { updated_at: created_at } // 가입일 하나 추가.
+        { updated_at: created_at }, // 가입일 하나 추가.
     ];
 
-    console.log(allStampItems)
     allStampItems.forEach((item) => {
         const temp = DateTime.fromJSDate(item.updated_at!).setZone('Asia/Seoul');
         yearSet.add(Number(temp.year.toString()));
@@ -94,6 +97,21 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
                 dayMap={dayMap}
                 showYear={yearStemp}
             />
+            <div className={"w-full p-0 my-20"}>
+
+                {activeStamps.enrollments.length > 0 && (
+                    <Card className={"max-w-[1080px] mx-auto"}>
+                        <CardContent>
+
+                            <CompletedCoursesGrid courses={activeStamps.enrollments}/>
+
+                        </CardContent>
+
+                    </Card>
+                )
+                }
+            </div>
+
         </div>
     )
 }

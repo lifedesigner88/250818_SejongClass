@@ -100,7 +100,7 @@ export default function SubjectsPage({ loaderData }: Route.ComponentProps) {
 }
 
 // 도서 비율을 유지하는 컴팩트한 교재 카드
-function TextbookCard({
+export function TextbookCard({
                           textbook,
                           themeSlug,
                           subjectSlug,

@@ -250,7 +250,6 @@ export default function profileEdit({
                     </Card>
                 </div>
 
-
             </div>
         </div>
     );
