@@ -128,12 +128,3 @@ export const getLoggedInUserId = async (request: Request): Promise<string | null
     if (error || data.user === null) return null;
     return data.user.id;
 }
-
-
-export const getUserIsAdmin = async (request: Request): Promise<boolean> => {
-    const { client } = makeSSRClient(request);
-    const { data, error } = await client.auth.getSession();
-    if (error || data.session?.user === null) return false;
-    console.log(data.session?.user.role);
-    return data.session?.user.role === 'admin';
-}

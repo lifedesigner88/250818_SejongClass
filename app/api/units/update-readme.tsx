@@ -1,8 +1,9 @@
 import type { Route } from "./+types/update-readme";
-import { getUserIsAdmin } from "~/feature/auth/useAuthUtil";
+import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { updateUnitReadmeContent } from "~/api/units/mutation";
 import type { JSONContent } from "@tiptap/react";
 import z from "zod";
+import { getPublicUserData } from "~/feature/users/quries";
 
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -22,7 +23,11 @@ export const action = async ({ request }: Route.ActionArgs) => {
     if (!success) throw new Error('Invalid form data');
 
     // JSONContent 객체를 직접 전달
-    const isAdmin = await getUserIsAdmin(request);
+    const userId = await getUserIdForServer(request);
+    if (!userId) return
+
+    const getUserRole = await getPublicUserData(userId)
+    const isAdmin = getUserRole?.role === "admin"
     if (isAdmin) await updateUnitReadmeContent(data.unit_id, data.content);
 
     return { success: true };

@@ -114,7 +114,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     const { data: supabaseAuthData, error } = await client.auth.getUser()
     if (error) return { supabaseAuthData }
     const user = supabaseAuthData.user;
-    const isAdmin = user.role === "admin";
 
     const loginedUuserProviderId = user.user_metadata.provider_id;
     const loginedUserDataFromProvider = user.identities?.filter(identity => identity.id === loginedUuserProviderId)[0];
@@ -149,6 +148,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
             })
         }).catch(console.error);
     }
+    const isAdmin = publicUserData?.role === "admin";
     console.timeEnd("⏳ Root Loader")
     return {
         publicUserData: {
