@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { User, LogIn, LogOut, Loader2, UserRoundCog, LibraryBig } from 'lucide-react';
+import { User, LogIn, LogOut, Loader2, UserRoundCog, LibraryBig, MessageCircleMore } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { FaGithub } from "react-icons/fa";
@@ -99,8 +99,12 @@ export function UserStatus({
                 <div className="p-4">
                     {isLoggedIn ? (
                         <div className="space-y-4">
-                            <div className="flex items-center gap-3">
-                                <Avatar className="size-9">
+                            <div className="flex items-center gap-3 cursor-pointer hover:bg-emerald-50"
+                                 onClick={() => {
+                                     navigate(`/profile/${publicUserData?.username}`)
+                                     setIsOpen(false);
+                                 }}>
+                                <Avatar className="size-11">
                                     <AvatarImage
                                         src={publicUserData?.profile_url || ""}
                                         alt={
@@ -125,11 +129,9 @@ export function UserStatus({
                                             publicUserData?.email?.split("@")[0]}
                                     </p>
                                     <div className="flex items-center gap-2">
-                                        {publicUserData?.email && (
                                             <p className="text-xs text-gray-500 truncate">
-                                                {publicUserData.email}
+                                                @{publicUserData?.username}
                                             </p>
-                                        )}
                                         {publicUserData?.provider && (
                                             <div
                                                 className="ml-1 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-700">
@@ -146,7 +148,7 @@ export function UserStatus({
                                     navigate(`/profile/${publicUserData?.username}`)
                                     setIsOpen(false);
                                 }}>
-                            <UserRoundCog className="size-5 mx-2"/>
+                                <UserRoundCog className="size-5 mx-2"/>
                                 나의정보
                             </Button>
                             <Button
@@ -159,6 +161,16 @@ export function UserStatus({
                             >
                                 <LibraryBig className="size-5 mx-2"/>
                                 강의목록
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start text-gray-600 hover:text-yellow-700 hover:bg-yellow-100"
+                                onClick={() => {
+                                    window.open("https://open.kakao.com/o/sMtZzoUh", "_blank", "noopener,noreferrer");
+                                    setIsOpen(false);
+                                }}>
+                                <MessageCircleMore className="size-5 mx-2"/>
+                                문의사항
                             </Button>
                             <Button
                                 variant="ghost"
