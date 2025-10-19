@@ -43,7 +43,7 @@ export const deleteUserInfo = async (user_id: string) => {
 }
 
 
-export const deleteProfile = async (request: Request, user_id: string) => {
+export const deleteProfile = async (request: Request, user_id: string, filePath?: string) => {
     const { client: supabase } = makeSSRClient(request)
     const folder = `${user_id}/`
 
@@ -58,9 +58,12 @@ export const deleteProfile = async (request: Request, user_id: string) => {
         return
     }
     // 2. 파일 경로 배열 생성
-    const filePaths = data.map((file) => `${folder}${file.name}`)
+    let filePaths = data.map((file) => `${folder}${file.name}`)
+
+    if (filePath) // 아바타 업로드시 기존파일 제외하고 삭제
+        filePaths = filePaths.filter(item => item !== filePath)
+
     // 3. 파일 삭제
     await supabase.storage.from('avatars').remove(filePaths)
-
 }
 

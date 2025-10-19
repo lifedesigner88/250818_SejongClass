@@ -70,6 +70,8 @@ export default function profileEdit({
             beforeUserName: userProfile.username,
             nickname: editNickname,
             username: editUsername,
+            beforeProfie: editProfileUrl,
+            filePath: "",
             profileUrl: editProfileUrl
         }, {
             method: "POST",

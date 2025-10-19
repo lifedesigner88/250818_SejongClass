@@ -52,16 +52,9 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
         })
     }
 
-    const deleteProfileFetcher = useFetcher();
     const uploadAvatar = async (file: File) => {
         try {
             setUploading(true)
-
-            // 기존 avatar 제거
-            void deleteProfileFetcher.submit({},{
-                method: "DELETE",
-                action: "/api/users/delete-profile",
-            })
 
             // 1. 정사각형 크롭
             const croppedFile = await cropToSquare(file)
@@ -90,6 +83,8 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
                         beforeUserName: userProfile.username,
                         nickname: userProfile.nickname,
                         username: userProfile.username,
+                        beforeProfie: userProfile.profile_url,
+                        filePath: filePath,
                         profileUrl: data.publicUrl,
                     }, {
                         method: "POST",
@@ -100,7 +95,6 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
                 setAvatarUrl(userProfile.profile_url)
                 console.log(error, "파일 업로드 실패")
             }
-
 
         } catch (err) {
             console.error("Upload error:", err)

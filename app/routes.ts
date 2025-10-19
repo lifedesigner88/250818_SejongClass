@@ -48,7 +48,6 @@ export default [
             route("/update-profile", "api/users/update-profile.tsx"),
             route("/is-exist", "api/users/is-exist.tsx"),
             route("/delete", "api/users/delete.tsx"),
-            route("/delete-profile", "api/users/delete-profile.tsx"),
         ])
     ]),
 
