@@ -135,12 +135,12 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
             {canEdit ?
                 <div className={"w-full"}>
                     <AlertDialog>
-                        <Card className={"w-full max-w-[1080px] mx-auto"}>
+                        <Card className={"w-full max-w-[1080px] sm:mx-auto mb-3 "}>
                             <CardContent>
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         variant="ghost"
-                                        className="w-full py-5 justify-center text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                        className="w-full py-3 justify-center text-gray-600 hover:text-red-600 hover:bg-red-50"
                                     >
                                         <Trash2/> 회원 탈퇴
                                     </Button>

@@ -57,6 +57,12 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
         try {
             setUploading(true)
 
+            // 기존 avatar 제거
+            void deleteProfileFetcher.submit({},{
+                method: "DELETE",
+                action: "/api/users/delete-profile",
+            })
+
             // 1. 정사각형 크롭
             const croppedFile = await cropToSquare(file)
 
@@ -68,12 +74,6 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
             })
 
             const filePath = `${loginUserId}/${Date.now()}`
-
-            // 기존 avatar 제거
-            void deleteProfileFetcher.submit({},{
-                method: "DELETE",
-                action: "/api/users/delete-profile",
-            })
 
             // Supabase Storage 업로드
             const { error } = await supabase.storage
