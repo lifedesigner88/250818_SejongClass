@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import db from "~/db";
 import { usersTable } from "~/feature/users/schema";
-import { makePublicClient, makeSSRClient } from "~/supa-clents";
+import { makeSSRClient } from "~/supa-clents";
 
 export const updateUserProfile = (
     user_id: string,

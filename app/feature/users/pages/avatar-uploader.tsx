@@ -52,6 +52,7 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
         })
     }
 
+    const deleteProfileFetcher = useFetcher();
     const uploadAvatar = async (file: File) => {
         try {
             setUploading(true)
@@ -68,6 +69,11 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
 
             const filePath = `${loginUserId}/${Date.now()}`
 
+            // 기존 avatar 제거
+            void deleteProfileFetcher.submit({},{
+                method: "DELETE",
+                action: "/api/users/delete-profile",
+            })
 
             // Supabase Storage 업로드
             const { error } = await supabase.storage
@@ -95,11 +101,13 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
                 console.log(error, "파일 업로드 실패")
             }
 
+
         } catch (err) {
             console.error("Upload error:", err)
         } finally {
             setUploading(false)
         }
+
     }
 
     const handleFileChange = async (
