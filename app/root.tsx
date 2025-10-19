@@ -109,12 +109,10 @@ export const action = async ({ request }: Route.ActionArgs) => {
 // loader
 export const loader = async ({ request }: Route.LoaderArgs) => {
 
-    console.time("⏳ Root Loader")
     const { client } = makeSSRClient(request)
     const { data: supabaseAuthData, error } = await client.auth.getUser()
     if (error) return { supabaseAuthData }
     const user = supabaseAuthData.user;
-    const isAdmin = user.role === "admin";
 
     const loginedUuserProviderId = user.user_metadata.provider_id;
     const loginedUserDataFromProvider = user.identities?.filter(identity => identity.id === loginedUuserProviderId)[0];
@@ -149,7 +147,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
             })
         }).catch(console.error);
     }
-    console.timeEnd("⏳ Root Loader")
+    const isAdmin = publicUserData?.role === "admin";
     return {
         publicUserData: {
             ...publicUserData,

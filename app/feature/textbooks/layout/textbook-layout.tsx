@@ -37,7 +37,6 @@ import { Badge } from "@/components/ui/badge";
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
-    console.time("⏳ textbook-layout loader")
     const themeSlug = params["theme-slug"];
     const subjectSlug = params["subject-slug"];
     const textbookId = params["textbook-id"];
@@ -57,7 +56,6 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         && textbookInfo.subject.slug === subjectSlug
         && textbookInfo.subject.theme.slug === themeSlug)
     ) throw redirect("/404");
-    console.timeEnd("⏳ textbook-layout loader")
 
     return { themeSlug, subjectSlug, textbookId, textbookInfo };
 }
@@ -342,7 +340,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     };
 
     useEffect(() => {
-        console.log("🔵")
         if (countMajorClosed('-0', closeSection) === countMajorClosed('-0', allSectionSet))
             setIsExpanded(false)
         else setIsExpanded(true)

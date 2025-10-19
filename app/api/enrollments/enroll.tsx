@@ -26,7 +26,6 @@ const paramsSchema = z.object({
 const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY;
 
 export const loader = async ({ request }: Route.ActionArgs) => {
-    console.log("enroll action")
     const url = new URL(request.url);
     const { success, data } = paramsSchema.safeParse(Object.fromEntries(url.searchParams));
     if (!success) return new Response(null, { status: 400 })
