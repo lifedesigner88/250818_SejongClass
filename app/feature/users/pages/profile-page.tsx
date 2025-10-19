@@ -8,6 +8,16 @@ import ProfileEdit from "~/feature/users/pages/profile-edit";
 import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { CompletedCoursesGrid } from "~/feature/users/pages/completed-course-card";
 import { Card, CardContent } from "@/components/ui/card";
+import { Trash2 } from "lucide-react";
+import {
+    AlertDialog, AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { useFetcher } from "react-router";
 
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
@@ -66,6 +76,19 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
     const sortedSetYear = [...yearSet].sort()
     const [yearStemp, setYearStemp] = useState<number>(sortedSetYear[sortedSetYear.length - 1]);
 
+
+    // 회원탈퇴
+    const [deleteUser, setDeleteUser] = useState<string>("")
+    const fetcher = useFetcher()
+    const deleteUserAllData = () => {
+        void fetcher.submit({
+            loginUserId
+        },{
+            method: "DELETE",
+            action: "/api/users/delete",
+        })
+        alert("영구 삭제 되었습니다.")
+    }
     return (
         <div className={"flex flex-col items-center h-[calc(100vh-64px)] max-w-screen overflow-y-auto"}>
 
@@ -98,7 +121,6 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
                 showYear={yearStemp}
             />
             <div className={"w-full p-0 my-20"}>
-
                 {activeStamps.enrollments.length > 0 && (
                     <Card className={"max-w-[1080px] mx-auto"}>
                         <CardContent>
@@ -108,10 +130,49 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
                         </CardContent>
 
                     </Card>
-                )
-                }
+                )}
             </div>
-
+            {canEdit ?
+                <div className={"w-full"}>
+                    <AlertDialog>
+                        <Card className={"w-full max-w-[1080px] mx-auto"}>
+                            <CardContent>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full py-5 justify-center text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                    >
+                                        <Trash2/> 회원 탈퇴
+                                    </Button>
+                                </AlertDialogTrigger>
+                            </CardContent>
+                        </Card>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>❌ 회원 삭제 (복구 불가)</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    "{userPofile.username}" 을 입력해 주세요.
+                                </AlertDialogDescription>
+                                <Input value={deleteUser} onChange={(e) => setDeleteUser(e.target.value)}/>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                    취소
+                                </AlertDialogCancel>
+                                {deleteUser === userPofile.username ?
+                                    <AlertDialogAction
+                                        className=" hover:text-red-600 hover:bg-red-50" asChild>
+                                        <Button onClick={deleteUserAllData}>
+                                            탈퇴
+                                        </Button>
+                                    </AlertDialogAction>
+                                    : null}
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </div>
+                : null
+            }
         </div>
     )
 }
