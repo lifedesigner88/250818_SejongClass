@@ -8,7 +8,7 @@ import {
     ScrollRestoration, useNavigate, useNavigation,
 } from "react-router";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -147,6 +147,8 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
             })
         }).catch(console.error);
     }
+
+
     const isAdmin = publicUserData?.role === "admin";
     return {
         publicUserData: {
@@ -165,6 +167,11 @@ export default function App({ loaderData }: Route.ComponentProps) {
     const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/themes");
     const provider = publicUserData?.provider;
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isLoggedIn)
+            void fetch(`/api/users/visit-log`, { method: "POST", })
+    }, [isLoggedIn]); // isLoggedIn이 true로 변할 때만 실행
 
     // 로딩 상태 확인
     const navigation = useNavigation();

@@ -5,6 +5,7 @@ import { enrollmentsTable } from "~/feature/enrollments/schema";
 import { progressTable } from "~/feature/progress/schema";
 import { commentsTable } from "~/feature/comments/schema";
 import { checklistsTable } from "~/feature/checklists/schema";
+import { visitlogsTable } from "~/feature/visitlogs/schema";
 
 export const userRoleEnum = pgEnum('user_role', ['user', 'admin']);
 
@@ -20,8 +21,7 @@ export const usersTable = pgTable("users", {
     updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
 }, () => [
 
-    
-    
+
     // pgPolicy(`policy-public`, {
     //     for: 'select',
     //     to: 'anon',  // 익명 사용자도 가능
@@ -78,5 +78,7 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
     comments: many(commentsTable),
 
     checklists: many(checklistsTable),
+
+    visitlogs: many(visitlogsTable),
 
 }));

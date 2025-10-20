@@ -22,6 +22,7 @@ import { curriculumsRelations, curriculumsTable } from "~/feature/curriculums/sc
 import { paymentsRelations, paymentsTable } from "~/feature/payments/schema";
 import { notesRelations, notesTable } from "~/feature/note/schema";
 import { commentLikesRelations, commentLikesTable, commentsRelations, commentsTable } from "~/feature/comments/schema";
+import { visitlogsRelations, visitlogsTable } from "~/feature/visitlogs/schema";
 
 const schema = {
     themesTable,
@@ -82,6 +83,9 @@ const schema = {
     commentsRelations,
     commentLikesTable,
     commentLikesRelations,
+
+    visitlogsTable,
+    visitlogsRelations
 
 }
 

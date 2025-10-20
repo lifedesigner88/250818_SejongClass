@@ -1,7 +1,8 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
 import db from "~/db";
 import { usersTable } from "~/feature/users/schema";
 import { makeSSRClient } from "~/supa-clents";
+import { visitlogsTable } from "~/feature/visitlogs/schema";
 
 export const updateUserProfile = (
     user_id: string,
@@ -67,3 +68,26 @@ export const deleteProfile = async (request: Request, user_id: string, filePath?
     await supabase.storage.from('avatars').remove(filePaths)
 }
 
+
+export const stampVisitLog = async (user_id: string) => {
+    return db.insert(visitlogsTable).values({ user_id: user_id })
+}
+
+
+export const getUserVisitLog = async (userId : string) => {
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    return db.query.visitlogsTable.findFirst({
+        where: and(
+            eq(visitlogsTable.user_id, userId),
+            gte(visitlogsTable.updated_at, startOfDay),
+            lte(visitlogsTable.updated_at, endOfDay)
+        ),
+    })
+
+}

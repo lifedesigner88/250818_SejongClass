@@ -57,6 +57,7 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
         ...activeStamps.checklists,
         ...activeStamps.progress,
         ...activeStamps.comments,
+        ...activeStamps.visitlogs,
         { updated_at: created_at }, // 가입일 하나 추가.
     ];
 

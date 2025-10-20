@@ -11,9 +11,10 @@ function generateRandomString(length: number = 8): string {
 
 export async function getPublicUserData(userId: string) {
     return db.query.usersTable.findFirst({
-        where: eq(usersTable.user_id, userId)
+        where: eq(usersTable.user_id, userId),
     });
 }
+
 
 export async function createPublicUserData(userData: {
     user_id: string;
@@ -22,8 +23,8 @@ export async function createPublicUserData(userData: {
     nickname: string;
     profile_url: string | null;
 }) {
-    let finalUsername = userData.username.substring(0,19);
-    let finalNickname = userData.nickname.substring(0,19);
+    let finalUsername = userData.username.substring(0, 19);
+    let finalNickname = userData.nickname.substring(0, 19);
 
     while (true) {
         const existingUsername = await db.query.usersTable.findFirst({
@@ -53,7 +54,6 @@ export async function createPublicUserData(userData: {
         .returning();
 
     return newUser[0];
-
 }
 
 
@@ -67,6 +67,11 @@ export const getActiveStamps = async (username: string) => {
             user_id: false,
         },
         with: {
+            visitlogs:{
+                columns: {
+                    updated_at: true,
+                }
+            },
             comments: {
                 columns: {
                     updated_at: true,
