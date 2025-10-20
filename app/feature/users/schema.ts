@@ -21,7 +21,6 @@ export const usersTable = pgTable("users", {
     updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
 }, () => [
 
-
     // pgPolicy(`policy-public`, {
     //     for: 'select',
     //     to: 'anon',  // 익명 사용자도 가능
