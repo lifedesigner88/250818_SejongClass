@@ -33,6 +33,17 @@ import { loadTossPayments, type TossPaymentsWidgets } from "@tosspayments/tosspa
 import { isNewInOneMonth } from "~/lib/utils";
 import { DateTime } from "luxon";
 import { Badge } from "@/components/ui/badge";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -353,6 +364,9 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         return count;
     };
 
+    // 사이드바 수정 함수.
+
+
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
         <div className={"h-screen sm:h-[calc(100vh-64px)] overflow-hidden"}>
@@ -405,7 +419,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                             <ChevronRight className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
                                         )}
                                         <div
-                                            className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>{major.title}</div>
+                                            className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>
+                                            {`${major.sort_order}. `}
+                                            {major.title}
+                                        </div>
                                         <div
                                             className={`${majorActive ? "opacity-35" : ""}`}>
                                             {majorActive ? "🔥 " : null}
@@ -432,7 +449,10 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                 <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0"/>
                                                             )}
                                                             <div
-                                                                className="text-muted-foreground truncate">{middle.title}</div>
+                                                                className="text-muted-foreground truncate">
+                                                                {`${major.sort_order}-${middle.sort_order}. `}
+                                                                {middle.title}
+                                                            </div>
                                                             <div
                                                                 className={`${middleActive ? "opacity-35" : ""}`}>
                                                                 {middleActive ? "🔥 " : null}
@@ -453,7 +473,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
                                                                 return (
                                                                     <div
-                                                                        className="flex items-center relative"
+                                                                        className="flex items-center relative group"
                                                                         key={unit.unit_id}
                                                                         data-unit-id={unit.unit_id}>
                                                                         <Checkbox
@@ -474,6 +494,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                         >
                                                                             <div
                                                                                 className="truncate w-full pl-10">
+                                                                                {`${unit.sort_order.toString().padStart(2, "0")}. `}
                                                                                 {unit.title}
                                                                                 {unit.is_published
                                                                                     ? isEnrolled
@@ -488,7 +509,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                                 {unit.is_published
                                                                                     ? updated
                                                                                         ? <span
-                                                                                            className="text-xs   opacity-0 group-hover:opacity-50">
+                                                                                            className="text-xs opacity-0 group-hover:opacity-50">
                                                                                             &nbsp;&nbsp;&nbsp;
                                                                                             {` ${DateTime.fromJSDate(unit.updated_at!).setLocale('ko').toRelative()}`}
                                                                                           </span>
@@ -503,6 +524,45 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                                 {Math.ceil(unit.estimated_seconds / 60)}분
                                                                             </div>
                                                                         </Button>
+                                                                        {isAdmin ?
+                                                                            <Dialog>
+                                                                                <DialogTrigger asChild>
+                                                                                    <Button
+                                                                                        variant={"outline"}
+                                                                                        className={"absolute right-20 "}>
+                                                                                        edit
+                                                                                    </Button>
+                                                                                </DialogTrigger>
+                                                                                <DialogContent>
+                                                                                    <DialogHeader>
+                                                                                        <DialogTitle>수정</DialogTitle>
+                                                                                    </DialogHeader>
+                                                                                    <div className={"grid grid-cols-5"}>
+                                                                                    <Input className={"col-span-1"} value={major.sort_order}/>
+                                                                                    <Input className={"col-span-4"} value={major.title}/>
+                                                                                    </div>
+                                                                                    <div className={"grid grid-cols-5"}>
+                                                                                        <Input className={"col-span-1"} value={middle.sort_order}/>
+                                                                                        <Input className={"col-span-4"} value={middle.title}/>
+                                                                                    </div>
+                                                                                    <div className={"grid grid-cols-5"}>
+                                                                                        <Input className={"col-span-1"} value={unit.sort_order}/>
+                                                                                        <Input className={"col-span-4"} value={unit.title}/>
+                                                                                    </div>
+                                                                                    <div className={"flex justify-evenly"}>
+                                                                                        isFree <Switch checked={unit.is_free} />
+                                                                                        isPub <Switch checked={unit.is_published}/>
+                                                                                    </div>
+                                                                                    <DialogFooter>
+                                                                                        <DialogClose asChild>
+                                                                                            <Button variant="outline">취소</Button>
+                                                                                        </DialogClose>
+                                                                                        <Button>저장</Button>
+                                                                                    </DialogFooter>
+                                                                                </DialogContent>
+                                                                            </Dialog>
+                                                                            : null
+                                                                        }
                                                                     </div>
                                                                 )
                                                             }
@@ -629,16 +689,16 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                     </ResizablePanel>
                     <ResizableHandle withHandle/>
                     <ResizablePanel defaultSize={80}>
-                            <Outlet
-                                context={{
-                                    isAdmin,
-                                    textbookInfo,
-                                    handleUnitClick,
-                                    isEnrolled,
-                                    setOpenEnrollWindow,
-                                    setAfterEnrollNaviUrl,
-                                    justOpenMajor
-                                }}/>
+                        <Outlet
+                            context={{
+                                isAdmin,
+                                textbookInfo,
+                                handleUnitClick,
+                                isEnrolled,
+                                setOpenEnrollWindow,
+                                setAfterEnrollNaviUrl,
+                                justOpenMajor
+                            }}/>
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </div>

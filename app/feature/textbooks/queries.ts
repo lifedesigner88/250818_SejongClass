@@ -38,6 +38,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                     major_id: true,
                     title: true,
                     is_published: true,
+                    sort_order: true,
                 },
                 orderBy: (majors, { asc }) => [asc(majors.sort_order)],
                 with: {
@@ -46,6 +47,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                             middle_id: true,
                             title: true,
                             is_published: true,
+                            sort_order: true,
                         },
                         orderBy: (middles, { asc }) => [asc(middles.sort_order)],
                         with: {
@@ -57,6 +59,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                                     is_published: true,
                                     estimated_seconds: true,
                                     updated_at: true,
+                                    sort_order: true,
                                 },
                                 orderBy: (units, { asc }) => [asc(units.sort_order)],
                                 with: {
