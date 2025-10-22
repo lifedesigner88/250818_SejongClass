@@ -22,6 +22,7 @@ export default [
         ...prefix("/units", [
             route("/toggle-unit", "api/units/toggle-unit.tsx"),
             route("/update-readme", "api/units/update-readme.tsx"),
+            route("/update-title", "api/units/update-title.tsx"),
         ]),
         ...prefix("/notes", [
             route("/create-note", "api/notes/create-note.tsx"),

@@ -36,14 +36,26 @@ import { Badge } from "@/components/ui/badge";
 import {
     Dialog,
     DialogClose,
-    DialogContent,
+    DialogContent, DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+
+type BasicStructureOfTitle = {
+    sort_order: number,
+    title: string,
+    id: number,
+}
+export type UnitInfoType = {
+    major: BasicStructureOfTitle
+    middle: BasicStructureOfTitle
+    unit: BasicStructureOfTitle
+    is_free: boolean
+    is_published: boolean
+}
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -367,6 +379,26 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     // 사이드바 수정 함수.
 
 
+    const [unitInfo, setUnitInfo] = useState<UnitInfoType | null>(null);
+    const [openUnitUpdate, setOpenUnitUpdate] = useState<boolean>(false);
+
+    const updateUnitOnClick = (payload: UnitInfoType) => {
+        setUnitInfo(payload)
+        setOpenUnitUpdate(true)
+    }
+
+    const updateFetch = useFetcher()
+    const updateUnitTitle = () => {
+        updateFetch.submit(
+            { unit_info : JSON.stringify(unitInfo) },
+            {
+                method: "post",
+                action: "/api/units/update-title"
+            }
+        )
+        setOpenUnitUpdate(false)
+    }
+
     // 사이드바 콘텐츠 컴포넌트
     const SidebarContent = () => (
         <div className={"h-screen sm:h-[calc(100vh-64px)] overflow-hidden"}>
@@ -525,43 +557,32 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                                                             </div>
                                                                         </Button>
                                                                         {isAdmin ?
-                                                                            <Dialog>
-                                                                                <DialogTrigger asChild>
-                                                                                    <Button
-                                                                                        variant={"outline"}
-                                                                                        className={"absolute right-20 "}>
-                                                                                        edit
-                                                                                    </Button>
-                                                                                </DialogTrigger>
-                                                                                <DialogContent>
-                                                                                    <DialogHeader>
-                                                                                        <DialogTitle>수정</DialogTitle>
-                                                                                    </DialogHeader>
-                                                                                    <div className={"grid grid-cols-5"}>
-                                                                                    <Input className={"col-span-1"} value={major.sort_order}/>
-                                                                                    <Input className={"col-span-4"} value={major.title}/>
-                                                                                    </div>
-                                                                                    <div className={"grid grid-cols-5"}>
-                                                                                        <Input className={"col-span-1"} value={middle.sort_order}/>
-                                                                                        <Input className={"col-span-4"} value={middle.title}/>
-                                                                                    </div>
-                                                                                    <div className={"grid grid-cols-5"}>
-                                                                                        <Input className={"col-span-1"} value={unit.sort_order}/>
-                                                                                        <Input className={"col-span-4"} value={unit.title}/>
-                                                                                    </div>
-                                                                                    <div className={"flex justify-evenly"}>
-                                                                                        isFree <Switch checked={unit.is_free} />
-                                                                                        isPub <Switch checked={unit.is_published}/>
-                                                                                    </div>
-                                                                                    <DialogFooter>
-                                                                                        <DialogClose asChild>
-                                                                                            <Button variant="outline">취소</Button>
-                                                                                        </DialogClose>
-                                                                                        <Button>저장</Button>
-                                                                                    </DialogFooter>
-                                                                                </DialogContent>
-                                                                            </Dialog>
-                                                                            : null
+                                                                            <Button
+                                                                                variant={"outline"}
+                                                                                className={"absolute right-20 "}
+                                                                                onClick={() => updateUnitOnClick(
+                                                                                    {
+                                                                                        major: {
+                                                                                            sort_order: major.sort_order,
+                                                                                            title: major.title,
+                                                                                            id: major.major_id,
+                                                                                        },
+                                                                                        middle: {
+                                                                                            sort_order: middle.sort_order,
+                                                                                            title: middle.title,
+                                                                                            id: middle.middle_id,
+                                                                                        },
+                                                                                        unit: {
+                                                                                            sort_order: unit.sort_order,
+                                                                                            title: unit.title,
+                                                                                            id: unit.unit_id,
+                                                                                        },
+                                                                                        is_free: unit.is_free,
+                                                                                        is_published: unit.is_published
+                                                                                    }
+                                                                                )}>
+                                                                                edit
+                                                                            </Button> : null
                                                                         }
                                                                     </div>
                                                                 )
@@ -583,7 +604,112 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     );
     return (
         <div className={"h-[calc(100vh-64px)] w-screen overflow-hidden"}>
-
+            <Dialog open={openUnitUpdate}
+                    onOpenChange={setOpenUnitUpdate}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>수정</DialogTitle>
+                        <DialogDescription>.</DialogDescription>
+                    </DialogHeader>
+                    <div className={"grid grid-cols-5"}>
+                        <Input
+                            className={"col-span-1"}
+                            value={unitInfo?.major.sort_order}
+                            type="number"
+                            required
+                            onChange={(e) => setUnitInfo(prv => {
+                                const next = { ...prv } as UnitInfoType;
+                                if (next)
+                                    next.major.sort_order = Number(e.target.value)
+                                return next
+                            })}
+                        />
+                        <Input className={"col-span-4"}
+                               value={unitInfo?.major.title}
+                               required
+                               onChange={(e) => setUnitInfo(prv => {
+                                   const next = { ...prv } as UnitInfoType;
+                                   if (next)
+                                       next.major.title = e.target.value
+                                   return next
+                               })}
+                        />
+                    </div>
+                    <div className={"grid grid-cols-5"}>
+                        <Input className={"col-span-1"}
+                               value={unitInfo?.middle.sort_order}
+                               type="number"
+                               required
+                               onChange={(e) => setUnitInfo(prv => {
+                                   const next = { ...prv } as UnitInfoType;
+                                   if (next)
+                                       next.middle.sort_order = Number(e.target.value)
+                                   return next
+                               })}
+                        />
+                        <Input className={"col-span-4"}
+                               value={unitInfo?.middle.title}
+                               required
+                               onChange={(e) => setUnitInfo(prv => {
+                                   const next = { ...prv } as UnitInfoType;
+                                   if (next)
+                                       next.middle.title = e.target.value
+                                   return next
+                               })}
+                        />
+                    </div>
+                    <div className={"grid grid-cols-5"}>
+                        <Input className={"col-span-1"}
+                               value={unitInfo?.unit.sort_order}
+                               type="number"
+                               required
+                               onChange={(e) => setUnitInfo(prv => {
+                                   const next = { ...prv } as UnitInfoType;
+                                   if (next)
+                                       next.unit.sort_order = Number(e.target.value)
+                                   return next
+                               })}
+                        />
+                        <Input className={"col-span-4"}
+                               value={unitInfo?.unit.title}
+                               required
+                               onChange={(e) => setUnitInfo(prv => {
+                                   const next = { ...prv } as UnitInfoType;
+                                   if (next)
+                                       next.unit.title = e.target.value
+                                   return next
+                               })}
+                        />
+                    </div>
+                    <div className={"flex justify-evenly"}>
+                        isFree <Switch
+                        checked={unitInfo?.is_free}
+                        onCheckedChange={(checked) => setUnitInfo(prv => {
+                            const next = { ...prv } as UnitInfoType;
+                            if (next)
+                                next.is_free = checked
+                            return next
+                        })}
+                    />
+                        isPub <Switch
+                        checked={unitInfo?.is_published}
+                        onCheckedChange={(checked) => setUnitInfo(prv => {
+                            const next = { ...prv } as UnitInfoType;
+                            if (next)
+                                next.is_published = checked
+                            return next
+                        })}
+                    />
+                    </div>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button
+                                variant="outline">취소</Button>
+                        </DialogClose>
+                        <Button onClick={updateUnitTitle}>저장</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             <AlertDialog open={notPublished} onOpenChange={openNotPubAlert}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -599,7 +725,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 </AlertDialogContent>
 
             </AlertDialog>
-
 
             {/* 결제 관련 */}
             <AlertDialog open={openEnrollWindow}>
