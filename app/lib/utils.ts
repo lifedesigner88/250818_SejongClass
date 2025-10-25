@@ -13,3 +13,23 @@ export const isNewInOneMonth = (updatedAt: Date): boolean => {
     // const oneMonthAgo = DateTime.now().minus({ month: 1 });
     return updateDate > oneMonthAgo;
 };
+
+
+
+import { useEffect, useState } from "react";
+
+export const useMediaQuery = (query: string) => {
+    const [matches, setMatches] = useState<boolean>(false);
+
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        if (media.matches !== matches) {
+            setMatches(media.matches);
+        }
+        const listener = () => setMatches(media.matches);
+        media.addEventListener("change", listener);
+        return () => media.removeEventListener("change", listener);
+    }, [matches, query]);
+
+    return matches;
+}

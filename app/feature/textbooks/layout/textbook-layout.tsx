@@ -21,6 +21,7 @@ import EditUnitDialog from "../component/EditUnitDialog";
 import NotPublishedAlert from "../component/NotPublishedAlert";
 import EnrollAlertDialog from "../component/EnrollAlertDialog";
 import SidebarContent from "../component/SidebarContent";
+import { useMediaQuery } from "~/lib/utils";
 
 type BasicStructureOfTitle = {
     sort_order: number,
@@ -352,8 +353,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     };
 
     // 사이드바 수정 함수.
-
-
     const [unitInfo, setUnitInfo] = useState<UnitInfoType | null>(null);
     const [openUnitUpdate, setOpenUnitUpdate] = useState<boolean>(false);
 
@@ -374,29 +373,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         setOpenUnitUpdate(false)
     }
 
-    const SideBar = () =>
-        <SidebarContent
-            themeSlug={themeSlug}
-            subjectSlug={subjectSlug}
-            textbookId={textbookId}
-            textbookInfo={textbookInfo}
-            progressRate={progressRate}
-            currentUnitId={currentUnitId}
-            unitSectionMap={unitSectionMap}
-            allSectionSet={allSectionSet}
-            closeSection={closeSection}
-            toggleSection={toggleSection}
-            onToggle={onToggle}
-            isExpanded={isExpanded}
-            scrollAreaRef={scrollAreaRef}
-            isEnrolled={isEnrolled}
-            fetcher={fetcher}
-            handleUnitToggleClick={handleUnitToggleClick}
-            handleUnitClick={handleUnitClick}
-            isAdmin={isAdmin}
-            updateUnitOnClick={updateUnitOnClick}
-            setIsMobileMenuOpen={setIsMobileMenuOpen}
-        />
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+
 
     return (
         <div className={"h-[calc(100vh-64px)] w-screen overflow-hidden"}>
@@ -428,15 +406,87 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 title={textbookInfo!.title}
             />
 
+            {isDesktop
+                ? <div className={"hidden md:block h-[calc(100vh-64px)] w-screen overflow-hidden"}>
+                    {/* 데스크톱 - Resizable 레이아웃 */}
+                    <ResizablePanelGroup direction="horizontal">
+                        <ResizablePanel defaultSize={20} minSize={15} maxSize={35}>
+                            <SidebarContent
+                                textbookId={textbookId}
+                                textbookInfo={textbookInfo}
+                                progressRate={progressRate}
+                                currentUnitId={currentUnitId}
+                                unitSectionMap={unitSectionMap}
+                                allSectionSet={allSectionSet}
+                                closeSection={closeSection}
+                                toggleSection={toggleSection}
+                                onToggle={onToggle}
+                                isExpanded={isExpanded}
+                                scrollAreaRef={scrollAreaRef}
+                                isEnrolled={isEnrolled}
+                                fetcher={fetcher}
+                                handleUnitToggleClick={handleUnitToggleClick}
+                                handleUnitClick={handleUnitClick}
+                                isAdmin={isAdmin}
+                                updateUnitOnClick={updateUnitOnClick}
+                                setIsMobileMenuOpen={setIsMobileMenuOpen}
+                            />
+                        </ResizablePanel>
+                        <ResizableHandle withHandle/>
+                        <ResizablePanel defaultSize={80}>
+                            <Outlet
+                                context={{
+                                    isAdmin,
+                                    textbookInfo,
+                                    handleUnitClick,
+                                    isEnrolled,
+                                    setOpenEnrollWindow,
+                                    setAfterEnrollNaviUrl,
+                                    justOpenMajor
+                                }}/>
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                </div>
+                :
+                <div className="md:hidden flex flex-col relative h-[calc(100vh-64px)] w-screen overflow-hidden">
+                    {/* 모바일 - Sheet 레이아웃 */}
+                    <div className="fixed left-4 bottom-20 z-50">
+                        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                            <SheetTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="size-12 flex-shrink-0 shadow-lg bg-background border-2 hover:bg-accent">
+                                    <Menu className="size-7"/>
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="left">
+                                <SidebarContent
+                                    textbookId={textbookId}
+                                    textbookInfo={textbookInfo}
+                                    progressRate={progressRate}
+                                    currentUnitId={currentUnitId}
+                                    unitSectionMap={unitSectionMap}
+                                    allSectionSet={allSectionSet}
+                                    closeSection={closeSection}
+                                    toggleSection={toggleSection}
+                                    onToggle={onToggle}
+                                    isExpanded={isExpanded}
+                                    scrollAreaRef={scrollAreaRef}
+                                    isEnrolled={isEnrolled}
+                                    fetcher={fetcher}
+                                    handleUnitToggleClick={handleUnitToggleClick}
+                                    handleUnitClick={handleUnitClick}
+                                    isAdmin={isAdmin}
+                                    updateUnitOnClick={updateUnitOnClick}
+                                    setIsMobileMenuOpen={setIsMobileMenuOpen}
+                                />
+                            </SheetContent>
+                        </Sheet>
+                    </div>
 
-            <div className={"hidden md:block h-[calc(100vh-64px)] w-screen overflow-hidden"}>
-                {/* 데스크톱 - Resizable 레이아웃 */}
-                <ResizablePanelGroup direction="horizontal">
-                    <ResizablePanel defaultSize={20} minSize={15} maxSize={35}>
-                        <SideBar/> {/* ➡️➡️➡️➡️➡️➡️ */}
-                    </ResizablePanel>
-                    <ResizableHandle withHandle/>
-                    <ResizablePanel defaultSize={80}>
+                    {/* 메인 콘텐츠가 전체 화면 사용 */}
+                    <div className="flex-1 w-full h-full overflow-auto">
                         <Outlet
                             context={{
                                 isAdmin,
@@ -447,41 +497,9 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 setAfterEnrollNaviUrl,
                                 justOpenMajor
                             }}/>
-                    </ResizablePanel>
-                </ResizablePanelGroup>
-            </div>
-            {/* 모바일 - Sheet 레이아웃 */}
-            <div className="md:hidden flex flex-col relative h-[calc(100vh-64px)] w-screen overflow-hidden">
-                <div className="fixed left-4 bottom-20 z-50">
-                    <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-                        <SheetTrigger asChild>
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                className="size-12 flex-shrink-0 shadow-lg bg-background border-2 hover:bg-accent">
-                                <Menu className="size-7"/>
-                            </Button>
-                        </SheetTrigger>
-                        <SheetContent side="left">
-                            <SideBar/> {/* ➡️➡️➡️➡️➡️➡️ */}
-                        </SheetContent>
-                    </Sheet>
+                    </div>
                 </div>
-
-                {/* 메인 콘텐츠가 전체 화면 사용 */}
-                <div className="flex-1 w-full h-full overflow-auto">
-                    <Outlet
-                        context={{
-                            isAdmin,
-                            textbookInfo,
-                            handleUnitClick,
-                            isEnrolled,
-                            setOpenEnrollWindow,
-                            setAfterEnrollNaviUrl,
-                            justOpenMajor
-                        }}/>
-                </div>
-            </div>
+            }
 
         </div>
     );

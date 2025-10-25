@@ -51,3 +51,56 @@ export const updateUnit = async (unit_id: number, title: string, sort_order: num
         })
         .where(eq(unitsTable.unit_id, unit_id));
 }
+
+export const createMajor = async (textbook_id: number) => {
+    return db.insert(majorsTable).values({
+        textbook_id,
+        title: "Major",
+        sort_order: 99,
+    })
+}
+export const createMiddle = async (major_id: number) => {
+    return db.insert(middlesTable).values({
+        major_id,
+        title: "Middle",
+        sort_order: 99,
+    })
+}
+export const createUnit = async (middle_chapter_id: number) => {
+    return db.insert(unitsTable).values({
+        middle_chapter_id,
+        title: "Unit",
+        sort_order: 99,
+    })
+}
+
+export const deleteMajor = async (major_id: number) => {
+    return db.delete(majorsTable).where(eq(majorsTable.major_id, major_id))
+}
+export const deleteMiddle = async (middle_id: number) => {
+    return db.delete(middlesTable).where(eq(middlesTable.middle_id, middle_id))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

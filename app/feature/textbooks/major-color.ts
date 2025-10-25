@@ -1,4 +1,4 @@
-export default  [
+export default [
     {
         bg: 'bg-blue-400',
         badge: 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
@@ -22,5 +22,17 @@ export default  [
     {
         bg: 'bg-indigo-400',
         badge: 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300'
+    },
+    {
+        bg: 'bg-red-400',
+        badge: 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'
+    },
+    {
+        bg: 'bg-teal-400',
+        badge: 'bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300'
+    },
+    {
+        bg: 'bg-yellow-400',
+        badge: 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300'
     },
 ];

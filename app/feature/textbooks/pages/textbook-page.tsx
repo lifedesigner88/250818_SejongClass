@@ -305,7 +305,7 @@ export default function TextbookPage() {
                                     </div>
                                 </TabsTrigger>
                                 {majorNames.map((majorName, index) => {
-                                    const colorSet = colors[index + 1 % colors.length];
+                                    const colorSet = colors[(index + 1) % colors.length];
                                     return (
                                         <TabsTrigger
                                             key={majorName}
@@ -334,7 +334,7 @@ export default function TextbookPage() {
                             // 대단원 이름을 기반으로 색상 인덱스 계산
                             const majorIndex = majorNames.findIndex(name => name === curriculum.major_name);
                             const colorIndex = majorIndex !== -1 ? majorIndex : 0;
-                            const colorSet = colors[colorIndex + 1 % colors.length];
+                            const colorSet = colors[(colorIndex + 1) % colors.length];
 
                             const isSubmitting = fetcher.state === "submitting";
                             const isLoading = fetcher.state === "loading";

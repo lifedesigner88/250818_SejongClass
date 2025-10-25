@@ -12,6 +12,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     if (!userId) return
     const getUserRole = await getPublicUserData(userId)
     const isAdmin = getUserRole?.role === "admin";
+
     if (isAdmin) {
         const formData = await request.formData()
         const unitInfo: UnitInfoType = JSON.parse(formData.get('unit_info') as string);

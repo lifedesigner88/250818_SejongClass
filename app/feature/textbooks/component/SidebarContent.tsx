@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router";
+import { Link, useFetcher } from "react-router";
 import { ChevronsDown, ChevronsUp, ChevronDown, ChevronRight } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,8 +23,6 @@ type UnitInfoTypeLocal = {
 export type TextBookInfoType = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>
 
 export type SidebarContentProps = {
-    themeSlug: string;
-    subjectSlug: string;
     textbookId: string | number;
     textbookInfo: TextBookInfoType | null;
     progressRate: number;
@@ -47,8 +45,6 @@ export type SidebarContentProps = {
 
 export default function SidebarContent(props: SidebarContentProps) {
     const {
-        themeSlug,
-        subjectSlug,
         textbookId,
         textbookInfo,
         progressRate,
@@ -68,6 +64,10 @@ export default function SidebarContent(props: SidebarContentProps) {
         updateUnitOnClick,
         setIsMobileMenuOpen,
     } = props;
+
+    const themeSlug = textbookInfo?.subject.theme.slug
+    const subjectSlug = textbookInfo?.subject.slug
+    const titleFetcher = useFetcher()
 
     return (
         <div className={"h-screen sm:h-[calc(100vh-64px)] overflow-hidden"}>
@@ -93,16 +93,16 @@ export default function SidebarContent(props: SidebarContentProps) {
             <ScrollArea ref={scrollAreaRef} className="h-[calc(100vh-64px)] sm:h-[calc(100vh-64px-64px)]">
                 <div className="pb-50 sm:p-2 sm:pb-80">
                     {textbookInfo?.majors.map((major: any, majorIndex: number) => {
-                        const colorSet = colors[majorIndex + 1 % colors.length];
+                        const colorSet = colors[(majorIndex + 1) % colors.length];
                         const majorActive =
                             currentUnitId && unitSectionMap.get(currentUnitId)?.majorIndex === major.major_id;
                         allSectionSet.add(`${major.major_id}-${0}`);
                         return (
                             <Collapsible
+                                className={"relative group/major"}
                                 key={major.major_id}
                                 open={!closeSection.has(`${major.major_id}-${0}`)}
-                                onOpenChange={() => toggleSection(major.major_id, 0)}
-                            >
+                                onOpenChange={() => toggleSection(major.major_id, 0)}>
                                 <CollapsibleTrigger asChild>
                                     <Button variant="ghost"
                                             className={`w-full justify-start p-2 h-auto text-left mt-4`}>
@@ -119,6 +119,45 @@ export default function SidebarContent(props: SidebarContentProps) {
                                             className={`${majorActive ? "opacity-35" : ""}`}>{majorActive ? "🔥 " : null}</div>
                                     </Button>
                                 </CollapsibleTrigger>
+                                {isAdmin ? <>
+                                    {!(major.middles?.length > 0) ?
+                                        <Button
+                                            variant={"outline"}
+                                            className={"absolute top-5 right-22 hidden group-hover/major:block bg-red-700 text-white"}
+                                            onClick={() => {
+                                                void titleFetcher.submit(
+                                                    {
+                                                        majorId: major.major_id,
+                                                        type: "major",
+                                                    },
+                                                    {
+                                                        method: "POST",
+                                                        action: "/api/units/delete-title"
+                                                    }
+                                                )
+                                            }}>
+                                            -
+                                        </Button>
+                                        : null
+                                    }
+                                    <Button
+                                        variant={"outline"}
+                                        className={"absolute top-5 right-35 hidden group-hover/major:block"}
+                                        onClick={() => {
+                                            void titleFetcher.submit(
+                                                {
+                                                    majorId: major.major_id,
+                                                    type: "middle",
+                                                },
+                                                {
+                                                    method: "POST",
+                                                    action: "/api/units/create-title"
+                                                }
+                                            )
+                                        }}>
+                                        +
+                                    </Button>
+                                </> : null}
 
                                 <CollapsibleContent className="ml-3 sm:ml-6">
                                     {major.middles.map((middle: any) => {
@@ -127,15 +166,14 @@ export default function SidebarContent(props: SidebarContentProps) {
                                         allSectionSet.add(`${major.major_id}-${middle.middle_id}`);
                                         return (
                                             <Collapsible
+                                                className={"relative group/middle"}
                                                 key={`${middle.middle_id}`}
                                                 open={!closeSection.has(`${major.major_id}-${middle.middle_id}`)}
-                                                onOpenChange={() => toggleSection(major.major_id, middle.middle_id)}
-                                            >
+                                                onOpenChange={() => toggleSection(major.major_id, middle.middle_id)}>
                                                 <CollapsibleTrigger asChild>
                                                     <Button
                                                         variant="ghost"
-                                                        className="w-full justify-start p-2 h-auto text-left text-sm my-1"
-                                                    >
+                                                        className="w-full justify-start p-2 h-auto text-left text-sm my-1">
                                                         {!closeSection.has(`${major.major_id}-${middle.middle_id}`) ? (
                                                             <ChevronDown className="h-3 w-3 mr-2 flex-shrink-0"/>
                                                         ) : (
@@ -150,6 +188,46 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                         </div>
                                                     </Button>
                                                 </CollapsibleTrigger>
+                                                {isAdmin ? <>
+                                                    {!(middle.units?.length > 0) ?
+                                                        <Button
+                                                            variant={"outline"}
+                                                            className={"absolute top-1 right-17 hidden group-hover/middle:block bg-red-700 text-white"}
+                                                            onClick={() => {
+                                                                void titleFetcher.submit(
+                                                                    {
+                                                                        middleId: middle.middle_id,
+                                                                        type: "middle",
+                                                                    },
+                                                                    {
+                                                                        method: "POST",
+                                                                        action: "/api/units/delete-title"
+                                                                    }
+                                                                )
+                                                            }}>
+                                                            -
+                                                        </Button>
+                                                        : null
+                                                    }
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={"absolute top-1 right-30 hidden group-hover/middle:block"}
+                                                        onClick={() => {
+                                                            void titleFetcher.submit(
+                                                                {
+                                                                    middleId: middle.middle_id,
+                                                                    type: "unit",
+                                                                },
+                                                                {
+                                                                    method: "POST",
+                                                                    action: "/api/units/create-title"
+                                                                }
+                                                            )
+                                                        }}>
+                                                        +
+                                                    </Button>
+                                                </> : null
+                                                }
 
                                                 <CollapsibleContent className="ml-1 sm:ml-4">
                                                     {middle.units.map((unit: any) => {
@@ -162,7 +240,7 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                         const updated = isNewInOneMonth(unit.updated_at!);
 
                                                         return (
-                                                            <div className="flex items-center relative group"
+                                                            <div className="flex items-center relative"
                                                                  key={unit.unit_id} data-unit-id={unit.unit_id}>
                                                                 <Checkbox
                                                                     onClick={(e) => {
@@ -175,11 +253,10 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                 />
                                                                 <Button
                                                                     variant="ghost"
-                                                                    className={`w-full justify-start p-2 h-auto text-left text-sm group ${
+                                                                    className={`w-full justify-start p-2 h-auto text-left text-sm group/time ${
                                                                         isActive ? "bg-accent text-accent-foreground" : ""
                                                                     }`}
-                                                                    onClick={() => handleUnitClick(unit.unit_id, unit.is_free, unit.is_published)}
-                                                                >
+                                                                    onClick={() => handleUnitClick(unit.unit_id, unit.is_free, unit.is_published)}>
                                                                     <div className="truncate w-full pl-10">
                                                                         {`${unit.sort_order.toString().padStart(2, "0")}. `}
                                                                         {unit.title}
@@ -200,8 +277,11 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                         {unit.is_published ? (
                                                                             updated ? (
                                                                                 <span
-                                                                                    className="text-xs opacity-0 group-hover:opacity-50">
-                                                                                  &nbsp;&nbsp;&nbsp;{` ${DateTime.fromJSDate(unit.updated_at!).setLocale("ko").toRelative()}`}
+                                                                                    className="text-xs opacity-0 group-hover/time:opacity-50">
+                                                                                    &nbsp;&nbsp;&nbsp;
+                                                                                    {`${DateTime.fromJSDate(unit.updated_at!)
+                                                                                        .setLocale("ko")
+                                                                                        .toRelative()}`}
                                                                                 </span>
                                                                             ) : (
                                                                                 ""
@@ -213,8 +293,7 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                     <div
                                                                         className={`text-xs text-muted-foreground flex-shrink-0 pr-2 ${
                                                                             isActive ? "" : "opacity-35"
-                                                                        }`}
-                                                                    >
+                                                                        }`}>
                                                                         {isActive ? "🔥 " : null}
                                                                         {Math.ceil(unit.estimated_seconds / 60)}분
                                                                     </div>
@@ -242,9 +321,7 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                                 },
                                                                                 is_free: unit.is_free,
                                                                                 is_published: unit.is_published,
-                                                                            })
-                                                                        }
-                                                                    >
+                                                                            })}>
                                                                         edit
                                                                     </Button>
                                                                 ) : null}
@@ -259,7 +336,24 @@ export default function SidebarContent(props: SidebarContentProps) {
                             </Collapsible>
                         );
                     })}
+                    {isAdmin ?
+                        <div className={"flex justify-center mt-10"}>
+                            <Button variant={"outline"} onClick={() => {
+                                void titleFetcher.submit(
+                                    {
+                                        textbookId,
+                                        type: "major",
+                                    },
+                                    {
+                                        method: "POST",
+                                        action: "/api/units/create-title"
+                                    }
+                                )
+                            }}>+</Button>
+                        </div> : null
+                    }
                 </div>
+
             </ScrollArea>
         </div>
     );
