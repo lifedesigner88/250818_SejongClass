@@ -8,7 +8,7 @@ import {
     useLocation,
     useNavigate
 } from "react-router";
-import { ChevronDown, ChevronRight, ChevronsDown, ChevronsUp, Loader2, Menu } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronsDown, ChevronsUp, Menu } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -23,26 +23,13 @@ import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import { getUserIdForServer, useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { calculateTotalProgressOptimized } from "~/feature/textbooks/total-progress";
 import { Progress } from "@/components/ui/progress";
-import {
-    AlertDialog, AlertDialogAction, AlertDialogCancel,
-    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { loadTossPayments, type TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
 import { isNewInOneMonth } from "~/lib/utils";
 import { DateTime } from "luxon";
 import { Badge } from "@/components/ui/badge";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent, DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import EditUnitDialog from "../component/EditUnitDialog";
+import NotPublishedAlert from "../component/NotPublishedAlert";
+import EnrollAlertDialog from "../component/EnrollAlertDialog";
 
 type BasicStructureOfTitle = {
     sort_order: number,
@@ -604,206 +591,30 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     );
     return (
         <div className={"h-[calc(100vh-64px)] w-screen overflow-hidden"}>
-            <Dialog open={openUnitUpdate}
-                    onOpenChange={setOpenUnitUpdate}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>수정</DialogTitle>
-                        <DialogDescription>.</DialogDescription>
-                    </DialogHeader>
-                    <div className={"grid grid-cols-5"}>
-                        <Input
-                            className={"col-span-1"}
-                            value={unitInfo?.major.sort_order}
-                            type="number"
-                            required
-                            onChange={(e) => setUnitInfo(prv => {
-                                const next = { ...prv } as UnitInfoType;
-                                if (next)
-                                    next.major.sort_order = Number(e.target.value)
-                                return next
-                            })}
-                        />
-                        <Input className={"col-span-4"}
-                               value={unitInfo?.major.title}
-                               required
-                               onChange={(e) => setUnitInfo(prv => {
-                                   const next = { ...prv } as UnitInfoType;
-                                   if (next)
-                                       next.major.title = e.target.value
-                                   return next
-                               })}
-                        />
-                    </div>
-                    <div className={"grid grid-cols-5"}>
-                        <Input className={"col-span-1"}
-                               value={unitInfo?.middle.sort_order}
-                               type="number"
-                               required
-                               onChange={(e) => setUnitInfo(prv => {
-                                   const next = { ...prv } as UnitInfoType;
-                                   if (next)
-                                       next.middle.sort_order = Number(e.target.value)
-                                   return next
-                               })}
-                        />
-                        <Input className={"col-span-4"}
-                               value={unitInfo?.middle.title}
-                               required
-                               onChange={(e) => setUnitInfo(prv => {
-                                   const next = { ...prv } as UnitInfoType;
-                                   if (next)
-                                       next.middle.title = e.target.value
-                                   return next
-                               })}
-                        />
-                    </div>
-                    <div className={"grid grid-cols-5"}>
-                        <Input className={"col-span-1"}
-                               value={unitInfo?.unit.sort_order}
-                               type="number"
-                               required
-                               onChange={(e) => setUnitInfo(prv => {
-                                   const next = { ...prv } as UnitInfoType;
-                                   if (next)
-                                       next.unit.sort_order = Number(e.target.value)
-                                   return next
-                               })}
-                        />
-                        <Input className={"col-span-4"}
-                               value={unitInfo?.unit.title}
-                               required
-                               onChange={(e) => setUnitInfo(prv => {
-                                   const next = { ...prv } as UnitInfoType;
-                                   if (next)
-                                       next.unit.title = e.target.value
-                                   return next
-                               })}
-                        />
-                    </div>
-                    <div className={"flex justify-evenly"}>
-                        isFree <Switch
-                        checked={unitInfo?.is_free}
-                        onCheckedChange={(checked) => setUnitInfo(prv => {
-                            const next = { ...prv } as UnitInfoType;
-                            if (next)
-                                next.is_free = checked
-                            return next
-                        })}
-                    />
-                        isPub <Switch
-                        checked={unitInfo?.is_published}
-                        onCheckedChange={(checked) => setUnitInfo(prv => {
-                            const next = { ...prv } as UnitInfoType;
-                            if (next)
-                                next.is_published = checked
-                            return next
-                        })}
-                    />
-                    </div>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button
-                                variant="outline">취소</Button>
-                        </DialogClose>
-                        <Button onClick={updateUnitTitle}>저장</Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-            <AlertDialog open={notPublished} onOpenChange={openNotPubAlert}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>
-                            🚫 강의 준비 중 🚫
-                        </AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogAction>
-                            둘러보기
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-
-            </AlertDialog>
+            <EditUnitDialog
+                open={openUnitUpdate}
+                onOpenChange={setOpenUnitUpdate}
+                unitInfo={unitInfo}
+                setUnitInfo={setUnitInfo}
+                onSave={updateUnitTitle}
+            />
+            <NotPublishedAlert open={notPublished} onOpenChange={openNotPubAlert} />
 
             {/* 결제 관련 */}
-            <AlertDialog open={openEnrollWindow}>
-                <AlertDialogContent className={"max-w-full px-1 sm:px-6 max-h-screen overflow-y-auto"}>
-
-                    {/* 강의 등록 의사 물어보기 */}
-                    <div className={tosswindow ? "hidden" : "block"}>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>✏️ 강의등록 ✏️</AlertDialogTitle>
-                            <AlertDialogDescription className={"pb-3"}>
-                                {price === 0 ? "무료" : `${price.toLocaleString()}원`} 입니다.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-
-                        <AlertDialogFooter>
-                            <AlertDialogCancel onClick={() => enrollCancel()}>둘러보기</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => {
-                                setTosswindow(true)
-                                void initToss()
-                            }}>강의등록</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </div>
-
-
-                    {/* 결제창 띄우기 */}
-                    <div className={tosswindow ? "block" : "hidden"}>
-
-                        {/* 결제 성공 */}
-                        <AlertDialogHeader className={enrollSuccess ? "block" : "hidden"}>
-                            <AlertDialogTitle>등록 완료</AlertDialogTitle>
-                            <AlertDialogDescription className={"text-center text-9xl pb-15 pt-8 animate-bounce"}>
-                                🎉
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-
-                        {/* 결제 실패 */}
-                        <AlertDialogHeader className={enrollFail ? "block" : "hidden"}>
-                            <AlertDialogTitle>등록 오류</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                새로고침후 다시 시도해 주세요.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-
-                        <AlertDialogHeader className={enrollSuccess || enrollFail ? "hidden" : "block"}>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>{textbookInfo!.title}</AlertDialogTitle>
-                                <div id={"toss-payment-methods"} className={"w-full"}></div>
-                                <div id={"toss-payment-agreement"} className={"w-full"}></div>
-                            </AlertDialogHeader>
-                        </AlertDialogHeader>
-
-                        <AlertDialogFooter>
-                            <AlertDialogCancel
-                                onClick={() => enrollCancel()}>{enrollSuccess || enrollFail ? "수강하기" : "돌아가기"}</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => enrollTextBooks()}
-                                               className={enrollSuccess || enrollFail ? "hidden" : "block"}
-                                               disabled={tossLoading || enrollFetcher.state === "submitting" || enrollFetcher.state === "loading"}>
-                                {tossLoading ?
-                                    <div className={"flex items-center gap-1"}>
-                                        <Loader2 className="size-5 mr-3 animate-spin"/>
-                                        <div> 로딩중 ...</div>
-                                    </div>
-                                    : <>
-                                        {enrollFetcher.state === "submitting" || enrollFetcher.state === "loading" ? (
-                                            <div className="flex items-center gap-2">
-                                                <div
-                                                    className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                                                처리중...
-                                            </div>
-                                        ) : (
-                                            price === 0 ? "결제없이 수강신청" : `${price.toLocaleString()}원 결제`
-                                        )}
-                                    </>}
-                            </AlertDialogAction>
-
-                        </AlertDialogFooter>
-                    </div>
-                </AlertDialogContent>
-            </AlertDialog>
+            <EnrollAlertDialog
+                open={openEnrollWindow}
+                tosswindow={tosswindow}
+                onClickStartEnroll={() => { setTosswindow(true); void initToss(); }}
+                price={price}
+                enrollSuccess={enrollSuccess}
+                enrollFail={enrollFail}
+                onCancel={enrollCancel}
+                onSubmit={enrollTextBooks}
+                tossLoading={tossLoading}
+                isSubmitting={enrollFetcher.state === "submitting"}
+                isLoading={enrollFetcher.state === "loading"}
+                title={textbookInfo!.title}
+            />
 
 
             <div className={"hidden md:block h-[calc(100vh-64px)] w-screen overflow-hidden"}>
