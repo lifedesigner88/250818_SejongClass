@@ -11,17 +11,45 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import type { UnitInfoType } from "../layout/textbook-layout";
+import { useFetcher } from "react-router";
+
+type BasicStructureOfTitle = {
+    sort_order: number,
+    title: string,
+    id: number,
+    parent_id: number
+}
+export type UnitInfoType = {
+    major: BasicStructureOfTitle
+    middle: BasicStructureOfTitle
+    unit: BasicStructureOfTitle
+    is_free: boolean
+    is_published: boolean
+}
 
 export type EditUnitDialogProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     unitInfo: UnitInfoType | null;
     setUnitInfo: React.Dispatch<React.SetStateAction<UnitInfoType | null>>;
-    onSave: () => void;
 };
 
-export function EditUnitDialog({ open, onOpenChange, unitInfo, setUnitInfo, onSave }: EditUnitDialogProps) {
+export function EditUnitDialog({ open, onOpenChange, unitInfo, setUnitInfo }: EditUnitDialogProps) {
+
+    const unitDeleteFetch = useFetcher()
+    const updateFetch = useFetcher()
+
+    const updateUnitTitle = () => {
+        updateFetch.submit(
+            { unit_info: JSON.stringify(unitInfo) },
+            {
+                method: "post",
+                action: "/api/units/update-title"
+            }
+        )
+        onOpenChange(false)
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
@@ -42,12 +70,22 @@ export function EditUnitDialog({ open, onOpenChange, unitInfo, setUnitInfo, onSa
                         })}
                     />
                     <Input
-                        className={"col-span-4"}
+                        className={"col-span-3"}
                         value={unitInfo?.major.title ?? ""}
                         required
                         onChange={(e) => setUnitInfo((prv) => {
                             const next = { ...(prv as UnitInfoType) } as UnitInfoType;
                             if (next) next.major.title = e.target.value;
+                            return next;
+                        })}
+                    />
+                    <Input
+                        className={"col-span-1"}
+                        value={unitInfo?.major.parent_id ?? ""}
+                        required
+                        onChange={(e) => setUnitInfo((prv) => {
+                            const next = { ...(prv as UnitInfoType) } as UnitInfoType;
+                            if (next) next.major.parent_id = Number(e.target.value);
                             return next;
                         })}
                     />
@@ -65,12 +103,22 @@ export function EditUnitDialog({ open, onOpenChange, unitInfo, setUnitInfo, onSa
                         })}
                     />
                     <Input
-                        className={"col-span-4"}
+                        className={"col-span-3"}
                         value={unitInfo?.middle.title ?? ""}
                         required
                         onChange={(e) => setUnitInfo((prv) => {
                             const next = { ...(prv as UnitInfoType) } as UnitInfoType;
                             if (next) next.middle.title = e.target.value;
+                            return next;
+                        })}
+                    />
+                    <Input
+                        className={"col-span-1"}
+                        value={unitInfo?.middle.parent_id ?? ""}
+                        required
+                        onChange={(e) => setUnitInfo((prv) => {
+                            const next = { ...(prv as UnitInfoType) } as UnitInfoType;
+                            if (next) next.middle.parent_id = Number(e.target.value);
                             return next;
                         })}
                     />
@@ -88,12 +136,22 @@ export function EditUnitDialog({ open, onOpenChange, unitInfo, setUnitInfo, onSa
                         })}
                     />
                     <Input
-                        className={"col-span-4"}
+                        className={"col-span-3"}
                         value={unitInfo?.unit.title ?? ""}
                         required
                         onChange={(e) => setUnitInfo((prv) => {
                             const next = { ...(prv as UnitInfoType) } as UnitInfoType;
                             if (next) next.unit.title = e.target.value;
+                            return next;
+                        })}
+                    />
+                    <Input
+                        className={"col-span-1"}
+                        value={unitInfo?.unit.parent_id ?? ""}
+                        required
+                        onChange={(e) => setUnitInfo((prv) => {
+                            const next = { ...(prv as UnitInfoType) } as UnitInfoType;
+                            if (next) next.unit.parent_id = Number(e.target.value);
                             return next;
                         })}
                     />
@@ -122,7 +180,23 @@ export function EditUnitDialog({ open, onOpenChange, unitInfo, setUnitInfo, onSa
                     <DialogClose asChild>
                         <Button variant="outline">취소</Button>
                     </DialogClose>
-                    <Button onClick={onSave}>저장</Button>
+                    <Button onClick={updateUnitTitle}>저장</Button>
+                    {
+                        unitInfo?.unit.title === 'Delete'
+                            ? <Button
+                                onClick={() => {
+                                    void unitDeleteFetch.submit({
+                                        unitId: unitInfo?.unit.id,
+                                        type: "unit"
+                                    }, {
+                                        method: "POST",
+                                        action: "/api/units/delete-title"
+                                    })
+                                    onOpenChange(false)
+                                }}
+                                className={"bg-red-700 text-white"}>Unit 삭제</Button>
+                            : null
+                    }
                 </DialogFooter>
             </DialogContent>
         </Dialog>

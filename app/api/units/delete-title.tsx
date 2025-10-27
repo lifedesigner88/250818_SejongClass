@@ -1,6 +1,6 @@
 import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { getPublicUserData } from "~/feature/users/quries";
-import { createUnit, deleteMajor, deleteMiddle } from "~/api/units/mutation";
+import { deleteMajor, deleteMiddle, deleteUnit } from "~/api/units/mutation";
 import type { Route } from "./+types/delete-title";
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -24,7 +24,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
         }
         else if (type=="unit") {
             const unitId = formData.get('unitId') as string;
-            await createUnit(Number(unitId));
+            await deleteUnit(Number(unitId));
         }
     }
     return { "ok": true }

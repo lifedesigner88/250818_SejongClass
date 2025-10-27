@@ -17,24 +17,11 @@ import { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
 import { getUserIdForServer, useAuthOutletData } from "~/feature/auth/useAuthUtil";
 import { calculateTotalProgressOptimized } from "~/feature/textbooks/total-progress";
 import { loadTossPayments, type TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
-import EditUnitDialog from "../component/EditUnitDialog";
+import EditUnitDialog, { type UnitInfoType } from "../component/EditUnitDialog";
 import NotPublishedAlert from "../component/NotPublishedAlert";
 import EnrollAlertDialog from "../component/EnrollAlertDialog";
 import SidebarContent from "../component/SidebarContent";
 import { useMediaQuery } from "~/lib/utils";
-
-type BasicStructureOfTitle = {
-    sort_order: number,
-    title: string,
-    id: number,
-}
-export type UnitInfoType = {
-    major: BasicStructureOfTitle
-    middle: BasicStructureOfTitle
-    unit: BasicStructureOfTitle
-    is_free: boolean
-    is_published: boolean
-}
 
 // ✅ loader
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
@@ -361,20 +348,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         setOpenUnitUpdate(true)
     }
 
-    const updateFetch = useFetcher()
-    const updateUnitTitle = () => {
-        updateFetch.submit(
-            { unit_info: JSON.stringify(unitInfo) },
-            {
-                method: "post",
-                action: "/api/units/update-title"
-            }
-        )
-        setOpenUnitUpdate(false)
-    }
-
     const isDesktop = useMediaQuery("(min-width: 768px)");
-
 
     return (
         <div className={"h-[calc(100vh-64px)] w-screen overflow-hidden"}>
@@ -383,7 +357,6 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 onOpenChange={setOpenUnitUpdate}
                 unitInfo={unitInfo}
                 setUnitInfo={setUnitInfo}
-                onSave={updateUnitTitle}
             />
             <NotPublishedAlert open={notPublished} onOpenChange={openNotPubAlert}/>
 

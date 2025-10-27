@@ -18,40 +18,45 @@ export const toggleUnit = async (unitId: number, userId: string | null) => {
     `)
 }
 
+// Update
 export async function updateUnitReadmeContent(unit_id: number, readme_json: JSONContent) {
     return db.update(unitsTable)
         .set({ readme_json })
         .where(eq(unitsTable.unit_id, unit_id));
 }
 
-export const updateMajor = async (major_id: number, title: string, sort_order: number) => {
+export const updateMajor = async (major_id: number, title: string, sort_order: number, textbook_id: number) => {
     return db.update(majorsTable)
         .set({
             title,
             sort_order,
+            textbook_id
         })
         .where(eq(majorsTable.major_id, major_id));
 }
-export const updateMiddle = async (middle_id: number, title: string, sort_order: number) => {
+export const updateMiddle = async (middle_id: number, title: string, sort_order: number, major_id: number) => {
     return db.update(middlesTable)
         .set({
             title,
             sort_order,
+            major_id
         })
         .where(eq(middlesTable.middle_id, middle_id));
 }
 export const updateUnit = async (unit_id: number, title: string, sort_order: number,
-                                 is_free: boolean, is_published: boolean) => {
+                                 is_free: boolean, is_published: boolean, middle_chapter_id:number) => {
     return db.update(unitsTable)
         .set({
             title,
             sort_order,
             is_free,
-            is_published
+            is_published,
+            middle_chapter_id
         })
         .where(eq(unitsTable.unit_id, unit_id));
 }
 
+// Create
 export const createMajor = async (textbook_id: number) => {
     return db.insert(majorsTable).values({
         textbook_id,
@@ -74,13 +79,16 @@ export const createUnit = async (middle_chapter_id: number) => {
     })
 }
 
+// Delete
 export const deleteMajor = async (major_id: number) => {
     return db.delete(majorsTable).where(eq(majorsTable.major_id, major_id))
 }
 export const deleteMiddle = async (middle_id: number) => {
     return db.delete(middlesTable).where(eq(middlesTable.middle_id, middle_id))
 }
-
+export const deleteUnit = async (unit_id: number) => {
+    return db.delete(unitsTable).where(eq(unitsTable.unit_id, unit_id))
+}
 
 
 

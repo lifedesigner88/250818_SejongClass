@@ -11,15 +11,9 @@ import colors from "~/feature/textbooks/major-color";
 import { DateTime } from "luxon";
 import { isNewInOneMonth } from "~/lib/utils";
 import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
+import type { UnitInfoType } from "~/feature/textbooks/component/EditUnitDialog";
 
-// Local type to avoid runtime circular deps
-type UnitInfoTypeLocal = {
-    major: { sort_order: number; title: string; id: number };
-    middle: { sort_order: number; title: string; id: number };
-    unit: { sort_order: number; title: string; id: number };
-    is_free: boolean;
-    is_published: boolean;
-};
+
 export type TextBookInfoType = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>
 
 export type SidebarContentProps = {
@@ -39,7 +33,7 @@ export type SidebarContentProps = {
     handleUnitToggleClick: (unit_id: number, isPublished: boolean) => void;
     handleUnitClick: (unit_id: number, is_free: boolean, is_published: boolean) => void;
     isAdmin: boolean;
-    updateUnitOnClick: (payload: UnitInfoTypeLocal) => void;
+    updateUnitOnClick: (payload: UnitInfoType) => void;
     setIsMobileMenuOpen: (open: boolean) => void;
 };
 
@@ -308,16 +302,19 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                                     sort_order: major.sort_order,
                                                                                     title: major.title,
                                                                                     id: major.major_id,
+                                                                                    parent_id: Number(textbookId)
                                                                                 },
                                                                                 middle: {
                                                                                     sort_order: middle.sort_order,
                                                                                     title: middle.title,
                                                                                     id: middle.middle_id,
+                                                                                    parent_id: major.major_id
                                                                                 },
                                                                                 unit: {
                                                                                     sort_order: unit.sort_order,
                                                                                     title: unit.title,
                                                                                     id: unit.unit_id,
+                                                                                    parent_id: middle.middle_id
                                                                                 },
                                                                                 is_free: unit.is_free,
                                                                                 is_published: unit.is_published,
