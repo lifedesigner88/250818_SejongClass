@@ -13,40 +13,66 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from '#app/common/components/ui/dropdown-menu.js';
-import { useNavigate, type FetcherWithComponents } from 'react-router';
+import { useFetcher, useNavigate } from 'react-router';
 
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
 interface CommentItemProps {
     comment: SubCommentsType;
-    onReply: (commentId: number, content: string) => void;
-    onLike: (commentId: number) => void;
-    deleteComment: (commentId: number) => void;
     loginUserId: string;
-    likeFetcher: FetcherWithComponents<any>
+    isAdmin: boolean;
+    unitId: number;
 }
 
 const CommentItem = ({
                          comment,
-                         onReply,
-                         onLike,
-                         deleteComment,
                          loginUserId,
-                         likeFetcher
+                         isAdmin,
+                         unitId
                      }: CommentItemProps) => {
 
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [showReplies, setShowReplies] = useState(false);
 
-    const handleReplySubmit = () => {
-        if (replyContent.trim()) {
-            onReply(comment.comment_id, replyContent);
-            setReplyContent('');
-            setShowReplyForm(false);
-            setShowReplies(true);
-        }
-    };
+
+    const subCommentFetcher = useFetcher()
+
+    const handleReply = () => {
+        if (!replyContent.trim() || !comment.comment_id) return;
+        void subCommentFetcher.submit({
+            content: replyContent,
+            unit_id: unitId,
+            type: 'reply',
+            parent_comment_id: comment.comment_id,
+        }, {
+            method: 'POST',
+            action: '/api/comments/create-comment',
+        })
+        setReplyContent('');
+        setShowReplyForm(false);
+        setShowReplies(true);
+    }
+
+    const likeFetcher = useFetcher()
+    const handleLike = (comment_id: number) => {
+        likeFetcher.submit({
+            comment_id,
+        }, {
+            method: 'POST',
+            action: '/api/comments/like-comment',
+        })
+    }
+
+    const deleteFetcher = useFetcher()
+    const deleteComment = (comment_id: number) => {
+        deleteFetcher.submit({
+            comment_id,
+        }, {
+            method: 'POST',
+            action: '/api/comments/delete-comment',
+        })
+    }
 
 
     const isLikeidle = likeFetcher.state === 'idle'
@@ -87,7 +113,7 @@ const CommentItem = ({
                                     variant="ghost"
                                     size="sm"
                                     className={`h-8 px-2 text-xs disabled:opacity-100`}
-                                    onClick={() => onLike(comment.comment_id)}
+                                    onClick={() => handleLike(comment.comment_id)}
                                     disabled={!isLikeidle}
                                 >
                                     <Heart
@@ -135,18 +161,26 @@ const CommentItem = ({
                                 )}
 
                                 <DropdownMenu>
-                                    {
-                                        comment.user.user_id === loginUserId && comment.comments.length === 0 ?
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="sm" className="h-8 px-2">
-                                                    <MoreHorizontal className="w-3 h-3"/>
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            : null
-                                    }
+
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="h-8 px-2">
+                                            <MoreHorizontal className="w-3 h-3"/>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+
                                     <DropdownMenuContent>
-                                        <DropdownMenuItem className={"flex justify-center"}
-                                                          onClick={() => deleteComment(comment.comment_id)}>삭제</DropdownMenuItem>
+                                        {(comment.user.user_id === loginUserId && comment.comments.length === 0) || isAdmin ? <>
+                                                <DropdownMenuItem className={"flex justify-center"}
+                                                                  onClick={() => deleteComment(comment.comment_id)}>
+                                                    삭제
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem className={"flex justify-center"}
+                                                                  onClick={() => deleteComment(comment.comment_id)}>
+                                                    수정
+                                                </DropdownMenuItem>
+                                            </>
+                                            : null
+                                        }
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
@@ -177,7 +211,7 @@ const CommentItem = ({
                                 </Button>
                                 <Button
                                     size="sm"
-                                    onClick={handleReplySubmit}
+                                    onClick={handleReply}
                                     disabled={!replyContent.trim()}
                                 >
                                     답글 작성
@@ -221,7 +255,7 @@ const CommentItem = ({
                                             variant="ghost"
                                             size="sm"
                                             className={`h-8 px-2 text-xs disabled:opacity-100`}
-                                            onClick={() => onLike(reply.comment_id)}
+                                            onClick={() => handleLike(reply.comment_id)}
                                             disabled={!isLikeidle}
                                         >
                                             <Heart
@@ -247,17 +281,20 @@ const CommentItem = ({
                                         </Button>
 
                                         <DropdownMenu>
-                                            {reply.user.user_id === loginUserId ?
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="sm" className="h-8 px-2">
-                                                        <MoreHorizontal className="w-3 h-3"/>
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                : null
-                                            }
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="sm" className="h-8 px-2">
+                                                    <MoreHorizontal className="w-3 h-3"/>
+                                                </Button>
+                                            </DropdownMenuTrigger>
                                             <DropdownMenuContent>
-                                                <DropdownMenuItem className={"flex justify-center"}
-                                                                  onClick={() => deleteComment(reply.comment_id)}>삭제</DropdownMenuItem>
+                                                {reply.user.user_id === loginUserId || isAdmin
+                                                    ? <DropdownMenuItem
+                                                        className={"flex justify-center"}
+                                                        onClick={() => deleteComment(reply.comment_id)}>
+                                                        삭제
+                                                    </DropdownMenuItem>
+                                                    : null
+                                                }
                                             </DropdownMenuContent>
                                         </DropdownMenu>
 
@@ -274,31 +311,34 @@ const CommentItem = ({
 
 interface CommentsSectionProps {
     comments: UnitCommentsType;
-    onNewComment: (content: string) => void;
-    onReply: (commentId: number, content: string) => void;
-    onLike: (commentId: number) => void;
-    deleteComment: (commentId: number) => void;
     loginUserId: string
-    likeFetcher: FetcherWithComponents<any>
+    isAdmin: boolean
+    unitId: number
 }
 
 const CommentsSection = ({
                              comments,
-                             onNewComment,
-                             onReply,
-                             onLike,
-                             deleteComment,
                              loginUserId,
-                             likeFetcher
+                             isAdmin,
+                             unitId
                          }: CommentsSectionProps) => {
     const [newComment, setNewComment] = useState('');
 
-    const handleNewCommentSubmit = () => {
+    const commentFetcher = useFetcher()
+
+    const handleNewComment = () => {
         if (newComment.trim()) {
-            onNewComment(newComment);
+            void commentFetcher.submit({
+                content: newComment,
+                unit_id: unitId,
+                type: 'comment',
+            }, {
+                method: 'POST',
+                action: '/api/comments/create-comment',
+            })
             setNewComment('');
         }
-    };
+    }
 
     return (
         <div className="w-full space-y-6">
@@ -316,7 +356,7 @@ const CommentsSection = ({
                             />
                             <div className="flex justify-end">
                                 <Button
-                                    onClick={handleNewCommentSubmit}
+                                    onClick={handleNewComment}
                                     disabled={!newComment.trim()}
                                 >
                                     댓글 작성
@@ -333,11 +373,9 @@ const CommentsSection = ({
                     <CommentItem
                         key={comment.comment_id}
                         comment={comment}
-                        onReply={onReply}
-                        onLike={onLike}
-                        deleteComment={deleteComment}
                         loginUserId={loginUserId}
-                        likeFetcher={likeFetcher}
+                        isAdmin={isAdmin}
+                        unitId={unitId}
                     />
                 ))}
             </div>

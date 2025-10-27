@@ -15,7 +15,7 @@ export const majorsTable = pgTable("majors", {
     }).notNull(),
 
 }, () => [
-    check("sort_order_positive", sql`sort_order > 0`),
+    check("sort_order_positive", sql`sort_order >= 0`),
 
     // pgPolicy(`policy-public`, {
     //     for: 'select',

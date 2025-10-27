@@ -38,7 +38,7 @@ export const unitsTable = pgTable("units", {
     }).notNull(),
 
 }, () => [
-    check("sort_order_positive", sql`sort_order > 0`),
+    check("sort_order_positive", sql`sort_order >= 0`),
     // pgPolicy(`policy-public`, {
     //     for: 'select',
     //     to: 'anon',  // 익명 사용자도 가능

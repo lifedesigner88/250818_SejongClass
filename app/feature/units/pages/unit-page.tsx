@@ -145,54 +145,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     }, [unitData])
 
 
-    // 댓글 관련
-
-    const commentFetcher = useFetcher()
-    const handleNewComment = (content: string) => {
-
-        if (!content) return;
-        commentFetcher.submit({
-            content,
-            unit_id: unitData.unit_id,
-            type: 'comment',
-        }, {
-            method: 'POST',
-            action: '/api/comments/create-comment',
-        })
-    }
-    const handleReply = (parent_comment_id: number, content: string) => {
-        if (!content || !parent_comment_id) return;
-        commentFetcher.submit({
-            content,
-            unit_id: unitData.unit_id,
-            type: 'reply',
-            parent_comment_id,
-        }, {
-            method: 'POST',
-            action: '/api/comments/create-comment',
-        })
-    }
-
-    const likeFetcher = useFetcher()
-    const handleLike = (comment_id: number) => {
-        likeFetcher.submit({
-            comment_id,
-        }, {
-            method: 'POST',
-            action: '/api/comments/like-comment',
-        })
-    }
-
-    const deleteFetcher = useFetcher()
-    const deleteComment = (comment_id: number) => {
-        deleteFetcher.submit({
-            comment_id,
-        }, {
-            method: 'POST',
-            action: '/api/comments/delete-comment',
-        })
-    }
-
     // 개념보기 시트
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -321,12 +273,9 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 <div className="container mx-auto py-8">
                     <CommentsSection
                         comments={unitComments}
-                        onNewComment={handleNewComment}
-                        onReply={handleReply}
-                        onLike={handleLike}
-                        deleteComment={deleteComment}
                         loginUserId={userId!}
-                        likeFetcher={likeFetcher}
+                        isAdmin={isAdmin}
+                        unitId={unitData.unit_id}
                     />
                 </div>
 
@@ -334,7 +283,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                     <SheetTrigger asChild>
                         <button
-                            className="fixed bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
+                            className="fixed bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700
+                            text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
                             aria-label="개념 보기">
                             <Brain className="h-6 w-6"/>
                         </button>
@@ -354,7 +304,10 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                                         className="m-5 group p-4 rounded-2xl backdrop-blur-sm hover:shadow-xl transition-all duration-300">
                                         <div className={"flex items-center space-x-4"}>
                                             <div
-                                                className={`flex-shrink-0 w-10 h-10 ${colors[index % colors.length].bg} text-white rounded-xl flex items-center justify-center text-sm font-bold shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                                className={
+                                                    `flex-shrink-0 w-10 h-10 ${colors[index % colors.length].bg} 
+                                                    text-white rounded-xl flex items-center justify-center text-sm 
+                                                    font-bold shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                                                 {index + 1}
                                             </div>
                                             <h3 className="font-bold text-xl text-gray-900 ">
