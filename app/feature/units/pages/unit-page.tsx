@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { DateTime } from "luxon";
-import CommentsSection from "~/feature/comments/comment-item";
+import CommentsSection from "~/feature/comments/page/comment-item";
 
 type UnitDataType = Awaited<ReturnType<typeof getUnitAndConceptsByUnitId>>;
 export type UnitCommentsType = NonNullable<UnitDataType>['comments'];

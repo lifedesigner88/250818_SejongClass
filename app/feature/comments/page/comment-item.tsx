@@ -12,8 +12,14 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger
-} from '#app/common/components/ui/dropdown-menu.js';
+} from '@/components/ui/dropdown-menu';
 import { useFetcher, useNavigate } from 'react-router';
+import {
+    AlertDialog, AlertDialogAction, AlertDialogCancel,
+    AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
@@ -23,6 +29,8 @@ interface CommentItemProps {
     isAdmin: boolean;
     unitId: number;
 }
+
+
 
 const CommentItem = ({
                          comment,
@@ -65,23 +73,47 @@ const CommentItem = ({
     }
 
     const deleteFetcher = useFetcher()
+    const [deleteCommentOpen, setDeleteCommentOpen] = useState<boolean>(false);
+    const [deleteCommentId, setDeleteCommentId] = useState<number | null>(null);
     const deleteComment = (comment_id: number) => {
-        deleteFetcher.submit({
-            comment_id,
+        setDeleteCommentOpen(true)
+        setDeleteCommentId(comment_id)
+    }
+    const realDeleteComment = () => {
+        void deleteFetcher.submit({
+            comment_id: deleteCommentId,
+            type: isAdmin
         }, {
             method: 'POST',
             action: '/api/comments/delete-comment',
         })
+        setDeleteCommentId(null)
+        setDeleteCommentOpen(false)
     }
-
 
     const isLikeidle = likeFetcher.state === 'idle'
     const likefetcherId = likeFetcher.formData?.get('comment_id')
+
+
 
     const navigate = useNavigate();
 
     return (
         <Card className="w-full">
+            <AlertDialog open={deleteCommentOpen} onOpenChange={setDeleteCommentOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>댓글 삭제</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            되돌릴 수 없습니다. 
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>취소</AlertDialogCancel>
+                        <AlertDialogAction onClick={realDeleteComment}>삭제</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
             <CardContent className="p-4">
                 {/* 메인 댓글 */}
                 <div className="flex space-x-3">

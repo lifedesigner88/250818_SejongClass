@@ -73,3 +73,8 @@ export const deleteComment = async (comment_id: number, userId: string) => {
             eq(commentsTable.user_id, userId)
         ));
 }
+
+export const adminDeleteComment = async (comment_id: number) => {
+    await db.delete(commentsTable)
+        .where(eq(commentsTable.comment_id, comment_id));
+}

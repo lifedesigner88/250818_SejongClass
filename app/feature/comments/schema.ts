@@ -22,7 +22,9 @@ export const commentsTable = pgTable("comments", {
     content: text().notNull(),
 
     // 2단계 댓글을 위한 parent_comment_id (null이면 최상위 댓글)
-    parent_comment_id: integer().references((): AnyPgColumn => commentsTable.comment_id, { onDelete: "cascade", }),
+    parent_comment_id: integer().references((): AnyPgColumn => commentsTable.comment_id, {
+        onDelete: "cascade",
+    }),
 
     // 좋아요 수
     likes_count: smallint().default(0).notNull(),
