@@ -1,11 +1,13 @@
-import { pgTable, uuid, varchar, timestamp, pgEnum, pgPolicy } from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
+import { pgTable, uuid, varchar, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { mastersTable } from "~/feature/masters/schema";
 import { enrollmentsTable } from "~/feature/enrollments/schema";
 import { progressTable } from "~/feature/progress/schema";
 import { commentsTable } from "~/feature/comments/schema";
 import { checklistsTable } from "~/feature/checklists/schema";
 import { visitlogsTable } from "~/feature/visitlogs/schema";
+import { defaultPgPolicy } from "@/pg-policy/pg-polish";
+import { notificationsTable } from "~/feature/notifications/schema";
 
 export const userRoleEnum = pgEnum('user_role', ['user', 'admin']);
 
@@ -19,49 +21,7 @@ export const usersTable = pgTable("users", {
 
     created_at: timestamp().defaultNow(),
     updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
-}, () => [
-
-    // pgPolicy(`policy-public`, {
-    //     for: 'select',
-    //     to: 'anon',  // 익명 사용자도 가능
-    // }),
-    pgPolicy(`policy-select`, {
-        for: 'select',
-        to: 'authenticated',
-        using: sql`auth.uid() = user_id`,
-    }),
-    pgPolicy(`policy-insert`, {
-        for: 'insert',
-        to: 'authenticated',
-        withCheck: sql`auth.uid() = user_id`,
-    }),
-    pgPolicy(`policy-update`, {
-        for: 'update',
-        to: 'authenticated',
-        using: sql`auth.uid() = user_id`,
-        withCheck: sql`auth.uid() = user_id`,
-    }),
-    pgPolicy(`policy-delete`, {
-        for: 'delete',
-        to: 'authenticated',
-        using: sql`auth.uid() = user_id`,
-    }),
-    // pgPolicy(`policy-admin-insert`, {
-    //     for: 'insert',
-    //     to: 'authenticated',
-    //     using: sql`auth.jwt() ->> 'role' = 'admin'`,
-    // }),
-    // pgPolicy(`policy-admin-update`, {
-    //     for: 'update',
-    //     to: 'authenticated',
-    //     using: sql`auth.jwt() ->> 'role' = 'admin'`,
-    // }),
-    // pgPolicy(`policy-admin-delete`, {
-    //     for: 'delete',
-    //     to: 'authenticated',
-    //     using: sql`auth.jwt() ->> 'role' = 'admin'`,
-    // })
-]);
+}, () => defaultPgPolicy);
 
 
 export const usersRelations = relations(usersTable, ({ many }) => ({
@@ -79,5 +39,7 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
     checklists: many(checklistsTable),
 
     visitlogs: many(visitlogsTable),
+
+    notifications: many(notificationsTable, {relationName: "to_user_id"}),
 
 }));

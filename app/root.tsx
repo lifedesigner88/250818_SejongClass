@@ -121,7 +121,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
     // DB에 없는 사용자는 가입
     if (!publicUserData) {
-        publicUserData = await createPublicUserData({
+        const response = await createPublicUserData({
             user_id: user.id,
             email: user.email as string,
             username: user.user_metadata.user_name || user.user_metadata.preferred_username || user?.user_metadata.full_name || "anon",
@@ -130,6 +130,11 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
                 ? user.user_metadata.profile_url.replace(/=s\d+-c$/, '') // 구글의 경우 뒤에 삭제.
                 : (user?.user_metadata.avatar_url || null),
         })
+
+        publicUserData = {
+            ...response,
+            notifications: []
+        }
 
         // 웰컴 이메일
         const secretKey = process.env.SEJONG_SECRET_KEY;
@@ -147,7 +152,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
             })
         }).catch(console.error);
     }
-
 
     const isAdmin = publicUserData?.role === "admin";
     return {

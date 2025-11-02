@@ -1,7 +1,8 @@
-import { pgPolicy, pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
+import { pgTable, serial, timestamp, varchar } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { dealingsTable } from "~/feature/dealings/schema";
 import { prerequisitesTable } from "~/feature/prerequisites/schema";
+import { defaultPgPolicy } from "@/pg-policy/pg-polish";
 
 export const conceptsTable = pgTable("concepts", {
     concept_id: serial().primaryKey(),
@@ -12,48 +13,7 @@ export const conceptsTable = pgTable("concepts", {
     name_eng: varchar({ length: 100 }),
 
     updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
-}, () => [
-    // pgPolicy(`policy-public`, {
-    //     for: 'select',
-    //     to: 'anon',  // 익명 사용자도 가능
-    // }),
-    pgPolicy(`policy-select`, {
-        for: 'select',
-        to: 'authenticated',
-        using: sql`auth.uid() = user_id`,
-    }),
-    // pgPolicy(`policy-insert`, {
-    //     for: 'insert',
-    //     to: 'authenticated',
-    //     withCheck: sql`auth.uid() = user_id`,
-    // }),
-    // pgPolicy(`policy-update`, {
-    //     for: 'update',
-    //     to: 'authenticated',
-    //     using: sql`auth.uid() = user_id`,
-    //     withCheck: sql`auth.uid() = user_id`,
-    // }),
-    // pgPolicy(`policy-delete`, {
-    //     for: 'delete',
-    //     to: 'authenticated',
-    //     using: sql`auth.uid() = user_id`,
-    // }),
-    pgPolicy(`policy-admin-insert`, {
-        for: 'insert',
-        to: 'authenticated',
-        using: sql`auth.jwt() ->> 'role' = 'admin'`,
-    }),
-    pgPolicy(`policy-admin-update`, {
-        for: 'update',
-        to: 'authenticated',
-        using: sql`auth.jwt() ->> 'role' = 'admin'`,
-    }),
-    pgPolicy(`policy-admin-delete`, {
-        for: 'delete',
-        to: 'authenticated',
-        using: sql`auth.jwt() ->> 'role' = 'admin'`,
-    })
-]);
+}, () => defaultPgPolicy);
 
 export const conceptsRelations = relations(conceptsTable, ({ many }) => ({
 

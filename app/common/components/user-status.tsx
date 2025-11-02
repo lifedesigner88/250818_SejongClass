@@ -8,6 +8,12 @@ import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import type { publicUserDataType } from "~/feature/auth/useAuthUtil";
+import {
+    Dialog,
+    DialogContent, DialogDescription, DialogHeader, DialogTitle,
+    DialogTrigger
+} from "@/components/ui/dialog";
+import { AlertContent } from './alert-content';
 
 type Provider = 'kakao' | 'google' | 'github';
 
@@ -29,6 +35,8 @@ export function UserStatus({
                            }: UserStatusProps) {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
+    const notifications = publicUserData?.notifications
+    const is_notifi = (notifications?.length ?? 0) > 0;
 
     const handleLoginClick = () => {
         setIsOpen(false);
@@ -67,7 +75,7 @@ export function UserStatus({
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-                    <div className={`
+                <div className={`
                         size-12 rounded-full
                         cursor-pointer
                         shadow-lg
@@ -79,27 +87,28 @@ export function UserStatus({
                         flex items-center justify-center
                         group
                       `}>
-                        {isLoading ? (
-                            <Loader2 className="size-6 text-white animate-spin"/>
-                        ) : isLoggedIn && provider ? <div className={"relative"}>
-                            <Avatar className="size-14">
-                                <AvatarImage
-                                    src={publicUserData?.profile_url || ""}
-                                    alt={
-                                        publicUserData?.nickname ||
-                                        publicUserData?.username ||
-                                        "user"
-                                    }
-                                />
-                                <AvatarFallback>
-                                    {providerConfig.icon}
-                                </AvatarFallback>
-                            </Avatar>
-                            <span className="absolute top-2 left-2 block h-3 w-3 rounded-full bg-red-600"></span>
-                        </div> : (
-                            <User className="size-6 text-white group-hover:scale-110 transition-transform"/>
-                        )}
-                    </div>
+                    {isLoading ? (
+                        <Loader2 className="size-6 text-white animate-spin"/>
+                    ) : isLoggedIn && provider ? <div className={"relative"}>
+                        <Avatar className="size-14">
+                            <AvatarImage
+                                src={publicUserData?.profile_url || ""}
+                                alt={
+                                    publicUserData?.nickname ||
+                                    publicUserData?.username ||
+                                    "user"
+                                }
+                            />
+                            <AvatarFallback>
+                                {providerConfig.icon}
+                            </AvatarFallback>
+                        </Avatar>
+                        {is_notifi ?
+                            <span className="absolute top-0.5 left-0.5 block h-3 w-3 rounded-full bg-red-600"/> : null}
+                    </div> : (
+                        <User className="size-6 text-white group-hover:scale-110 transition-transform"/>
+                    )}
+                </div>
             </PopoverTrigger>
 
             <PopoverContent className="w-60 ml-10 mb-3 p-0" side="top">
@@ -179,15 +188,31 @@ export function UserStatus({
                                 <MessageCircleMore className="size-5 mx-2"/>
                                 문의사항
                             </Button>
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50 relative"
-                            >
-                                <Bell className="size-5 mx-2"/>
-                                {/* 빨간 점 */}
-                                <span className="absolute top-1 left-3 block h-2 w-2 rounded-full bg-red-600"></span>
-                                알림확인
-                            </Button>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50 relative">
+                                        <Bell className="size-5 mx-2"/>
+                                        {/* 빨간 점 */}
+                                        {is_notifi ? <span
+                                            className="absolute top-1 left-3 block h-2 w-2 rounded-full bg-red-600"/> : null}
+                                        알림확인
+                                    </Button>
+                                </DialogTrigger>
+
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>알림</DialogTitle>
+                                        <DialogDescription>
+                                            개발중
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <AlertContent
+                                        content={notifications}
+                                    />
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     ) : (
                         <div className="space-y-4">

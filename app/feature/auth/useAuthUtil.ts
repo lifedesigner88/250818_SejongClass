@@ -16,6 +16,7 @@ export interface publicUserDataType {
     profile_url: string | null
     created_at: Date | null
     updated_at: Date | null
+    notifications: [],
 }
 
 interface AuthOutletContext {

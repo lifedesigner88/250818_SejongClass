@@ -12,6 +12,9 @@ function generateRandomString(length: number = 8): string {
 export async function getPublicUserData(userId: string) {
     return db.query.usersTable.findFirst({
         where: eq(usersTable.user_id, userId),
+        with: {
+            notifications: true
+        }
     });
 }
 
@@ -67,7 +70,7 @@ export const getActiveStamps = async (username: string) => {
             user_id: false,
         },
         with: {
-            visitlogs:{
+            visitlogs: {
                 columns: {
                     updated_at: true,
                 }

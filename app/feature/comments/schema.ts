@@ -4,13 +4,13 @@ import {
     integer,
     pgTable,
     serial,
-    text,
     timestamp,
     uuid,
     smallint,
     primaryKey,
     type AnyPgColumn,
-    pgPolicy
+    pgPolicy,
+    varchar
 } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { unitsTable } from "~/feature/units/schema";
@@ -19,7 +19,7 @@ import { relations, sql } from "drizzle-orm";
 
 export const commentsTable = pgTable("comments", {
     comment_id: serial().primaryKey(),
-    content: text().notNull(),
+    content: varchar({ length: 2000 }).notNull(),
 
     // 2단계 댓글을 위한 parent_comment_id (null이면 최상위 댓글)
     parent_comment_id: integer().references((): AnyPgColumn => commentsTable.comment_id, {
