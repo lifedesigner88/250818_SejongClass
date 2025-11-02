@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { User, LogIn, LogOut, Loader2, UserRoundCog, LibraryBig, MessageCircleMore } from 'lucide-react';
+import { User, LogIn, Loader2, UserRoundCog, LibraryBig, MessageCircleMore, Bell } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { FaGithub } from "react-icons/fa";
@@ -15,7 +15,6 @@ interface UserStatusProps {
     isLoggedIn: boolean;
     isLoading?: boolean;
     onLoginClick: () => void;
-    onLogoutClick: () => void;
     provider?: Provider;
     publicUserData?: publicUserDataType | undefined;
 }
@@ -24,7 +23,6 @@ interface UserStatusProps {
 export function UserStatus({
                                isLoggedIn,
                                onLoginClick,
-                               onLogoutClick,
                                isLoading = false,
                                provider,
                                publicUserData
@@ -37,10 +35,6 @@ export function UserStatus({
         onLoginClick();
     };
 
-    const handleLogoutClick = () => {
-        setIsOpen(false);
-        onLogoutClick();
-    };
 
     // Provider별 아이콘과 색상 정의
     const getProviderConfig = (providerType?: string) => {
@@ -73,7 +67,7 @@ export function UserStatus({
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-                <div className={`
+                    <div className={`
                         size-12 rounded-full
                         cursor-pointer
                         shadow-lg
@@ -85,14 +79,27 @@ export function UserStatus({
                         flex items-center justify-center
                         group
                       `}>
-                    {isLoading ? (
-                        <Loader2 className="size-6 text-white animate-spin"/>
-                    ) : isLoggedIn && provider ? (
-                        providerConfig.icon
-                    ) : (
-                        <User className="size-6 text-white group-hover:scale-110 transition-transform"/>
-                    )}
-                </div>
+                        {isLoading ? (
+                            <Loader2 className="size-6 text-white animate-spin"/>
+                        ) : isLoggedIn && provider ? <div className={"relative"}>
+                            <Avatar className="size-14">
+                                <AvatarImage
+                                    src={publicUserData?.profile_url || ""}
+                                    alt={
+                                        publicUserData?.nickname ||
+                                        publicUserData?.username ||
+                                        "user"
+                                    }
+                                />
+                                <AvatarFallback>
+                                    {providerConfig.icon}
+                                </AvatarFallback>
+                            </Avatar>
+                            <span className="absolute top-2 left-2 block h-3 w-3 rounded-full bg-red-600"></span>
+                        </div> : (
+                            <User className="size-6 text-white group-hover:scale-110 transition-transform"/>
+                        )}
+                    </div>
             </PopoverTrigger>
 
             <PopoverContent className="w-60 ml-10 mb-3 p-0" side="top">
@@ -129,9 +136,9 @@ export function UserStatus({
                                             publicUserData?.email?.split("@")[0]}
                                     </p>
                                     <div className="flex items-center gap-2">
-                                            <p className="text-xs text-gray-500 truncate">
-                                                @{publicUserData?.username}
-                                            </p>
+                                        <p className="text-xs text-gray-500 truncate">
+                                            @{publicUserData?.username}
+                                        </p>
                                         {publicUserData?.provider && (
                                             <div
                                                 className="ml-1 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-700">
@@ -174,11 +181,12 @@ export function UserStatus({
                             </Button>
                             <Button
                                 variant="ghost"
-                                className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
-                                onClick={handleLogoutClick}
+                                className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50 relative"
                             >
-                                <LogOut className="size-5 mx-2"/>
-                                로그아웃
+                                <Bell className="size-5 mx-2"/>
+                                {/* 빨간 점 */}
+                                <span className="absolute top-1 left-3 block h-2 w-2 rounded-full bg-red-600"></span>
+                                알림확인
                             </Button>
                         </div>
                     ) : (

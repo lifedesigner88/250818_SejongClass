@@ -252,7 +252,6 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 isLoggedIn={isLoggedIn}
                 isLoading={isLoading || isSubmitting}
                 onLoginClick={() => setShowLoginDialog(true)}
-                onLogoutClick={() => navigate("/logout")}
                 provider={provider as 'github' | 'google' | 'kakao'}
                 publicUserData={publicUserData as publicUserDataType | undefined}
             />
