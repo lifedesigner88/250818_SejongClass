@@ -1,8 +1,9 @@
 import db from "~/db";
 import { usersTable } from "~/feature/users/schema";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { advancedUsernameRegex } from "~/feature/users/pages/username-input";
 import { enrollmentsTable } from "~/feature/enrollments/schema";
+import { notificationsTable } from "../notifications/schema";
 
 
 function generateRandomString(length: number = 8): string {
@@ -13,7 +14,23 @@ export async function getPublicUserData(userId: string) {
     return db.query.usersTable.findFirst({
         where: eq(usersTable.user_id, userId),
         with: {
-            notifications: true
+            notifications: {
+                columns: {
+                    to_user_id: false,
+                    from_user_id: false,
+                    updated_at: false,
+                },
+                with: {
+                    from: {
+                        columns: {
+                            nickname: true,
+                            username: true,
+                            profile_url: true,
+                        }
+                    }
+                },
+                orderBy: [desc(notificationsTable.created_at)]
+            }
         }
     });
 }

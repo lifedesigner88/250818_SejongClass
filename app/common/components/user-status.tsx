@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { User, LogIn, Loader2, UserRoundCog, LibraryBig, MessageCircleMore, Bell } from 'lucide-react';
+import { User, LogIn, Loader2, UserRoundCog, LibraryBig, MessageCircleMore, Bell, LogOut } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { FaGithub } from "react-icons/fa";
@@ -27,12 +27,12 @@ interface UserStatusProps {
 
 
 export function UserStatus({
-                               isLoggedIn,
-                               onLoginClick,
-                               isLoading = false,
-                               provider,
-                               publicUserData
-                           }: UserStatusProps) {
+    isLoggedIn,
+    onLoginClick,
+    isLoading = false,
+    provider,
+    publicUserData
+}: UserStatusProps) {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
     const notifications = publicUserData?.notifications
@@ -49,22 +49,22 @@ export function UserStatus({
         switch (providerType) {
             case 'github':
                 return {
-                    icon: <FaGithub className="size-6 text-white"/>,
+                    icon: <FaGithub className="size-6 text-white" />,
                     bgClass: 'bg-gradient-to-br from-gray-800 to-gray-900'
                 };
             case 'google':
                 return {
-                    icon: <FcGoogle className="size-6"/>,
+                    icon: <FcGoogle className="size-6" />,
                     bgClass: 'bg-gradient-to-br from-white to-gray-100 border border-gray-200'
                 };
             case 'kakao':
                 return {
-                    icon: <RiKakaoTalkFill className="size-6 text-[#3A1D1D]"/>,
+                    icon: <RiKakaoTalkFill className="size-6 text-[#3A1D1D]" />,
                     bgClass: 'bg-gradient-to-br from-[#FEE500] to-[#FDD000]'
                 };
             default:
                 return {
-                    icon: <User className="size-6 text-white group-hover:scale-110 transition-transform"/>,
+                    icon: <User className="size-6 text-white group-hover:scale-110 transition-transform" />,
                     bgClass: 'bg-gradient-to-br from-gray-300 to-gray-500'
                 };
         }
@@ -88,7 +88,7 @@ export function UserStatus({
                         group
                       `}>
                     {isLoading ? (
-                        <Loader2 className="size-6 text-white animate-spin"/>
+                        <Loader2 className="size-6 text-white animate-spin" />
                     ) : isLoggedIn && provider ? <div className={"relative"}>
                         <Avatar className="size-14">
                             <AvatarImage
@@ -104,9 +104,9 @@ export function UserStatus({
                             </AvatarFallback>
                         </Avatar>
                         {is_notifi ?
-                            <span className="absolute top-0.5 left-0.5 block h-3 w-3 rounded-full bg-red-600"/> : null}
+                            <span className="absolute top-0.5 left-0.5 block h-3 w-3 rounded-full bg-red-600" /> : null}
                     </div> : (
-                        <User className="size-6 text-white group-hover:scale-110 transition-transform"/>
+                        <User className="size-6 text-white group-hover:scale-110 transition-transform" />
                     )}
                 </div>
             </PopoverTrigger>
@@ -116,10 +116,10 @@ export function UserStatus({
                     {isLoggedIn ? (
                         <div className="space-y-4">
                             <div className="flex items-center gap-3 cursor-pointer hover:bg-emerald-50"
-                                 onClick={() => {
-                                     navigate(`/profile/${publicUserData?.username}`)
-                                     setIsOpen(false);
-                                 }}>
+                                onClick={() => {
+                                    navigate(`/profile/${publicUserData?.username}`)
+                                    setIsOpen(false);
+                                }}>
                                 <Avatar className="size-11">
                                     <AvatarImage
                                         src={publicUserData?.profile_url || ""}
@@ -164,7 +164,7 @@ export function UserStatus({
                                     navigate(`/profile/${publicUserData?.username}`)
                                     setIsOpen(false);
                                 }}>
-                                <UserRoundCog className="size-5 mx-2"/>
+                                <UserRoundCog className="size-5 mx-2" />
                                 나의정보
                             </Button>
                             <Button
@@ -175,7 +175,7 @@ export function UserStatus({
                                     setIsOpen(false);
                                 }}
                             >
-                                <LibraryBig className="size-5 mx-2"/>
+                                <LibraryBig className="size-5 mx-2" />
                                 강의목록
                             </Button>
                             <Button
@@ -185,34 +185,41 @@ export function UserStatus({
                                     window.open("https://open.kakao.com/o/sMtZzoUh", "_blank", "noopener,noreferrer");
                                     setIsOpen(false);
                                 }}>
-                                <MessageCircleMore className="size-5 mx-2"/>
+                                <MessageCircleMore className="size-5 mx-2" />
                                 문의사항
                             </Button>
                             <Dialog>
                                 <DialogTrigger asChild>
                                     <Button
                                         variant="ghost"
-                                        className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50 relative">
-                                        <Bell className="size-5 mx-2"/>
+                                        className="w-full justify-start text-gray-600 hover:text-orange-600 hover:bg-orange-100 relative">
+                                        <Bell className="size-5 mx-2" />
                                         {/* 빨간 점 */}
                                         {is_notifi ? <span
-                                            className="absolute top-1 left-3 block h-2 w-2 rounded-full bg-red-600"/> : null}
+                                            className="absolute top-1 left-3 block h-2 w-2 rounded-full bg-red-600" /> : null}
                                         알림확인
                                     </Button>
                                 </DialogTrigger>
 
                                 <DialogContent>
-                                    <DialogHeader>
+                                    <DialogHeader className='hidden'>
                                         <DialogTitle>알림</DialogTitle>
                                         <DialogDescription>
                                             개발중
                                         </DialogDescription>
                                     </DialogHeader>
                                     <AlertContent
-                                        content={notifications}
+                                        notifications={notifications}
                                     />
                                 </DialogContent>
                             </Dialog>
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                onClick={() => navigate("/logout")}>
+                                <LogOut className="size-5 mx-2" />
+                                로그아웃
+                            </Button>
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -220,7 +227,7 @@ export function UserStatus({
                                 className="w-full justify-start hoever:text-gray-600 hover:text-blue-700 hover:bg-blue-100 cursor-pointer"
 
                                 onClick={handleLoginClick}>
-                                <LogIn className="size-4 mr-2"/>
+                                <LogIn className="size-4 mr-2" />
                                 로그인
                             </Button>
                         </div>

@@ -62,18 +62,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
     return (
         <html lang="en">
-        <head>
-            <meta charSet="utf-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <title></title>
-            <Meta/>
-            <Links/>
-        </head>
-        <body className={"mt-16 h-[calc(100vh-64px)] w-screen overflow-hidden"}>
-        {children}
-        <ScrollRestoration/>
-        <Scripts/>
-        </body>
+            <head>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <title></title>
+                <Meta />
+                <Links />
+            </head>
+            <body className={"mt-16 h-[calc(100vh-64px)] w-screen overflow-hidden"}>
+                {children}
+                <ScrollRestoration />
+                <Scripts />
+            </body>
         </html>
     );
 }
@@ -190,7 +190,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
         <>
             {(isLoading || isSubmitting) && (
                 <div className="fixed inset-0 z-30 flex items-center justify-center">
-                    <Loader2 className="size-20 sm:size-30 animate-spin text-emerald-700"/>
+                    <Loader2 className="size-20 sm:size-30 animate-spin text-emerald-700" />
                 </div>
             )}
 
@@ -200,7 +200,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
                         <Link to="/" className="flex items-center space-x-2">
-                            <img src="/logo.svg" alt="SejongClass Logo" className="size-8"/>
+                            <img src="/logo.svg" alt="SejongClass Logo" className="size-8" />
                             <span className="font-bold text-xl ml-1 text-gray-900">SejongClass</span>
                         </Link>
 
@@ -242,7 +242,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                             }
                             <Link to="/themes">
                                 <Button size="sm"
-                                        className=" bg-emerald-600 hover:bg-emerald-700 text-white">
+                                    className=" bg-emerald-600 hover:bg-emerald-700 text-white">
                                     주제보기
                                 </Button>
                             </Link>
@@ -268,7 +268,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                         <DialogTitle>로그인</DialogTitle>
                     </DialogHeader>
                     <Form method="post" className="space-y-4">
-                        <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''}/>
+                        <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''} />
 
                         {/* Kakao 버튼 */}
                         <Button
@@ -280,12 +280,12 @@ export default function App({ loaderData }: Route.ComponentProps) {
                         >
                             {isSubmitting && submittedProvider === "kakao" ? (
                                 <>
-                                    <Loader2 className="size-12 mr-3 animate-spin"/>
+                                    <Loader2 className="size-12 mr-3 animate-spin" />
                                     <div className="font-medium text-base">연결 중...</div>
                                 </>
                             ) : (
                                 <>
-                                    <RiKakaoTalkFill className="size-13 mr-3"/>
+                                    <RiKakaoTalkFill className="size-13 mr-3" />
                                     <div className="font-medium text-base">KakaoTalk</div>
                                 </>
                             )}
@@ -300,20 +300,20 @@ export default function App({ loaderData }: Route.ComponentProps) {
                             className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
                         >
                             {isWebView ? <>
-                                    <FcGoogle className="size-13 mr-3"/>
-                                    <div className="font-medium text- overflow-hidden">
-                                        <p>구글 로그인</p> {getInAppBrowserType()} 지원 ❌ <p> 크롬 이용 </p>
-                                    </div>
-                                </> :
+                                <FcGoogle className="size-13 mr-3" />
+                                <div className="font-medium text- overflow-hidden">
+                                    <p>구글 로그인</p> {getInAppBrowserType()} 지원 ❌ <p> 크롬 이용 </p>
+                                </div>
+                            </> :
                                 <>
                                     {isSubmitting && submittedProvider === "google" ? (
                                         <>
-                                            <Loader2 className="size-12 mr-3 animate-spin"/>
+                                            <Loader2 className="size-12 mr-3 animate-spin" />
                                             <div className="font-medium text-base">연결 중...</div>
                                         </>
                                     ) : (
                                         <>
-                                            <FcGoogle className="size-13 mr-3"/>
+                                            <FcGoogle className="size-13 mr-3" />
                                             <div className="font-medium text-base">Google</div>
                                         </>
                                     )}
@@ -333,12 +333,12 @@ export default function App({ loaderData }: Route.ComponentProps) {
                         >
                             {isSubmitting && submittedProvider === "github" ? (
                                 <>
-                                    <Loader2 className="size-12 mr-3 animate-spin"/>
+                                    <Loader2 className="size-12 mr-3 animate-spin" />
                                     <div className="font-medium text-base">연결 중...</div>
                                 </>
                             ) : (
                                 <>
-                                    <FaGithub className="size-13 mr-3"/>
+                                    <FaGithub className="size-13 mr-3" />
                                     <div className="font-medium text-base">GitHub</div>
                                 </>
                             )}
@@ -352,7 +352,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 publicUserData,
                 setShowLoginDialog,
                 setPendingUrlAfterLogin,
-            }}/>
+            }} />
         </>
     );
 }
@@ -379,8 +379,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
             <p>{details}</p>
             {stack && (
                 <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
+                    <code>{stack}</code>
+                </pre>
             )}
         </main>
     );
