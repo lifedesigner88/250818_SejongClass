@@ -31,6 +31,9 @@ export default [
             route("/update-note", "api/notes/update-note.tsx"),
             route("/delete-note", "api/notes/delete-note.tsx"),
         ]),
+        ...prefix("/notifi", [
+            route("check-notifi", "api/notifications/check-notifi.tsx")
+        ]),
         ...prefix("/enrollments", [
             route("/enroll", "api/enrollments/enroll.tsx"),
             route("/enroll-free", "api/enrollments/enroll-free.tsx"),

@@ -4,6 +4,8 @@ import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "./ui/item";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useFetcher } from "react-router";
+import { DateTime } from "luxon";
 
 type GetPublicUserDataType = Awaited<ReturnType<typeof getPublicUserData>>;
 export type NotificationsType = NonNullable<GetPublicUserDataType>["notifications"]
@@ -24,12 +26,25 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
             confirm_no.push(notification)
     })
 
-    const checkConfirm = (notification_id : number) => {
-        console.log('check✅✅', notification_id)
+    const fetcher = useFetcher()
+    const checkConfirm = (notification_id: number) => {
+        void fetcher.submit({
+            notification_id,
+            type:"confirm"
+        }, {
+            method: "POST",
+            action: "/api/notifi/check-notifi"
+        })
     }
 
-    const deleteNotifi = (notification_id : number) => {
-        console.log('hihi🚨🚨', notification_id)
+    const deleteNotifi = (notification_id: number) => {
+        void fetcher.submit({
+            notification_id,
+            type:"delete"
+        }, {
+            method: "POST",
+            action: "/api/notifi/check-notifi"
+        })
     }
 
     return (
@@ -42,7 +57,9 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
 
             <TabsContent value="no">
                 {confirm_no.map(noti => (
-                    <Item className={"my-2.5 shadow-md"} variant="outline" size="sm" asChild>
+                    <Item
+                        key={noti.notification_id}
+                        className={"my-2.5 shadow-md"} variant="outline" size="sm" asChild>
                         <a href={noti.where_url || "#"}>
                             <ItemMedia>
                                 <Avatar className="size-11">
@@ -60,7 +77,8 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                             <ItemContent>
                                 <ItemTitle>
                                     {noti.from?.nickname}
-                                    <span className="text-xs text-gray-400">@{noti.from?.username} 🚨</span>
+                                    <span className="text-xs text-gray-400">@{noti.from?.username}{" 🚨 "}
+                                    {DateTime.fromJSDate(noti.created_at!) .setLocale("ko") .toRelative()}</span>
                                 </ItemTitle>
                                 <ItemDescription>{noti.message}</ItemDescription>
                             </ItemContent>
@@ -71,10 +89,12 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                     </Item>
                 ))}
             </TabsContent>
-
+                                      
             <TabsContent value="yes">
                 {confirm_yes.map(noti => (
-                    <Item className={"my-2.5 shadow-md"} variant="outline" size="sm" asChild>
+                    <Item
+                        key={noti.notification_id}
+                        className={"my-2.5 shadow-md"} variant="outline" size="sm" asChild>
                         <a href={noti.where_url || "#"}>
                             <ItemMedia>
                                 <Avatar className="size-11">
@@ -92,12 +112,18 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                             <ItemContent>
                                 <ItemTitle>
                                     {noti.from?.nickname}
-                                    <span className="text-xs text-gray-400">@{noti.from?.username} ✅</span>
+                                    <span className="text-xs text-gray-400">@{noti.from?.username} 
+                                        {" ✅ "}
+                                    {DateTime.fromJSDate(noti.created_at!) .setLocale("ko") .toRelative()}
+                                    </span>
                                 </ItemTitle>
                                 <ItemDescription>{noti.message}</ItemDescription>
                             </ItemContent>
                             <ItemActions>
-                                <Button variant={"outline"} className="bg-red-400 text-white" onClick={()=>deleteNotifi(noti.notification_id)}>삭제</Button>
+                                <Button
+                                    variant={"outline"}
+                                    className="bg-red-400 text-white"
+                                    onClick={() => deleteNotifi(noti.notification_id)}>삭제</Button>
                             </ItemActions>
                         </a>
                     </Item>
