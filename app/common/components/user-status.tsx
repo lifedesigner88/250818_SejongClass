@@ -36,7 +36,7 @@ export function UserStatus({
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
     const notifications = publicUserData?.notifications
-    const is_notifi = (notifications?.length ?? 0) > 0;
+    const is_notifi = (notifications?.filter(e => e.is_checked == false).length ?? 0) > 0;
 
     const handleLoginClick = () => {
         setIsOpen(false);

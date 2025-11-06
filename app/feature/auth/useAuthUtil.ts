@@ -2,6 +2,7 @@ import { useOutletContext } from "react-router";
 import { makeSSRClient } from "~/supa-clents";
 import { parseCookieHeader } from "@supabase/ssr";
 import { jwtDecode } from "jwt-decode";
+import type { NotificationsType } from "#app/common/components/alert-content.js";
 
 
 type Provider = 'kakao' | 'google' | 'github';
@@ -16,7 +17,7 @@ export interface publicUserDataType {
     profile_url: string | null
     created_at: Date | null
     updated_at: Date | null
-    notifications: [],
+    notifications: NotificationsType,
 }
 
 interface AuthOutletContext {
