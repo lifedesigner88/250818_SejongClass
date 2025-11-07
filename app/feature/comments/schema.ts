@@ -15,6 +15,7 @@ import {
 import { usersTable } from "~/feature/users/schema";
 import { unitsTable } from "~/feature/units/schema";
 import { relations, sql } from "drizzle-orm";
+import { notificationsTable } from "../notifications/schema";
 
 
 export const commentsTable = pgTable("comments", {
@@ -96,7 +97,9 @@ export const commentsRelations = relations(commentsTable, ({ one, many }) => ({
         relationName: "ParentChild",
     }),
 
-    likes: many(commentLikesTable)
+    likes: many(commentLikesTable),
+
+    notifications: many(notificationsTable)
 
 }));
 

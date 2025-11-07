@@ -27,6 +27,12 @@ export async function getPublicUserData(userId: string) {
                             username: true,
                             profile_url: true,
                         }
+                    },
+                    comment: {
+                        columns: {
+                            content:true,
+                            comment_id:true,
+                        }
                     }
                 },
                 orderBy: [desc(notificationsTable.created_at)]

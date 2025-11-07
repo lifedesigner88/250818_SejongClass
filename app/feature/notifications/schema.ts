@@ -1,20 +1,25 @@
-import { boolean, pgEnum, pgTable, serial, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, pgEnum, pgTable, serial, timestamp, uuid, varchar, integer } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { defaultPgPolicy } from "@/pg-policy/pg-polish";
 import { relations } from "drizzle-orm";
+import { commentsTable } from "../comments/schema";
 
 export const notificationType = pgEnum("notification_type", [
-    "reply", // from, to 모두 있음               삭제 가능
-    "notification", // from Null to Null       삭제 관리자만 삭제 가능
-    "message" // from Null, to 있음.            삭제 가능.
+    "reply",
+    "like",
 ]);
 
 export const notificationsTable = pgTable("notifications", {
     notification_id: serial().primaryKey(),
-    message: varchar({ length: 800 }).notNull(),
-    where_url: varchar({ length: 500 }),
-    from_user_id: uuid().references(() => usersTable.user_id),
-    to_user_id: uuid().references(() => usersTable.user_id),
+    comment_id: integer().references(() => commentsTable.comment_id, {
+        onDelete: "cascade"
+    }).notNull(),
+    from_user_id: uuid().references(() => usersTable.user_id, {
+        onDelete: "cascade"
+    }).notNull(),
+    to_user_id: uuid().references(() => usersTable.user_id, {
+        onDelete: "cascade"
+    }).notNull(),
     type: notificationType().notNull(),
     is_checked: boolean().default(false).notNull(),
     created_at: timestamp().defaultNow(),
@@ -32,6 +37,11 @@ export const notificationsRelation = relations(notificationsTable, ({ one }) => 
         fields: [notificationsTable.to_user_id],
         references: [usersTable.user_id],
         relationName: "to_user_id"
+    }),
+
+    comment:one(commentsTable, {
+        fields: [notificationsTable.comment_id],
+        references: [commentsTable.comment_id]
     })
 
 }))

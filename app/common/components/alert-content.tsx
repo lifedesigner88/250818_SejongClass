@@ -30,7 +30,7 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
     const checkConfirm = (notification_id: number) => {
         void fetcher.submit({
             notification_id,
-            type:"confirm"
+            type: "confirm"
         }, {
             method: "POST",
             action: "/api/notifi/check-notifi"
@@ -40,7 +40,7 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
     const deleteNotifi = (notification_id: number) => {
         void fetcher.submit({
             notification_id,
-            type:"delete"
+            type: "delete"
         }, {
             method: "POST",
             action: "/api/notifi/check-notifi"
@@ -48,7 +48,7 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
     }
 
     return (
-        <Tabs defaultValue="no" >
+        <Tabs defaultValue="no">
             <TabsList>
                 <TabsTrigger value="no">🚨</TabsTrigger>
                 <TabsTrigger value="yes">✅</TabsTrigger>
@@ -56,11 +56,12 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
 
 
             <TabsContent value="no">
+                {confirm_no.length == 0 ? "1주일간 댓글이 없습니다" : null}
                 {confirm_no.map(noti => (
                     <Item
                         key={noti.notification_id}
-                        className={"my-2.5 shadow-md"} variant="outline" size="sm" asChild>
-                        <a href={noti.where_url || "#"}>
+                        className={"my-2.5 shadow-md relative"} variant="outline" size="sm" asChild>
+                        <a href={"#"}>
                             <ItemMedia>
                                 <Avatar className="size-11">
                                     <AvatarImage
@@ -76,26 +77,34 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                             </ItemMedia>
                             <ItemContent>
                                 <ItemTitle>
-                                    {noti.from?.nickname}
-                                    <span className="text-xs text-gray-400">@{noti.from?.username}{" 🚨 "}
-                                    {DateTime.fromJSDate(noti.created_at!) .setLocale("ko") .toRelative()}</span>
+                                    <span>{noti.from?.nickname}</span>
                                 </ItemTitle>
-                                <ItemDescription>{noti.message}</ItemDescription>
+                                <span className="text-xs text-gray-400">
+                                    @{noti.from?.username}{" 🚨 "}
+                                    {DateTime.fromJSDate(noti.created_at!).setLocale("ko").toRelative()}
+                                </span>
+                                <ItemDescription className="truncate">{noti.comment.content}</ItemDescription>
                             </ItemContent>
                             <ItemActions>
-                                <Button onClick={() => checkConfirm(noti.notification_id)}>확인</Button>
+                                <Button className="hidden sm:block" onClick={() => checkConfirm(noti.notification_id)}>확인</Button>
                             </ItemActions>
+                            <Button
+                                variant={'outline'}
+                                className="absolute p-3 m-1 top-0 right-0 sm:hidden"
+                                onClick={() => checkConfirm(noti.notification_id)}>✅
+                            </Button>
                         </a>
                     </Item>
                 ))}
             </TabsContent>
-                                      
+
             <TabsContent value="yes">
+                {confirm_yes.length == 0 ? "댓글 알림은 1주일 후 삭제됩니다." : null}
                 {confirm_yes.map(noti => (
                     <Item
                         key={noti.notification_id}
-                        className={"my-2.5 shadow-md"} variant="outline" size="sm" asChild>
-                        <a href={noti.where_url || "#"}>
+                        className={"my-2.5 shadow-md relative"} variant="outline" size="sm" asChild>
+                        <a href={"#"}>
                             <ItemMedia>
                                 <Avatar className="size-11">
                                     <AvatarImage
@@ -112,19 +121,25 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                             <ItemContent>
                                 <ItemTitle>
                                     {noti.from?.nickname}
-                                    <span className="text-xs text-gray-400">@{noti.from?.username} 
-                                        {" ✅ "}
-                                    {DateTime.fromJSDate(noti.created_at!) .setLocale("ko") .toRelative()}
-                                    </span>
+
                                 </ItemTitle>
-                                <ItemDescription>{noti.message}</ItemDescription>
+                                <span className="text-xs text-gray-400">@{noti.from?.username}
+                                    {" ✅ "}
+                                    {DateTime.fromJSDate(noti.created_at!).setLocale("ko").toRelative()}
+                                </span>
+                                <ItemDescription>{noti.comment.content}</ItemDescription>
                             </ItemContent>
                             <ItemActions>
                                 <Button
                                     variant={"outline"}
-                                    className="bg-red-400 text-white"
+                                    className="bg-red-400 text-white hidden sm:block"
                                     onClick={() => deleteNotifi(noti.notification_id)}>삭제</Button>
                             </ItemActions>
+                            <Button
+                                variant={'outline'}
+                                className="absolute p-3 m-1 top-0 right-0 sm:hidden bg-red-400 text-white"
+                                onClick={() => deleteNotifi(noti.notification_id)}> X
+                            </Button>
                         </a>
                     </Item>
                 ))}
