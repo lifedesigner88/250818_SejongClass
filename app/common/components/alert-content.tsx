@@ -127,7 +127,7 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                                     {" ✅ "}
                                     {DateTime.fromJSDate(noti.created_at!).setLocale("ko").toRelative()}
                                 </span>
-                                <ItemDescription>{noti.comment.content}</ItemDescription>
+                                <ItemDescription className="truncate">{noti.comment.content}</ItemDescription>
                             </ItemContent>
                             <ItemActions>
                                 <Button

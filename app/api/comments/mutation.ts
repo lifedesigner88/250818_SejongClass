@@ -1,6 +1,7 @@
 import { and, eq, sql } from "drizzle-orm";
 import db from "~/db";
 import { commentLikesTable, commentsTable } from "~/feature/comments/schema";
+import { deleteLikeNotification, insertNotification } from "../notifications/mutations";
 
 
 export const createComment = ({ user_id, content, unit_id }: {
@@ -43,7 +44,7 @@ export const toggleCommentLike = async (comment_id: number, userId: string) => {
     `)
 }
 
-export const updateCommentLike = async (comment_id: number, userId: string) => {
+export const updateCommentLike = async (comment_id: number, userId: string, writter_id: string) => {
     const result = await db.query.commentLikesTable.findFirst({
         where: and(
             eq(commentLikesTable.comment_id, comment_id),
@@ -56,6 +57,10 @@ export const updateCommentLike = async (comment_id: number, userId: string) => {
         SET likes_count = likes_count - 1
         WHERE comment_id = ${comment_id} 
     `)
+        deleteLikeNotification(
+            comment_id,
+            writter_id
+        )
     }
     else {
         await db.execute(sql`
@@ -63,6 +68,13 @@ export const updateCommentLike = async (comment_id: number, userId: string) => {
         SET likes_count = likes_count + 1
         WHERE comment_id = ${comment_id} 
     `)
+        insertNotification({
+            type: "like",
+            comment_id: comment_id,
+            from_user_id: userId,
+            to_user_id: writter_id
+        })
+
     }
 }
 

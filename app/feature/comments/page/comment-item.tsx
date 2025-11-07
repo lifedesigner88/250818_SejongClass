@@ -33,11 +33,11 @@ interface CommentItemProps {
 
 
 const CommentItem = ({
-                         comment,
-                         loginUserId,
-                         isAdmin,
-                         unitId
-                     }: CommentItemProps) => {
+    comment,
+    loginUserId,
+    isAdmin,
+    unitId
+}: CommentItemProps) => {
 
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
@@ -63,9 +63,10 @@ const CommentItem = ({
     }
 
     const likeFetcher = useFetcher()
-    const handleLike = (comment_id: number) => {
+    const handleLike = (comment_id: number, writter_id: string) => {
         likeFetcher.submit({
             comment_id,
+            writter_id,
         }, {
             method: 'POST',
             action: '/api/comments/like-comment',
@@ -105,7 +106,7 @@ const CommentItem = ({
                     <AlertDialogHeader>
                         <AlertDialogTitle>댓글 삭제</AlertDialogTitle>
                         <AlertDialogDescription>
-                            되돌릴 수 없습니다. 
+                            되돌릴 수 없습니다.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -118,8 +119,8 @@ const CommentItem = ({
                 {/* 메인 댓글 */}
                 <div className="flex space-x-3">
                     <Avatar className="size-9 sm:size-11 cursor-pointer"
-                            onClick={() => navigate(`/profile/${comment.user.username}`)}>
-                        <AvatarImage src={comment.user.profile_url || ""}/>
+                        onClick={() => navigate(`/profile/${comment.user.username}`)}>
+                        <AvatarImage src={comment.user.profile_url || ""} />
                         <AvatarFallback>
                             {comment.user.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
@@ -128,10 +129,10 @@ const CommentItem = ({
                     <div className="flex-1">
 
                         <div className="flex items-center space-x-2 cursor-pointer"
-                             onClick={() => navigate(`/profile/${comment.user.username}`)}>
+                            onClick={() => navigate(`/profile/${comment.user.username}`)}>
                             <span className="font-medium text-sm text-muted-foreground">{comment.user.nickname}</span>
                             <span className="text-xs text-muted-foreground">
-                            {DateTime.fromJSDate(comment.updated_at!).setLocale("ko").toRelative()}
+                                {DateTime.fromJSDate(comment.updated_at!).setLocale("ko").toRelative()}
                             </span>
                         </div>
 
@@ -145,19 +146,18 @@ const CommentItem = ({
                                     variant="ghost"
                                     size="sm"
                                     className={`h-8 px-2 text-xs disabled:opacity-100`}
-                                    onClick={() => handleLike(comment.comment_id)}
+                                    onClick={() => handleLike(comment.comment_id, comment.user.user_id)}
                                     disabled={!isLikeidle}
                                 >
                                     <Heart
-                                        className={`size-4 mr-1 ${
-                                            comment.likes.length > 0
+                                        className={`size-4 mr-1 ${comment.likes.length > 0
                                                 ? !isLikeidle && comment.comment_id === Number(likefetcherId)
                                                     ? ''
                                                     : 'fill-red-500 text-red-500'
                                                 : !isLikeidle && Number(likefetcherId) === comment.comment_id
                                                     ? 'fill-red-500 text-red-500'
                                                     : ''
-                                        }`}
+                                            }`}
                                     />
                                     {
                                         comment.likes.length > 0
@@ -176,7 +176,7 @@ const CommentItem = ({
                                     className="h-8 px-2 text-xs"
                                     onClick={() => setShowReplyForm(!showReplyForm)}
                                 >
-                                    <Reply className="w-3 h-3 mr-1"/>
+                                    <Reply className="w-3 h-3 mr-1" />
                                     답글
                                 </Button>
 
@@ -187,7 +187,7 @@ const CommentItem = ({
                                         className="h-8 px-2 text-xs"
                                         onClick={() => setShowReplies(!showReplies)}
                                     >
-                                        <MessageCircle className={`size-4 mr-1 fill-emerald-500 text-emerald-500`}/>
+                                        <MessageCircle className={`size-4 mr-1 fill-emerald-500 text-emerald-500`} />
                                         답글 {comment.comments.length}개 {showReplies ? '닫기' : '보기'}
                                     </Button>
                                 )}
@@ -196,21 +196,21 @@ const CommentItem = ({
 
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" size="sm" className="h-8 px-2">
-                                            <MoreHorizontal className="w-3 h-3"/>
+                                            <MoreHorizontal className="w-3 h-3" />
                                         </Button>
                                     </DropdownMenuTrigger>
 
                                     <DropdownMenuContent>
                                         {(comment.user.user_id === loginUserId && comment.comments.length === 0) || isAdmin ? <>
-                                                <DropdownMenuItem className={"flex justify-center"}
-                                                                  onClick={() => deleteComment(comment.comment_id)}>
-                                                    삭제
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className={"flex justify-center"}
-                                                                  onClick={() => deleteComment(comment.comment_id)}>
-                                                    수정
-                                                </DropdownMenuItem>
-                                            </>
+                                            <DropdownMenuItem className={"flex justify-center"}
+                                                onClick={() => deleteComment(comment.comment_id)}>
+                                                삭제
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem className={"flex justify-center"}
+                                                onClick={() => deleteComment(comment.comment_id)}>
+                                                수정
+                                            </DropdownMenuItem>
+                                        </>
                                             : null
                                         }
                                     </DropdownMenuContent>
@@ -256,13 +256,13 @@ const CommentItem = ({
                 {/* 답글 목록 */}
                 {showReplies && comment.comments && comment.comments.length > 0 && (
                     <div className="mt-4 pl-11 space-y-4 bg-emerald-50 rounded-lg">
-                        <Separator/>
+                        <Separator />
                         {comment.comments.map((reply) => (
                             <div key={reply.comment_id} className="flex space-x-3">
 
                                 <Avatar className="size-9 sm:size-11 cursor-pointer"
-                                        onClick={() => navigate(`/profile/${reply.user.username}`)}>
-                                    <AvatarImage src={reply.user.profile_url || ""}/>
+                                    onClick={() => navigate(`/profile/${reply.user.username}`)}>
+                                    <AvatarImage src={reply.user.profile_url || ""} />
                                     <AvatarFallback className="text-xs">
                                         {reply.user.username.charAt(0).toUpperCase()}
                                     </AvatarFallback>
@@ -270,11 +270,11 @@ const CommentItem = ({
 
                                 <div className="flex-1">
                                     <div className="flex items-center space-x-2 cursor-pointer"
-                                         onClick={() => navigate(`/profile/${reply.user.username}`)}>
+                                        onClick={() => navigate(`/profile/${reply.user.username}`)}>
                                         <span
                                             className="font-medium text-xs text-muted-foreground">{reply.user.nickname}</span>
                                         <span className="text-xs text-muted-foreground">
-                                          {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
+                                            {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
                                         </span>
                                     </div>
                                     <div
@@ -287,19 +287,18 @@ const CommentItem = ({
                                             variant="ghost"
                                             size="sm"
                                             className={`h-8 px-2 text-xs disabled:opacity-100`}
-                                            onClick={() => handleLike(reply.comment_id)}
+                                            onClick={() => handleLike(reply.comment_id, reply.user.user_id)}
                                             disabled={!isLikeidle}
                                         >
                                             <Heart
-                                                className={`size-4 mr-1 ${
-                                                    reply.likes.length > 0
+                                                className={`size-4 mr-1 ${reply.likes.length > 0
                                                         ? !isLikeidle && reply.comment_id === Number(likefetcherId)
                                                             ? ''
                                                             : 'fill-red-500 text-red-500'
                                                         : !isLikeidle && Number(likefetcherId) === reply.comment_id
                                                             ? 'fill-red-500 text-red-500'
                                                             : ''
-                                                }`}
+                                                    }`}
                                             />
                                             {
                                                 reply.likes.length > 0
@@ -315,7 +314,7 @@ const CommentItem = ({
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button variant="ghost" size="sm" className="h-8 px-2">
-                                                    <MoreHorizontal className="w-3 h-3"/>
+                                                    <MoreHorizontal className="w-3 h-3" />
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent>
@@ -349,11 +348,11 @@ interface CommentsSectionProps {
 }
 
 const CommentsSection = ({
-                             comments,
-                             loginUserId,
-                             isAdmin,
-                             unitId
-                         }: CommentsSectionProps) => {
+    comments,
+    loginUserId,
+    isAdmin,
+    unitId
+}: CommentsSectionProps) => {
     const [newComment, setNewComment] = useState('');
 
     const commentFetcher = useFetcher()

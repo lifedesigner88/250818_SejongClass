@@ -201,7 +201,7 @@ export function UserStatus({
                                     </Button>
                                 </DialogTrigger>
 
-                                <DialogContent className="p-2 sm:p-6 min-w-[320px]">
+                                <DialogContent className="p-2 sm:p-6 min-w-[320px] max-h-screen overflow-y-auto">
                                     <DialogHeader className='hidden'>
                                         <DialogTitle>알림</DialogTitle>
                                         <DialogDescription>

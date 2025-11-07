@@ -12,7 +12,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
     const formDataObject = Object.fromEntries(formData.entries());
 
     const schema = z.object({
-        comment_id: z.coerce.number().int().positive()
+        comment_id: z.coerce.number().int().positive(),
+        writter_id: z.uuid()
     });
 
     const { success, data } = schema.safeParse(formDataObject);
@@ -22,7 +23,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     if (!userId) return { status: 401, body: { error: 'Unauthorized' } };
 
     await toggleCommentLike(data.comment_id, userId);
-    await updateCommentLike(data.comment_id, userId);
+    await updateCommentLike(data.comment_id, userId, data.writter_id);
 
 
     return new Response("ok", { status: 200 });
