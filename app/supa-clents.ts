@@ -1,14 +1,14 @@
 import { createBrowserClient, createServerClient, parseCookieHeader, serializeCookieHeader } from "@supabase/ssr";
 
 export const makePublicClient = createBrowserClient(
-    "https://ierkuifrgbcadwasnkih.supabase.co",
-    "sb_publishable_XsUBXVJtuRbbQ-ECXB7BQA_UkgDqpva"
+    import.meta.env.VITE_SUPABASE_ID,
+    import.meta.env.VITE_SUPABASE_PUBLIC
 );
 
 export function makeSSRClient(request: Request) {
     const headers: Headers = new Headers();
     const client = createServerClient(
-        "https://ierkuifrgbcadwasnkih.supabase.co",
+        process.env.SUPABASE_ID!,
         process.env.SUPABASE_KEY!,
         {
             cookies: {
