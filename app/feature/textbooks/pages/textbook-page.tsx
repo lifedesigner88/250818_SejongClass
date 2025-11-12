@@ -21,6 +21,7 @@ export type OutletContextType = {
     setOpenEnrollWindow: (open: boolean) => void;
     setAfterEnrollNaviUrl: (url: string) => void;
     justOpenMajor: (majorId: number) => void;
+    docUrlSetter: (url: string) => void
 };
 
 export default function TextbookPage() {
@@ -38,17 +39,17 @@ export default function TextbookPage() {
 
     // 📊 카운트 및 시간 계산
     const unitCount = textbookInfo.majors.reduce((acc, major) =>
-            acc + major.middles.reduce((acc2, middle) =>
-                acc2 + middle.units.length, 0
-            ), 0
+        acc + major.middles.reduce((acc2, middle) =>
+            acc2 + middle.units.length, 0
+        ), 0
     );
 
     const totalEstimatedSeconds = textbookInfo.majors.reduce((acc, major) =>
-            acc + major.middles.reduce((acc2, middle) =>
-                    acc2 + middle.units.reduce((acc3, unit) =>
-                        acc3 + unit.estimated_seconds, 0
-                    ), 0
+        acc + major.middles.reduce((acc2, middle) =>
+            acc2 + middle.units.reduce((acc3, unit) =>
+                acc3 + unit.estimated_seconds, 0
             ), 0
+        ), 0
     );
 
 
@@ -166,12 +167,12 @@ export default function TextbookPage() {
                     <Card className="hover:shadow-md transition-shadow duration-300">
                         <CardContent className="flex flex-col items-center justify-center p-4 md:p-6">
                             {isEnrolled ? <>
-                                    <AnimatedCircularProgressBar className={"size-30"} max={100} value={totalProgress}
-                                                                 gaugePrimaryColor={`${totalProgress > 99 ? "red" : "#4ade80"}`}
-                                                                 gaugeSecondaryColor={"#f4f4f5"}/>
-                                </> :
+                                <AnimatedCircularProgressBar className={"size-30"} max={100} value={totalProgress}
+                                    gaugePrimaryColor={`${totalProgress > 99 ? "red" : "#4ade80"}`}
+                                    gaugeSecondaryColor={"#f4f4f5"} />
+                            </> :
                                 <div className="flex items-center justify-center w-30 h-30 bg-red-100 rounded-full">
-                                    <BanIcon className="w-20 h-20 text-red-500"/>
+                                    <BanIcon className="w-20 h-20 text-red-500" />
                                 </div>}
 
                         </CardContent>
@@ -193,7 +194,7 @@ export default function TextbookPage() {
                                     <div className="text-4xl">🎉</div>
                                 ) : <>
                                     {isEnrolled
-                                        ? <><Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600"/></>
+                                        ? <><Hash className="w-5 h-5 md:w-6 md:h-6 text-green-600" /></>
                                         : <div className="text-3xl">✏️</div>
                                     }
                                 </>}
@@ -227,7 +228,7 @@ export default function TextbookPage() {
                                 {checkedUnitsCounter === unitCount ? (
                                     <div className="text-4xl">🎉</div>
                                 ) : (
-                                    <Target className="w-5 h-5 md:w-6 md:h-6 text-purple-600"/>
+                                    <Target className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
                                 )}
                             </div>
                             <div className="text-xl md:text-2xl font-bold text-purple-600 mb-1 truncate max-w-full">
@@ -247,7 +248,7 @@ export default function TextbookPage() {
                                 {checkedCurriculums.length === curriculumList.length ? (
                                     <div className="text-4xl">🎉</div>
                                 ) : (
-                                    <BarChart className="w-5 h-5 md:w-6 md:h-6 text-yellow-600"/>
+                                    <BarChart className="w-5 h-5 md:w-6 md:h-6 text-yellow-600" />
                                 )}
                             </div>
                             <div className="text-xl md:text-2xl font-bold text-yellow-600 mb-1 truncate max-w-full">
@@ -269,7 +270,7 @@ export default function TextbookPage() {
                                 {unCheckedUnitsEstimatedSeconds === 0 ? (
                                     <div className="text-4xl">🎉</div>
                                 ) : (
-                                    <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600"/>
+                                    <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-orange-600" />
                                 )}
                             </div>
                             <div className="text-xl md:text-2xl font-bold text-orange-600 mb-1 truncate max-w-full">
@@ -286,8 +287,8 @@ export default function TextbookPage() {
                 <Card className="border-0 shadow-none">
                     <CardContent className={"p-0 "}>
                         <Tabs value={selectedFilter} onValueChange={setSelectedFilter}
-                              className={"w-full overflow-x-auto rounded-lg bg-muted"}
-                              onClick={() => justOpenMajor(getMajorIdFromName(selectedFilter)!)}>
+                            className={"w-full overflow-x-auto rounded-lg bg-muted"}
+                            onClick={() => justOpenMajor(getMajorIdFromName(selectedFilter)!)}>
                             {/* 모바일에서 스크롤 가능한 탭 */}
                             <TabsList
                                 className="flex h-14 items-center justify-between text-muted-foreground w-full p-2">
@@ -377,7 +378,7 @@ export default function TextbookPage() {
                                                                     ? ""
                                                                     : curriculum.isFree
                                                                         ? <Badge className={"ml-2 bg-sky-200"}
-                                                                                 variant={"outline"}>free</Badge>
+                                                                            variant={"outline"}>free</Badge>
                                                                         : " 🔒"
                                                                 : " 🚫"
                                                             }

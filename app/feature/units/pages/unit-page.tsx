@@ -52,7 +52,12 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
 
 export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
-    const { isAdmin, isEnrolled, setOpenEnrollWindow, setAfterEnrollNaviUrl } = useOutletContext<OutletContextType>();
+    const {
+        isAdmin,
+        isEnrolled,
+        setOpenEnrollWindow,
+        setAfterEnrollNaviUrl,
+    } = useOutletContext<OutletContextType>();
     const EMPTY_NOTE: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const
     const { unitData, userId } = loaderData;
     const isFree = unitData.is_free;
@@ -170,17 +175,17 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                             <Breadcrumb>
                                 <BreadcrumbList className={"text-md text-orange-700"}>
                                     {contentOpen ? <>
-                                            <BreadcrumbItem>
-                                                {unitData.middle.major.title}
-                                            </BreadcrumbItem>
-                                            <BreadcrumbSeparator/>
-                                            <BreadcrumbItem>
-                                                {unitData.middle.title}
-                                            </BreadcrumbItem>
-                                        </>
+                                        <BreadcrumbItem>
+                                            {unitData.middle.major.title}
+                                        </BreadcrumbItem>
+                                        <BreadcrumbSeparator />
+                                        <BreadcrumbItem>
+                                            {unitData.middle.title}
+                                        </BreadcrumbItem>
+                                    </>
                                         : null
                                     }
-                                    <BreadcrumbSeparator/>
+                                    <BreadcrumbSeparator />
                                     <BreadcrumbItem className={"text-lg font-semibold "}>
                                         🔥 {unitData.title}
                                     </BreadcrumbItem>
@@ -188,15 +193,15 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                             </Breadcrumb>
                         </div>
                         <ChevronDown
-                            className={`h-5 w-5 transition-transform duration-200 ${!contentOpen ? "rotate-90" : ""}`}/>
+                            className={`h-5 w-5 transition-transform duration-200 ${!contentOpen ? "rotate-90" : ""}`} />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="mt-4">
-                        <Tiptap content={content} editable={isAdmin} onChange={setContent}/>
+                        <Tiptap content={content} editable={isAdmin} onChange={setContent} />
                         {isContentNeedSave ?
                             <fetcher.Form method="POST" className="space-y-4 flex justify-center "
-                                          action={'/api/units/update-readme'}>
-                                <input type="hidden" name="content" value={JSON.stringify(content)}/>
-                                <input type="hidden" name="unit_id" value={unitData.unit_id}/>
+                                action={'/api/units/update-readme'}>
+                                <input type="hidden" name="content" value={JSON.stringify(content)} />
+                                <input type="hidden" name="unit_id" value={unitData.unit_id} />
                                 {isAdmin &&
                                     <Button
                                         type="submit"
@@ -204,7 +209,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                                         className="fixed bottom-0 z-50 w-full max-w-xl px-4 py-2 mb-10 mt-4">
                                         {fetcher.state !== "idle" ? (
                                             <div className="flex items-center justify-center">
-                                                <Loader2 className="size-5 mr-3 animate-spin"/>
+                                                <Loader2 className="size-5 mr-3 animate-spin" />
                                                 저장 중...
                                             </div>
                                         ) : (
@@ -231,7 +236,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                                         </BreadcrumbItem>
                                         : null}
 
-                                    <BreadcrumbSeparator className={noteOpen ? "rotate-90" : ""}/>
+                                    <BreadcrumbSeparator className={noteOpen ? "rotate-90" : ""} />
                                     <BreadcrumbItem className={"text-lg font-semibold "}>
                                         {noteOpen ? "✏️ 메모" : "✅ 메모"}
                                     </BreadcrumbItem>
@@ -239,24 +244,24 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                             </Breadcrumb>
                         </div>
                         <ChevronDown
-                            className={`h-5 w-5 transition-transform duration-200 ${!noteOpen ? "rotate-90" : ""}`}/>
+                            className={`h-5 w-5 transition-transform duration-200 ${!noteOpen ? "rotate-90" : ""}`} />
                     </CollapsibleTrigger>
 
                     {isNoteExists ?
                         <CollapsibleContent className="mt-4 mb-20">
-                            <Tiptap content={noteData} editable={true} onChange={setNoteData}/>
+                            <Tiptap content={noteData} editable={true} onChange={setNoteData} />
                             {isNoteNeedSave ?
                                 <noteFetcher.Form method="post" className="flex justify-center  "
-                                                  action={'/api/notes/update-note'}>
-                                    <input type="hidden" name="content" value={JSON.stringify(noteData)}/>
-                                    <input type="hidden" name="unit_id" value={unitData.unit_id}/>
+                                    action={'/api/notes/update-note'}>
+                                    <input type="hidden" name="content" value={JSON.stringify(noteData)} />
+                                    <input type="hidden" name="unit_id" value={unitData.unit_id} />
                                     <Button
                                         type="submit"
                                         disabled={noteFetcher.state !== "idle"}
                                         className="fixed bottom-0 z-50 w-full max-w-xl px-4 py-2 mb-10 mt-4 bg-indigo-100 font-bold text-indigo-700 hover:text-white">
                                         {noteFetcher.state !== "idle" ? (
                                             <div className="flex items-center justify-center">
-                                                <Loader2 className="size-5 mr-3 animate-spin"/>
+                                                <Loader2 className="size-5 mr-3 animate-spin" />
                                                 저장 중...
                                             </div>
                                         ) : (
@@ -286,13 +291,13 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                             className="fixed bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700
                             text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
                             aria-label="개념 보기">
-                            <Brain className="h-6 w-6"/>
+                            <Brain className="h-6 w-6" />
                         </button>
                     </SheetTrigger>
                     <SheetContent side="right">
                         <SheetTitle className="p-10 flex items-center gap-3 text-xl">
                             <div className="p-2 bg-purple-500/10 rounded-xl">
-                                <Brain className="h-8 w-8 text-purple-600 dark:text-purple-400"/>
+                                <Brain className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                             </div>
                             학습 개념
                         </SheetTitle>
@@ -326,7 +331,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                             ) : (
                                 <div className="text-center py-16 text-gray-500 dark:text-gray-400">
                                     <div className="p-6 bg-gray-100 dark:bg-gray-800 rounded-2xl inline-block mb-6">
-                                        <Brain className="h-16 w-16 mx-auto opacity-50"/>
+                                        <Brain className="h-16 w-16 mx-auto opacity-50" />
                                     </div>
                                     <h3 className="text-lg font-semibold mb-2">개념이 없습니다</h3>
                                     <p>이 단원에 등록된 개념이 아직 없습니다.</p>

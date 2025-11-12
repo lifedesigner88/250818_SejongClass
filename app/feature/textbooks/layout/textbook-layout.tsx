@@ -468,7 +468,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 isEnrolled,
                                 setOpenEnrollWindow,
                                 setAfterEnrollNaviUrl,
-                                justOpenMajor
+                                justOpenMajor,
                             }}/>
                     </div>
                 </div>

@@ -151,12 +151,12 @@ const CommentItem = ({
                                 >
                                     <Heart
                                         className={`size-4 mr-1 ${comment.likes.length > 0
-                                                ? !isLikeidle && comment.comment_id === Number(likefetcherId)
-                                                    ? ''
-                                                    : 'fill-red-500 text-red-500'
-                                                : !isLikeidle && Number(likefetcherId) === comment.comment_id
-                                                    ? 'fill-red-500 text-red-500'
-                                                    : ''
+                                            ? !isLikeidle && comment.comment_id === Number(likefetcherId)
+                                                ? ''
+                                                : 'fill-red-500 text-red-500'
+                                            : !isLikeidle && Number(likefetcherId) === comment.comment_id
+                                                ? 'fill-red-500 text-red-500'
+                                                : ''
                                             }`}
                                     />
                                     {
@@ -292,12 +292,12 @@ const CommentItem = ({
                                         >
                                             <Heart
                                                 className={`size-4 mr-1 ${reply.likes.length > 0
-                                                        ? !isLikeidle && reply.comment_id === Number(likefetcherId)
-                                                            ? ''
-                                                            : 'fill-red-500 text-red-500'
-                                                        : !isLikeidle && Number(likefetcherId) === reply.comment_id
-                                                            ? 'fill-red-500 text-red-500'
-                                                            : ''
+                                                    ? !isLikeidle && reply.comment_id === Number(likefetcherId)
+                                                        ? ''
+                                                        : 'fill-red-500 text-red-500'
+                                                    : !isLikeidle && Number(likefetcherId) === reply.comment_id
+                                                        ? 'fill-red-500 text-red-500'
+                                                        : ''
                                                     }`}
                                             />
                                             {

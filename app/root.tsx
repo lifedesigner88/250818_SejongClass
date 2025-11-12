@@ -170,7 +170,6 @@ export default function App({ loaderData }: Route.ComponentProps) {
     const [showLoginDialog, setShowLoginDialog] = useState(false);
     const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/themes");
     const provider = publicUserData?.provider;
-    const navigate = useNavigate();
 
     useEffect(() => {
         if (isLoggedIn)
@@ -186,6 +185,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
     const submittedProvider = navigation.formData?.get("provider");
     const isWebView = isInAppBrowser()
     const isAdmin = publicUserData?.isAdmin;
+
     return (
         <>
             {(isLoading || isSubmitting) && (
@@ -199,7 +199,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 <div className="w-full px-3 sm:px-6">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
-                        <Link to="/" className="flex items-center space-x-2">
+                        <Link to="/themes" className="flex items-center space-x-2">
                             <img src="/logo.svg" alt="SejongClass Logo" className="size-8" />
                             <span className="font-bold text-xl ml-1 text-gray-900">SejongClass</span>
                         </Link>
@@ -230,22 +230,10 @@ export default function App({ loaderData }: Route.ComponentProps) {
                         </div>
 
                         <div className="flex items-center space-x-3">
-                            {isLoggedIn ?
-                                <Button
-                                    className={"hidden sm:block bg-gradient-to-r to-red-500 from-orange-300 bg-clip-text text-transparent "}
-                                    variant="ghost" size="sm" onClick={() => navigate("/logout")}>
-                                    로그아웃
-                                </Button> :
-                                <Button variant="ghost" size="sm" onClick={() => setShowLoginDialog(true)}>
-                                    로그인
-                                </Button>
-                            }
-                            <Link to="/themes">
-                                <Button size="sm"
-                                    className=" bg-emerald-600 hover:bg-emerald-700 text-white">
-                                    주제보기
-                                </Button>
-                            </Link>
+                            <Button size="sm"
+                                className=" bg-emerald-600 hover:bg-emerald-700 text-white">
+                                계속하기
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -276,7 +264,9 @@ export default function App({ loaderData }: Route.ComponentProps) {
                             name="provider"
                             value="kakao"
                             disabled={isSubmitting && submittedProvider !== "kakao"}
-                            className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] disabled:bg-gray-300 disabled:cursor-not-allowed text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                            className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] disabled:bg-gray-300 disabled:cursor-not-allowed 
+                            text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out 
+                            hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
                         >
                             {isSubmitting && submittedProvider === "kakao" ? (
                                 <>
@@ -297,7 +287,9 @@ export default function App({ loaderData }: Route.ComponentProps) {
                             name="provider"
                             value="google"
                             disabled={isSubmitting && submittedProvider !== "google" || isWebView}
-                            className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                            className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed
+                            text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out 
+                            hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
                         >
                             {isWebView ? <>
                                 <FcGoogle className="size-13 mr-3" />
@@ -329,7 +321,9 @@ export default function App({ loaderData }: Route.ComponentProps) {
                             name="provider"
                             value="github"
                             disabled={isSubmitting && submittedProvider !== "github"}
-                            className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] disabled:bg-gray-500 disabled:cursor-not-allowed text-white border-0 rounded-lg transition-all duration-200 ease-in-out hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                            className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] disabled:bg-gray-500 disabled:cursor-not-allowed
+                            text-white border-0 rounded-lg transition-all duration-200 ease-in-out 
+                            hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
                         >
                             {isSubmitting && submittedProvider === "github" ? (
                                 <>

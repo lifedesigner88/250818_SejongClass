@@ -20,11 +20,11 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
     const user_id = await getUserIdForServer(request)
 
-    if(user_id && beforeUsername && nickname && username)
+    if (user_id && beforeUsername && nickname && username)
         await updateUserProfile(user_id, beforeUsername, username, nickname, profile_url)
 
     if (beforeProfie !== profile_url && user_id)
-        await deleteProfile(request, user_id, filePath )
+        await deleteProfile(request, user_id, filePath)
 
     return new Response("Successfully updated profile", {});
 }

@@ -25,6 +25,5 @@ export const action = async ({ request }: Route.ActionArgs) => {
     await toggleCommentLike(data.comment_id, userId);
     await updateCommentLike(data.comment_id, userId, data.writter_id);
 
-
     return new Response("ok", { status: 200 });
 }

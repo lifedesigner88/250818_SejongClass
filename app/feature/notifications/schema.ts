@@ -1,4 +1,4 @@
-import { boolean, pgEnum, pgTable, serial, timestamp, uuid, varchar, integer } from "drizzle-orm/pg-core";
+import { boolean, pgEnum, pgTable, serial, timestamp, uuid, integer } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { defaultPgPolicy } from "@/pg-policy/pg-polish";
 import { relations } from "drizzle-orm";
@@ -39,7 +39,7 @@ export const notificationsRelation = relations(notificationsTable, ({ one }) => 
         relationName: "to_user_id"
     }),
 
-    comment:one(commentsTable, {
+    comment: one(commentsTable, {
         fields: [notificationsTable.comment_id],
         references: [commentsTable.comment_id]
     })
