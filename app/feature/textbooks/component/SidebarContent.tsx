@@ -101,9 +101,9 @@ export default function SidebarContent(props: SidebarContentProps) {
                                     <Button variant="ghost"
                                             className={`w-full justify-start p-2 h-auto text-left mt-4`}>
                                         {!closeSection.has(`${major.major_id}-${0}`) ? (
-                                            <ChevronDown className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
+                                            <ChevronDown className={`h-4 w-4 mr-2 shrink-0 ${colorSet.badge}`}/>
                                         ) : (
-                                            <ChevronRight className={`h-4 w-4 mr-2 flex-shrink-0 ${colorSet.badge}`}/>
+                                            <ChevronRight className={`h-4 w-4 mr-2 shrink-0 ${colorSet.badge}`}/>
                                         )}
                                         <div className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>
                                             {`${major.sort_order}. `}
@@ -169,9 +169,9 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                         variant="ghost"
                                                         className="w-full justify-start p-2 h-auto text-left text-sm my-1">
                                                         {!closeSection.has(`${major.major_id}-${middle.middle_id}`) ? (
-                                                            <ChevronDown className="h-3 w-3 mr-2 flex-shrink-0"/>
+                                                            <ChevronDown className="h-3 w-3 mr-2 shrink-0"/>
                                                         ) : (
-                                                            <ChevronRight className="h-3 w-3 mr-2 flex-shrink-0"/>
+                                                            <ChevronRight className="h-3 w-3 mr-2 shrink-0"/>
                                                         )}
                                                         <div className="text-muted-foreground truncate">
                                                             {`${major.sort_order}-${middle.sort_order}. `}
@@ -285,7 +285,7 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                         )}
                                                                     </div>
                                                                     <div
-                                                                        className={`text-xs text-muted-foreground flex-shrink-0 pr-2 ${
+                                                                        className={`text-xs text-muted-foreground shrink-0 pr-2 ${
                                                                             isActive ? "" : "opacity-35"
                                                                         }`}>
                                                                         {isActive ? "🔥 " : null}

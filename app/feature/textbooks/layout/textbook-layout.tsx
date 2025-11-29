@@ -429,7 +429,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="size-12 flex-shrink-0 shadow-lg bg-background border-2 hover:bg-accent">
+                                    className="size-12 shrink-0 shadow-lg bg-background border-2 hover:bg-accent">
                                     <Menu className="size-7"/>
                                 </Button>
                             </SheetTrigger>
