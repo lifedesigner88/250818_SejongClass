@@ -25,7 +25,7 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
         else
             confirm_no.push(notification)
     })
-
+    console.log(confirm_no)
     const fetcher = useFetcher()
     const checkConfirm = (notification_id: number) => {
         void fetcher.submit({
@@ -60,7 +60,7 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                 {confirm_no.map(noti => (
                     <Item
                         key={noti.notification_id}
-                        className={"my-2.5 shadow-md relative"} variant="outline" size="sm" asChild>
+                        className={`my-2.5 shadow-md relative ${noti.type === "like"? "bg-red-50" : "bg-blue-100"}`} variant="outline" size="sm" asChild>
                         <a href={"#"}>
                             <ItemMedia>
                                 <Avatar className="size-11">
@@ -83,7 +83,11 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                                     @{noti.from?.username}{" 🚨 "}
                                     {DateTime.fromJSDate(noti.created_at!).setLocale("ko").toRelative()}
                                 </span>
-                                <ItemDescription className="truncate">{noti.comment.content}</ItemDescription>
+                                <ItemDescription className="truncate">
+                                    {noti.type === "like" ? "댓글 ❤️ 좋아요"
+                                        : noti.comment.content}
+                                </ItemDescription>
+
                             </ItemContent>
                             <ItemActions>
                                 <Button className="hidden sm:block" onClick={() => checkConfirm(noti.notification_id)}>확인</Button>
@@ -103,7 +107,7 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                 {confirm_yes.map(noti => (
                     <Item
                         key={noti.notification_id}
-                        className={"my-2.5 shadow-md relative"} variant="outline" size="sm" asChild>
+                        className={"my-2.5 shadow-md relative bg-yellow-100"} variant="outline" size="sm" asChild>
                         <a href={"#"}>
                             <ItemMedia>
                                 <Avatar className="size-11">
@@ -127,7 +131,10 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                                     {" ✅ "}
                                     {DateTime.fromJSDate(noti.created_at!).setLocale("ko").toRelative()}
                                 </span>
-                                <ItemDescription className="truncate">{noti.comment.content}</ItemDescription>
+                                <ItemDescription className="truncate">
+                                    {noti.type === "like" ? "댓글 ❤️ 좋아요"
+                                        : noti.comment.content}
+                                </ItemDescription>
                             </ItemContent>
                             <ItemActions>
                                 <Button
