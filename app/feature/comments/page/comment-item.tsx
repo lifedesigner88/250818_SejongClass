@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Heart, MoreHorizontal, Reply } from 'lucide-react';
-import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
+import { useState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { DateTime } from 'luxon';
 import {
     DropdownMenu,
@@ -13,13 +13,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { useFetcher, useNavigate } from 'react-router';
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
     AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useFetcher, useNavigate } from 'react-router';
 
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
@@ -30,9 +30,7 @@ interface CommentItemProps {
     unitId: number;
 }
 
-
-
-const CommentItem = ({
+export const CommentItem = ({
     comment,
     loginUserId,
     isAdmin,
@@ -41,7 +39,7 @@ const CommentItem = ({
 
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
-    const [showReplies, setShowReplies] = useState(false);
+    const [showReplies, setShowReplies] = useState(true);
 
 
     const subCommentFetcher = useFetcher()
@@ -95,9 +93,28 @@ const CommentItem = ({
     const isLikeidle = likeFetcher.state === 'idle'
     const likefetcherId = likeFetcher.formData?.get('comment_id')
 
-
-
     const navigate = useNavigate();
+
+
+    //  🚨🚨 수정필요
+    const [showReplyReplyForm, setShowReplyReplyForm] = useState(false);
+    const [replyReplyContent, setReplyReplyContent] = useState('');
+
+    const handleReplyReply = () => {
+        if (!replyReplyContent.trim() || !comment.comment_id) return;
+        void subCommentFetcher.submit({
+            content: replyReplyContent,
+            unit_id: unitId,
+            type: 'reply',
+            parent_comment_id: comment.comment_id,
+        }, {
+            method: 'POST',
+            action: '/api/comments/create-comment',
+        })
+        setReplyReplyContent('');
+        setShowReplyReplyForm(false);
+        setShowReplies(true);
+    }
 
     return (
         <Card className="w-full">
@@ -142,6 +159,7 @@ const CommentItem = ({
 
                         <div className="flex items-center space-x-4">
                             <div>
+                                {/* ❤️ 좋아요 버튼 */}
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -170,6 +188,7 @@ const CommentItem = ({
                                     }
                                 </Button>
 
+                                {/* ✅ 답글 버튼 */}
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -253,165 +272,137 @@ const CommentItem = ({
                     </div>
                 )}
 
-                {/* 답글 목록 */}
+                {/* 🔗🔗🔗🔗🔗🔗 답글 목록 🔗🔗🔗🔗🔗🔗*/}
                 {showReplies && comment.comments && comment.comments.length > 0 && (
                     <div className="mt-4 pl-11 space-y-4 bg-emerald-50 rounded-lg">
                         <Separator />
-                        {comment.comments.map((reply) => (
-                            <div key={reply.comment_id} className="flex space-x-3">
+                        {comment.comments.map((reply) => {
 
-                                <Avatar className="size-9 sm:size-11 cursor-pointer"
-                                    onClick={() => navigate(`/profile/${reply.user.username}`)}>
-                                    <AvatarImage src={reply.user.profile_url || ""} />
-                                    <AvatarFallback className="text-xs">
-                                        {reply.user.username.charAt(0).toUpperCase()}
-                                    </AvatarFallback>
-                                </Avatar>
 
-                                <div className="flex-1">
-                                    <div className="flex items-center space-x-2 cursor-pointer"
+                            return (
+                                <div key={reply.comment_id} className="flex space-x-3">
+
+                                    <Avatar className="size-9 sm:size-11 cursor-pointer"
                                         onClick={() => navigate(`/profile/${reply.user.username}`)}>
-                                        <span
-                                            className="font-medium text-xs text-muted-foreground">{reply.user.nickname}</span>
-                                        <span className="text-xs text-muted-foreground">
-                                            {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
-                                        </span>
-                                    </div>
-                                    <div
-                                        className={"text-xs text-muted-foreground/50 mb-3"}>@{reply.user.username}</div>
+                                        <AvatarImage src={reply.user.profile_url || ""} />
+                                        <AvatarFallback className="text-xs">
+                                            {reply.user.username.charAt(0).toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
 
-                                    <p className="text-xs leading-relaxed">{reply.content}</p>
+                                    <div className="flex-1">
+                                        <div className="flex items-center space-x-2 cursor-pointer"
+                                            onClick={() => navigate(`/profile/${reply.user.username}`)}>
+                                            <span
+                                                className="font-medium text-xs text-muted-foreground">{reply.user.nickname}</span>
+                                            <span className="text-xs text-muted-foreground">
+                                                {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
+                                            </span>
+                                        </div>
+                                        <div
+                                            className={"text-xs text-muted-foreground/50 mb-3"}>@{reply.user.username}</div>
 
-                                    <div className="flex items-center space-x-3">
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className={`h-8 px-2 text-xs disabled:opacity-100`}
-                                            onClick={() => handleLike(reply.comment_id, reply.user.user_id)}
-                                            disabled={!isLikeidle}
-                                        >
-                                            <Heart
-                                                className={`size-4 mr-1 ${reply.likes.length > 0
-                                                    ? !isLikeidle && reply.comment_id === Number(likefetcherId)
-                                                        ? ''
-                                                        : 'fill-red-500 text-red-500'
-                                                    : !isLikeidle && Number(likefetcherId) === reply.comment_id
-                                                        ? 'fill-red-500 text-red-500'
-                                                        : ''
-                                                    }`}
-                                            />
-                                            {
-                                                reply.likes.length > 0
-                                                    ? !isLikeidle && reply.comment_id === Number(likefetcherId)
-                                                        ? reply.likes_count - 1
-                                                        : reply.likes_count
-                                                    : !isLikeidle && Number(likefetcherId) === reply.comment_id
-                                                        ? reply.likes_count + 1
-                                                        : reply.likes_count
-                                            }
-                                        </Button>
+                                        <p className="text-xs leading-relaxed">{reply.content}</p>
 
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="sm" className="h-8 px-2">
-                                                    <MoreHorizontal className="w-3 h-3" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent>
-                                                {reply.user.user_id === loginUserId || isAdmin
-                                                    ? <DropdownMenuItem
-                                                        className={"flex justify-center"}
-                                                        onClick={() => deleteComment(reply.comment_id)}>
-                                                        삭제
-                                                    </DropdownMenuItem>
-                                                    : null
+                                        <div className="flex items-center space-x-3">
+                                            {/* ❤️ 좋아요 버튼 */}
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className={`h-8 px-2 text-xs disabled:opacity-100`}
+                                                onClick={() => handleLike(reply.comment_id, reply.user.user_id)}
+                                                disabled={!isLikeidle}
+                                            >
+                                                <Heart
+                                                    className={`size-4 mr-1 ${reply.likes.length > 0
+                                                        ? !isLikeidle && reply.comment_id === Number(likefetcherId)
+                                                            ? ''
+                                                            : 'fill-red-500 text-red-500'
+                                                        : !isLikeidle && Number(likefetcherId) === reply.comment_id
+                                                            ? 'fill-red-500 text-red-500'
+                                                            : ''
+                                                        }`}
+                                                />
+                                                {
+                                                    reply.likes.length > 0
+                                                        ? !isLikeidle && reply.comment_id === Number(likefetcherId)
+                                                            ? reply.likes_count - 1
+                                                            : reply.likes_count
+                                                        : !isLikeidle && Number(likefetcherId) === reply.comment_id
+                                                            ? reply.likes_count + 1
+                                                            : reply.likes_count
                                                 }
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                            </Button>
 
+                                            {/* ✅ 답글 버튼 */}
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8 px-2 text-xs hover:bg-emerald-200"
+                                                onClick={() => setShowReplyReplyForm(!showReplyReplyForm)}
+                                            >
+                                                <Reply className="w-3 h-3 mr-1" />
+                                                답글
+                                            </Button>
+
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="sm" className="h-8 px-2">
+                                                        <MoreHorizontal className="w-3 h-3" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent>
+                                                    {reply.user.user_id === loginUserId || isAdmin
+                                                        ? <DropdownMenuItem
+                                                            className={"flex justify-center"}
+                                                            onClick={() => deleteComment(reply.comment_id)}>
+                                                            삭제
+                                                        </DropdownMenuItem>
+                                                        : null
+                                                    }
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+
+                                        </div>
+                                        {showReplyReplyForm && (
+                                            <div className="mt-4">
+                                                <div className="space-y-2">
+                                                    <Textarea
+                                                        placeholder="답글을 작성하세요..."
+                                                        value={replyReplyContent}
+                                                        onChange={(e) => setReplyReplyContent(e.target.value)}
+                                                        className="min-h-[80px] text-sm"
+                                                    />
+                                                    <div className="flex justify-end space-x-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setShowReplyReplyForm(false);
+                                                                setReplyReplyContent('');
+                                                            }}
+                                                        >
+                                                            취소
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            onClick={handleReplyReply}
+                                                            disabled={!replyReplyContent.trim()}
+                                                        >
+                                                            답글 작성
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        }
+                        )}
                     </div>
                 )}
             </CardContent>
         </Card>
     );
 };
-
-interface CommentsSectionProps {
-    comments: UnitCommentsType;
-    loginUserId: string
-    isAdmin: boolean
-    unitId: number
-}
-
-const CommentsSection = ({
-    comments,
-    loginUserId,
-    isAdmin,
-    unitId
-}: CommentsSectionProps) => {
-    const [newComment, setNewComment] = useState('');
-
-    const commentFetcher = useFetcher()
-
-    const handleNewComment = () => {
-        if (newComment.trim()) {
-            void commentFetcher.submit({
-                content: newComment,
-                unit_id: unitId,
-                type: 'comment',
-            }, {
-                method: 'POST',
-                action: '/api/comments/create-comment',
-            })
-            setNewComment('');
-        }
-    }
-
-    return (
-        <div className="w-full space-y-6">
-            {/* 새 댓글 작성 */}
-            <Card className={"bg-emerald-50 text-emerald-700"}>
-                <CardContent className="p-4 ">
-                    <div className="space-y-2">
-                        <h3 className="text-lg font-semibold">댓글 {comments.length}개</h3>
-                        <div className="space-y-3">
-                            <Textarea
-                                placeholder="댓글을 작성하세요..."
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                className="min-h-[100px]"
-                            />
-                            <div className="flex justify-end">
-                                <Button
-                                    onClick={handleNewComment}
-                                    disabled={!newComment.trim()}
-                                >
-                                    댓글 작성
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* 댓글 목록 */}
-            <div className="space-y-4">
-                {comments.map((comment) => (
-                    <CommentItem
-                        key={comment.comment_id}
-                        comment={comment}
-                        loginUserId={loginUserId}
-                        isAdmin={isAdmin}
-                        unitId={unitId}
-                    />
-                ))}
-            </div>
-        </div>
-    );
-};
-
-export default CommentsSection;

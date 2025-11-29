@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { DateTime } from "luxon";
-import CommentsSection from "~/feature/comments/page/comment-item";
+import CommentsSection from "~/feature/comments/page/comment-section";
 
 type UnitDataType = Awaited<ReturnType<typeof getUnitAndConceptsByUnitId>>;
 export type UnitCommentsType = NonNullable<UnitDataType>['comments'];
@@ -310,7 +310,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                                         <div className={"flex items-center space-x-4"}>
                                             <div
                                                 className={
-                                                    `flex-shrink-0 w-10 h-10 ${colors[index % colors.length].bg} 
+                                                    `shrink-0 w-10 h-10 ${colors[index % colors.length].bg} 
                                                     text-white rounded-xl flex items-center justify-center text-sm 
                                                     font-bold shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                                                 {index + 1}
