@@ -20,6 +20,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useFetcher, useNavigate } from 'react-router';
+import { CommnetReplyFrom } from './comment-reply-form';
 
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 
@@ -94,27 +95,7 @@ export const CommentItem = ({
     const likefetcherId = likeFetcher.formData?.get('comment_id')
 
     const navigate = useNavigate();
-
-
-    //  🚨🚨 수정필요
-    const [showReplyReplyForm, setShowReplyReplyForm] = useState(false);
-    const [replyReplyContent, setReplyReplyContent] = useState('');
-
-    const handleReplyReply = () => {
-        if (!replyReplyContent.trim() || !comment.comment_id) return;
-        void subCommentFetcher.submit({
-            content: replyReplyContent,
-            unit_id: unitId,
-            type: 'reply',
-            parent_comment_id: comment.comment_id,
-        }, {
-            method: 'POST',
-            action: '/api/comments/create-comment',
-        })
-        setReplyReplyContent('');
-        setShowReplyReplyForm(false);
-        setShowReplies(true);
-    }
+    const [showReplyReplyForm, setShowReplyReplyForm] = useState<Set<number>>(new Set());
 
     return (
         <Card className="w-full">
@@ -277,8 +258,6 @@ export const CommentItem = ({
                     <div className="mt-4 pl-11 space-y-4 bg-emerald-50 rounded-lg">
                         <Separator />
                         {comment.comments.map((reply) => {
-
-
                             return (
                                 <div key={reply.comment_id} className="flex space-x-3">
 
@@ -339,7 +318,14 @@ export const CommentItem = ({
                                                 variant="ghost"
                                                 size="sm"
                                                 className="h-8 px-2 text-xs hover:bg-emerald-200"
-                                                onClick={() => setShowReplyReplyForm(!showReplyReplyForm)}
+                                                onClick={() => setShowReplyReplyForm(prev => {
+                                                    const newSet = new Set(prev)
+                                                    if (newSet.has(reply.comment_id)) 
+                                                        newSet.delete(reply.comment_id)
+                                                    else 
+                                                        newSet.add(reply.comment_id)
+                                                    return newSet
+                                                } )}
                                             >
                                                 <Reply className="w-3 h-3 mr-1" />
                                                 답글
@@ -364,37 +350,13 @@ export const CommentItem = ({
                                             </DropdownMenu>
 
                                         </div>
-                                        {showReplyReplyForm && (
-                                            <div className="mt-4">
-                                                <div className="space-y-2">
-                                                    <Textarea
-                                                        placeholder="답글을 작성하세요..."
-                                                        value={replyReplyContent}
-                                                        onChange={(e) => setReplyReplyContent(e.target.value)}
-                                                        className="min-h-[80px] text-sm"
-                                                    />
-                                                    <div className="flex justify-end space-x-2">
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => {
-                                                                setShowReplyReplyForm(false);
-                                                                setReplyReplyContent('');
-                                                            }}
-                                                        >
-                                                            취소
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            onClick={handleReplyReply}
-                                                            disabled={!replyReplyContent.trim()}
-                                                        >
-                                                            답글 작성
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
+                                        { showReplyReplyForm.has(reply.comment_id) ? <CommnetReplyFrom
+                                            comment_id={comment.comment_id}
+                                            unit_id={unitId}
+                                            reply_id={reply.comment_id}
+                                            setShowReplyReplyForm={setShowReplyReplyForm}
+                                        />
+                                        : null} 
                                     </div>
                                 </div>
                             )

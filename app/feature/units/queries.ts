@@ -94,7 +94,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                             is_edited: true,
                             updated_at: true,
                         },
-                        orderBy: (comments, { desc }) => [desc(comments.created_at)],
+                        orderBy: (comments, { asc }) => [asc(comments.created_at)],
                         with:{
                             user: {
                                 columns: {
