@@ -26,6 +26,10 @@ export const commentsTable = pgTable("comments", {
     parent_comment_id: integer().references((): AnyPgColumn => commentsTable.comment_id, {
         onDelete: "cascade",
     }),
+    // 대댓글 언급 유저
+    mentioned_user_id: uuid().references(() => usersTable.user_id, {
+        onDelete: "cascade"
+    }),
 
     // 좋아요 수
     likes_count: smallint().default(0).notNull(),
@@ -85,6 +89,12 @@ export const commentsRelations = relations(commentsTable, ({ one, many }) => ({
     user: one(usersTable, {
         fields: [commentsTable.user_id],
         references: [usersTable.user_id],
+        relationName: "get_comments"
+    }),
+
+    mention: one(usersTable, {
+        fields: [commentsTable.mentioned_user_id],
+        references:[usersTable.user_id]
     }),
 
     comment: one(commentsTable, {

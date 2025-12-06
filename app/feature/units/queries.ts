@@ -109,6 +109,11 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                                     comment_id: true,
                                 },
                                 where: eq(commentLikesTable.user_id, user_id),
+                            },
+                            mention:{
+                                columns:{
+                                    username:true
+                                }
                             }
                         },
                     },

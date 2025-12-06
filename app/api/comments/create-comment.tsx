@@ -13,11 +13,13 @@ export const action = async ({ request }: Route.ActionArgs) => {
         content: z.string().min(1),
         unit_id: z.coerce.number().int().positive(),
         parent_comment_id: z.coerce.number().int().positive().optional(),
+        mentioned_user_id: z.uuid().optional(), 
         type: z.enum(['comment', 'reply'])
     });
 
     const formData = await request.formData()
     const formDataObject = Object.fromEntries(formData.entries());
+    console.log(formData)
     const { success, data, error } = schema.safeParse(formDataObject);
     if (!success) return { status: 400, body: { errors: error } };
 
@@ -30,6 +32,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
         const refineData = {
             ...data,
             parent_comment_id: data.parent_comment_id,
+            mentioned_user_id: data.mentioned_user_id!
         }
         await createReply({user_id, ...refineData})
     }

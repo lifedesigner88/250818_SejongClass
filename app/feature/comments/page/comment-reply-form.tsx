@@ -3,16 +3,18 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useFetcher } from 'react-router';
+import type { SubReplyUserType } from './comment-item';
 
 
 interface CommnetReplyFromProps {
     comment_id: number,
     unit_id: number,
     reply_id: number,
+    reply_userinfo: SubReplyUserType,
     setShowReplyReplyForm: React.Dispatch<React.SetStateAction<Set<number>>>
 }
 
-export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, setShowReplyReplyForm }: CommnetReplyFromProps) => {
+export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, reply_userinfo, setShowReplyReplyForm }: CommnetReplyFromProps) => {
 
     const [replyReplyContent, setReplyReplyContent] = useState('');
 
@@ -36,6 +38,7 @@ export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, setShowReplyRe
             unit_id,
             type: 'reply',
             parent_comment_id: comment_id,
+            mentioned_user_id: reply_userinfo.user_id
         }, {
             method: 'POST',
             action: '/api/comments/create-comment',
@@ -47,7 +50,7 @@ export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, setShowReplyRe
         <div className="mt-3 pb-4 pr-3">
             <div className="space-y-2">
                 <Textarea
-                    placeholder="답글을 작성하세요..."
+                    placeholder={`to ${reply_userinfo?.nickname}(${reply_userinfo?.username})`}
                     value={replyReplyContent}
                     onChange={(e) => setReplyReplyContent(e.target.value)}
                     className="min-h-[80px] text-sm"

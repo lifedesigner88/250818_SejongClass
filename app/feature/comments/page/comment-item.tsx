@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
 import { Separator } from '@/components/ui/separator';
 import { MessageCircle, Heart, MoreHorizontal, Reply } from 'lucide-react';
 import { useState } from 'react';
@@ -22,7 +21,9 @@ import {
 import { useFetcher, useNavigate } from 'react-router';
 import { CommnetReplyFrom } from './comment-reply-form';
 
+import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
+export type SubReplyUserType = SubCommentsType["comments"][number]["user"]
 
 interface CommentItemProps {
     comment: SubCommentsType;
@@ -225,7 +226,7 @@ export const CommentItem = ({
                     <div className="mt-4 ml-11">
                         <div className="space-y-2">
                             <Textarea
-                                placeholder="답글을 작성하세요..."
+                                placeholder={`to ${comment.user.nickname}(${comment.user.username})`}
                                 value={replyContent}
                                 onChange={(e) => setReplyContent(e.target.value)}
                                 className="min-h-[80px] text-sm"
@@ -281,7 +282,17 @@ export const CommentItem = ({
                                         <div
                                             className={"text-xs text-muted-foreground/50 mb-3"}>@{reply.user.username}</div>
 
-                                        <p className="text-xs leading-relaxed">{reply.content}</p>
+                                        <p className="text-xs leading-relaxed">
+                                            {reply.mention ?
+                                                <span 
+                                                onClick={() => navigate(`/profile/${reply.mention?.username}`)}
+                                                className="inline-flex items-center rounded-md bg-sky-100 px-1.5 py-0.5 mr-1 
+                                                cursor-pointer text-xs font-medium text-sky-700">
+                                                    @{reply.mention?.username} 
+                                                </span> : null}
+                                            {reply.content}
+
+                                        </p>
 
                                         <div className="flex items-center space-x-3">
                                             {/* ❤️ 좋아요 버튼 */}
@@ -320,12 +331,12 @@ export const CommentItem = ({
                                                 className="h-8 px-2 text-xs hover:bg-emerald-200"
                                                 onClick={() => setShowReplyReplyForm(prev => {
                                                     const newSet = new Set(prev)
-                                                    if (newSet.has(reply.comment_id)) 
+                                                    if (newSet.has(reply.comment_id))
                                                         newSet.delete(reply.comment_id)
-                                                    else 
+                                                    else
                                                         newSet.add(reply.comment_id)
                                                     return newSet
-                                                } )}
+                                                })}
                                             >
                                                 <Reply className="w-3 h-3 mr-1" />
                                                 답글
@@ -350,13 +361,14 @@ export const CommentItem = ({
                                             </DropdownMenu>
 
                                         </div>
-                                        { showReplyReplyForm.has(reply.comment_id) ? <CommnetReplyFrom
+                                        {showReplyReplyForm.has(reply.comment_id) ? <CommnetReplyFrom
                                             comment_id={comment.comment_id}
+                                            reply_userinfo={reply.user}
                                             unit_id={unitId}
                                             reply_id={reply.comment_id}
                                             setShowReplyReplyForm={setShowReplyReplyForm}
                                         />
-                                        : null} 
+                                            : null}
                                     </div>
                                 </div>
                             )

@@ -16,17 +16,19 @@ export const createComment = ({ user_id, content, unit_id }: {
     })
 }
 
-export const createReply = ({ user_id, content, unit_id, parent_comment_id }: {
+export const createReply = ({ user_id, content, unit_id, parent_comment_id, mentioned_user_id }: {
     user_id: string,
     content: string,
     unit_id: number,
-    parent_comment_id: number
+    parent_comment_id: number,
+    mentioned_user_id: string
 }) => {
     return db.insert(commentsTable).values({
         user_id,
         content,
         parent_comment_id,
-        unit_id
+        unit_id,
+        mentioned_user_id
     })
 }
 

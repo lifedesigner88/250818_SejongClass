@@ -34,7 +34,7 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
     // 사용자의 단원별 학습 진도
     progress: many(progressTable),
 
-    comments: many(commentsTable),
+    comments: many(commentsTable, {relationName: "get_comments"}),
 
     checklists: many(checklistsTable),
 
