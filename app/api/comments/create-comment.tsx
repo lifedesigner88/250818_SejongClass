@@ -2,6 +2,7 @@ import type { Route } from "./+types/create-comment";
 import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { createComment, createReply } from "~/api/comments/mutation";
 import z from "zod";
+import { insertNotification } from "../notifications/mutations";
 
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -19,7 +20,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
     const formData = await request.formData()
     const formDataObject = Object.fromEntries(formData.entries());
-    console.log(formData)
     const { success, data, error } = schema.safeParse(formDataObject);
     if (!success) return { status: 400, body: { errors: error } };
 
@@ -28,13 +28,24 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
     if (data.type === 'comment') {
         await createComment({ user_id, ...data })
+
+
     } else if (data.type === 'reply' && data.parent_comment_id !== undefined) {
         const refineData = {
             ...data,
             parent_comment_id: data.parent_comment_id,
             mentioned_user_id: data.mentioned_user_id!
         }
-        await createReply({user_id, ...refineData})
+        const [{reply_id}] = await createReply({user_id, ...refineData})
+
+        await insertNotification({
+            type : "reply",
+            comment_id : reply_id,
+            from_user_id: user_id,
+            to_user_id: data.mentioned_user_id!,
+        })
+
+
     }
 
     return new Response("ok", { status: 200 })

@@ -29,7 +29,7 @@ export const createReply = ({ user_id, content, unit_id, parent_comment_id, ment
         parent_comment_id,
         unit_id,
         mentioned_user_id
-    })
+    }).returning({ reply_id : commentsTable.comment_id})
 }
 
 

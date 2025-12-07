@@ -53,6 +53,7 @@ export const CommentItem = ({
             unit_id: unitId,
             type: 'reply',
             parent_comment_id: comment.comment_id,
+            mentioned_user_id: comment.user.user_id
         }, {
             method: 'POST',
             action: '/api/comments/create-comment',
@@ -137,7 +138,7 @@ export const CommentItem = ({
 
                         <div className={"text-xs text-muted-foreground/50 mb-3"}>@{comment.user.username}</div>
 
-                        <p className="text-sm leading-relaxed">{comment.content}</p>
+                        <p className="text-sm leading-relaxed whitespace-pre-line">{comment.content}</p>
 
                         <div className="flex items-center space-x-4">
                             <div>
@@ -282,7 +283,7 @@ export const CommentItem = ({
                                         <div
                                             className={"text-xs text-muted-foreground/50 mb-3"}>@{reply.user.username}</div>
 
-                                        <p className="text-xs leading-relaxed">
+                                        <p className="text-xs leading-relaxed whitespace-pre-line">
                                             {reply.mention ?
                                                 <span 
                                                 onClick={() => navigate(`/profile/${reply.mention?.username}`)}
