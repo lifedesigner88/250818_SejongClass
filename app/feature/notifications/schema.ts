@@ -1,4 +1,4 @@
-import { boolean, pgEnum, pgTable, serial, timestamp, uuid, integer } from "drizzle-orm/pg-core";
+import { boolean, pgEnum, pgTable, serial, timestamp, uuid, integer, varchar } from "drizzle-orm/pg-core";
 import { usersTable } from "~/feature/users/schema";
 import { defaultPgPolicy } from "@/pg-policy/pg-polish";
 import { relations } from "drizzle-orm";
@@ -20,6 +20,7 @@ export const notificationsTable = pgTable("notifications", {
     to_user_id: uuid().references(() => usersTable.user_id, {
         onDelete: "cascade"
     }).notNull(),
+    to_unit_url: varchar({ length: 500 }),
     type: notificationType().notNull(),
     is_checked: boolean().default(false).notNull(),
     created_at: timestamp().defaultNow(),

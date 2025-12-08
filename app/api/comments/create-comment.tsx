@@ -15,6 +15,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
         unit_id: z.coerce.number().int().positive(),
         parent_comment_id: z.coerce.number().int().positive().optional(),
         mentioned_user_id: z.uuid().optional(), 
+        to_unit_url: z.string().min(1).optional(),
         type: z.enum(['comment', 'reply'])
     });
 
@@ -37,12 +38,13 @@ export const action = async ({ request }: Route.ActionArgs) => {
             mentioned_user_id: data.mentioned_user_id!
         }
         const [{reply_id}] = await createReply({user_id, ...refineData})
-
+        
         await insertNotification({
             type : "reply",
             comment_id : reply_id,
             from_user_id: user_id,
             to_user_id: data.mentioned_user_id!,
+            to_unit_url: data.to_unit_url
         })
 
 

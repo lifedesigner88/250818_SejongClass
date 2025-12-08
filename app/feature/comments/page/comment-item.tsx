@@ -18,7 +18,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useFetcher, useNavigate } from 'react-router';
+import { useFetcher, useLocation, useNavigate } from 'react-router';
 import { CommnetReplyFrom } from './comment-reply-form';
 
 import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
@@ -45,6 +45,7 @@ export const CommentItem = ({
 
 
     const subCommentFetcher = useFetcher()
+    const location = useLocation()
 
     const handleReply = () => {
         if (!replyContent.trim() || !comment.comment_id) return;
@@ -53,7 +54,8 @@ export const CommentItem = ({
             unit_id: unitId,
             type: 'reply',
             parent_comment_id: comment.comment_id,
-            mentioned_user_id: comment.user.user_id
+            mentioned_user_id: comment.user.user_id,
+            to_unit_url: location.pathname
         }, {
             method: 'POST',
             action: '/api/comments/create-comment',
@@ -68,6 +70,7 @@ export const CommentItem = ({
         likeFetcher.submit({
             comment_id,
             writter_id,
+            to_unit_url: location.pathname
         }, {
             method: 'POST',
             action: '/api/comments/like-comment',
@@ -285,11 +288,11 @@ export const CommentItem = ({
 
                                         <p className="text-xs leading-relaxed whitespace-pre-line">
                                             {reply.mention ?
-                                                <span 
-                                                onClick={() => navigate(`/profile/${reply.mention?.username}`)}
-                                                className="inline-flex items-center rounded-md bg-sky-100 px-1.5 py-0.5 mr-1 
+                                                <span
+                                                    onClick={() => navigate(`/profile/${reply.mention?.username}`)}
+                                                    className="inline-flex items-center rounded-md bg-sky-100 px-1.5 py-0.5 mr-1 
                                                 cursor-pointer text-xs font-medium text-sky-700">
-                                                    @{reply.mention?.username} 
+                                                    @{reply.mention?.username}
                                                 </span> : null}
                                             {reply.content}
 
@@ -362,13 +365,14 @@ export const CommentItem = ({
                                             </DropdownMenu>
 
                                         </div>
-                                        {showReplyReplyForm.has(reply.comment_id) ? <CommnetReplyFrom
-                                            comment_id={comment.comment_id}
-                                            reply_userinfo={reply.user}
-                                            unit_id={unitId}
-                                            reply_id={reply.comment_id}
-                                            setShowReplyReplyForm={setShowReplyReplyForm}
-                                        />
+                                        {showReplyReplyForm.has(reply.comment_id) ?
+                                            <CommnetReplyFrom
+                                                comment_id={comment.comment_id}
+                                                reply_userinfo={reply.user}
+                                                unit_id={unitId}
+                                                reply_id={reply.comment_id}
+                                                setShowReplyReplyForm={setShowReplyReplyForm}
+                                            />
                                             : null}
                                     </div>
                                 </div>

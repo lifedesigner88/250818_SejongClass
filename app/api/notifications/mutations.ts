@@ -25,13 +25,15 @@ export const insertNotification = async({
     type,
     comment_id,
     from_user_id, 
-    to_user_id, 
+    to_user_id,
+    to_unit_url, 
 }:InferInsertModel<typeof notificationsTable>) => {
     return db.insert(notificationsTable).values({
         type,
         comment_id,
         from_user_id,
         to_user_id,
+        to_unit_url
     })
 }
 

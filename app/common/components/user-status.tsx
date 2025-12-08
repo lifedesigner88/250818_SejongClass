@@ -72,6 +72,8 @@ export function UserStatus({
 
     const providerConfig = getProviderConfig(provider);
 
+    const [notifiOpen, setNotifiOpen] = useState(false);
+
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
@@ -188,11 +190,14 @@ export function UserStatus({
                                 <MessageCircleMore className="size-5 mx-2" />
                                 문의사항
                             </Button>
-                            <Dialog>
+
+                            {/* 🚨🚨🚨 알림 다이얼로그  */}
+                            <Dialog open={notifiOpen} onOpenChange={setNotifiOpen}>
                                 <DialogTrigger asChild>
                                     <Button
                                         variant="ghost"
                                         className="w-full justify-start text-gray-600 hover:text-orange-600 hover:bg-orange-100 relative">
+                                        
                                         <Bell className="size-5 mx-2" />
                                         {/* 빨간 점 */}
                                         {is_notifi ? <span
@@ -210,6 +215,7 @@ export function UserStatus({
                                     </DialogHeader>
                                     <AlertContent
                                         notifications={notifications}
+                                        setNotifiOpen={setNotifiOpen}
                                     />
                                 </DialogContent>
                             </Dialog>

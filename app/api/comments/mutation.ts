@@ -21,7 +21,7 @@ export const createReply = ({ user_id, content, unit_id, parent_comment_id, ment
     content: string,
     unit_id: number,
     parent_comment_id: number,
-    mentioned_user_id: string
+    mentioned_user_id: string,
 }) => {
     return db.insert(commentsTable).values({
         user_id,
@@ -33,7 +33,7 @@ export const createReply = ({ user_id, content, unit_id, parent_comment_id, ment
 }
 
 
-export const toggleCommentLike = async (comment_id: number, userId: string) => {
+export const toggleCommentLike = async (comment_id: number, userId: string, ) => {
     await db.execute(sql`
         WITH deleted AS (
             DELETE FROM comment_likes
@@ -46,7 +46,7 @@ export const toggleCommentLike = async (comment_id: number, userId: string) => {
     `)
 }
 
-export const updateCommentLike = async (comment_id: number, userId: string, writter_id: string) => {
+export const updateCommentLike = async (comment_id: number, userId: string, writter_id: string, to_unit_url:string) => {
     const result = await db.query.commentLikesTable.findFirst({
         where: and(
             eq(commentLikesTable.comment_id, comment_id),
@@ -74,7 +74,8 @@ export const updateCommentLike = async (comment_id: number, userId: string, writ
             type: "like",
             comment_id: comment_id,
             from_user_id: userId,
-            to_user_id: writter_id
+            to_user_id: writter_id,
+            to_unit_url
         })
 
     }

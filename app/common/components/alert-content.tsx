@@ -4,7 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "./ui/item";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useFetcher } from "react-router";
+import { useFetcher, useNavigate } from "react-router";
 import { DateTime } from "luxon";
 
 type GetPublicUserDataType = Awaited<ReturnType<typeof getPublicUserData>>;
@@ -12,12 +12,14 @@ export type NotificationsType = NonNullable<GetPublicUserDataType>["notification
 
 interface AlertContentProps {
     notifications: NotificationsType | undefined;
+    setNotifiOpen: (val: boolean) => void
 }
 
-export const AlertContent = ({ notifications }: AlertContentProps) => {
+export const AlertContent = ({ notifications, setNotifiOpen }: AlertContentProps) => {
 
     const confirm_yes: NotificationsType = []
     const confirm_no: NotificationsType = []
+    const navigate = useNavigate()
 
     notifications?.forEach((notification) => {
         if (notification.is_checked == true)
@@ -25,7 +27,6 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
         else
             confirm_no.push(notification)
     })
-    console.log(confirm_no)
     const fetcher = useFetcher()
     const checkConfirm = (notification_id: number) => {
         void fetcher.submit({
@@ -47,6 +48,11 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
         })
     }
 
+    const moveToUnit = (to_unit_url: string) => {
+        navigate(to_unit_url)
+        setNotifiOpen(false)
+    }
+
     return (
         <Tabs defaultValue="no">
             <TabsList>
@@ -60,8 +66,9 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                 {confirm_no.map(noti => (
                     <Item
                         key={noti.notification_id}
-                        className={`my-2.5 shadow-md relative ${noti.type === "like"? "bg-red-50" : "bg-blue-100"}`} variant="outline" size="sm" asChild>
-                        <a href={"#"}>
+                        onClick={() => moveToUnit(noti.to_unit_url!)}
+                        className={`my-2.5 shadow-md relative cursor-pointer ${noti.type === "like" ? "bg-red-50" : "bg-blue-100"}`} variant="outline" size="sm" asChild>
+                        <div>
                             <ItemMedia>
                                 <Avatar className="size-11">
                                     <AvatarImage
@@ -90,14 +97,20 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
 
                             </ItemContent>
                             <ItemActions>
-                                <Button className="hidden sm:block" onClick={() => checkConfirm(noti.notification_id)}>확인</Button>
+                                <Button className="hidden sm:block" onClick={(e) => {
+                                    e.stopPropagation()
+                                    checkConfirm(noti.notification_id)
+                                }}>확인</Button>
                             </ItemActions>
                             <Button
                                 variant={'outline'}
                                 className="absolute p-3 m-1 top-0 right-0 sm:hidden"
-                                onClick={() => checkConfirm(noti.notification_id)}>✅
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    checkConfirm(noti.notification_id)
+                                }}>✅
                             </Button>
-                        </a>
+                        </div>
                     </Item>
                 ))}
             </TabsContent>
@@ -107,8 +120,9 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                 {confirm_yes.map(noti => (
                     <Item
                         key={noti.notification_id}
-                        className={"my-2.5 shadow-md relative bg-yellow-100"} variant="outline" size="sm" asChild>
-                        <a href={"#"}>
+                        onClick={() => moveToUnit(noti.to_unit_url!)}
+                        className={"my-2.5 shadow-md relative bg-yellow-100 cursor-pointer"} variant="outline" size="sm" asChild>
+                        <div>
                             <ItemMedia>
                                 <Avatar className="size-11">
                                     <AvatarImage
@@ -140,14 +154,20 @@ export const AlertContent = ({ notifications }: AlertContentProps) => {
                                 <Button
                                     variant={"outline"}
                                     className="bg-red-400 text-white hidden sm:block"
-                                    onClick={() => deleteNotifi(noti.notification_id)}>삭제</Button>
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        deleteNotifi(noti.notification_id)
+                                    }}>삭제</Button>
                             </ItemActions>
                             <Button
                                 variant={'outline'}
                                 className="absolute p-3 m-1 top-0 right-0 sm:hidden bg-red-400 text-white"
-                                onClick={() => deleteNotifi(noti.notification_id)}> X
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    deleteNotifi(noti.notification_id)
+                                }}> X
                             </Button>
-                        </a>
+                        </div>
                     </Item>
                 ))}
             </TabsContent>

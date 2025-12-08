@@ -2,7 +2,7 @@
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { useFetcher } from 'react-router';
+import { useFetcher, useLocation } from 'react-router';
 import type { SubReplyUserType } from './comment-item';
 
 
@@ -30,7 +30,7 @@ export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, reply_userinfo
             return newSet
         })
     }
-    
+    const location = useLocation()
     const handleReplyReply = () => {
         if (!replyReplyContent.trim() || !comment_id) return;
         void subCommentFetcher.submit({
@@ -38,7 +38,8 @@ export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, reply_userinfo
             unit_id,
             type: 'reply',
             parent_comment_id: comment_id,
-            mentioned_user_id: reply_userinfo.user_id
+            mentioned_user_id: reply_userinfo.user_id,
+            to_unit_url: location.pathname
         }, {
             method: 'POST',
             action: '/api/comments/create-comment',
