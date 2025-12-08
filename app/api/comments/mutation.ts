@@ -29,11 +29,11 @@ export const createReply = ({ user_id, content, unit_id, parent_comment_id, ment
         parent_comment_id,
         unit_id,
         mentioned_user_id
-    }).returning({ reply_id : commentsTable.comment_id})
+    }).returning({ reply_id: commentsTable.comment_id })
 }
 
 
-export const toggleCommentLike = async (comment_id: number, userId: string, ) => {
+export const toggleCommentLike = async (comment_id: number, userId: string,) => {
     await db.execute(sql`
         WITH deleted AS (
             DELETE FROM comment_likes
@@ -46,7 +46,7 @@ export const toggleCommentLike = async (comment_id: number, userId: string, ) =>
     `)
 }
 
-export const updateCommentLike = async (comment_id: number, userId: string, writter_id: string, to_unit_url:string) => {
+export const updateCommentLike = async (comment_id: number, userId: string, writter_id: string, to_unit_url: string) => {
     const result = await db.query.commentLikesTable.findFirst({
         where: and(
             eq(commentLikesTable.comment_id, comment_id),
@@ -91,5 +91,23 @@ export const deleteComment = async (comment_id: number, userId: string) => {
 
 export const adminDeleteComment = async (comment_id: number) => {
     await db.delete(commentsTable)
-        .where(eq(commentsTable.comment_id, comment_id));
+        .where(eq(commentsTable.comment_id, comment_id))
 }
+
+
+export const adminUpdateComment = async (comment_id: number, content: string) => {
+    await db.update(commentsTable)
+        .set({ content })
+        .where(eq(commentsTable.comment_id, comment_id))
+}
+
+
+export const updateComment = async (comment_id: number, content: string, userId: string) => {
+    await db.update(commentsTable)
+        .set({ content })
+        .where(and(
+            eq(commentsTable.comment_id, comment_id),
+            eq(commentsTable.user_id, userId)
+        ));
+}
+

@@ -96,6 +96,29 @@ export const CommentItem = ({
         setDeleteCommentOpen(false)
     }
 
+    const updateFetcher = useFetcher()
+    const [updateCommentOepn, setUpdateCommentOpen] = useState<boolean>(false)
+    const [updateCommentId, setUpdateCommentId] = useState<number>(0)
+    const [updateContent, setUpdateContent] = useState<string>("")
+    const updateComment = (comment_id: number, content: string) => {
+        setUpdateCommentId(comment_id)
+        setUpdateContent(content)
+        setUpdateCommentOpen(true)
+
+    }
+    const realUpdateComment = () => {
+        void updateFetcher.submit({
+            comment_id: updateCommentId,
+            content: updateContent,
+            type: isAdmin
+        }, {
+            method: 'POST',
+            action: '/api/comments/update-comment',
+        })
+        setUpdateCommentId(0)
+        setUpdateContent("")
+    }
+
     const isLikeidle = likeFetcher.state === 'idle'
     const likefetcherId = likeFetcher.formData?.get('comment_id')
 
@@ -115,6 +138,24 @@ export const CommentItem = ({
                     <AlertDialogFooter>
                         <AlertDialogCancel>취소</AlertDialogCancel>
                         <AlertDialogAction onClick={realDeleteComment}>삭제</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+            <AlertDialog open={updateCommentOepn} onOpenChange={setUpdateCommentOpen}>
+                <AlertDialogContent className="p-2 sm:p-6 min-w-[320px] max-h-screen overflow-y-auto">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>댓글 수정</AlertDialogTitle>
+                        <AlertDialogDescription className='hidden'>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <Textarea
+                        value={updateContent}
+                        onChange={(e) => setUpdateContent(e.target.value)}
+                        className="min-h-[80px] text-sm"
+                    />
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>취소</AlertDialogCancel>
+                        <AlertDialogAction onClick={realUpdateComment}>수정</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
@@ -141,7 +182,7 @@ export const CommentItem = ({
 
                         <div className={"text-xs text-muted-foreground/50 mb-3"}>@{comment.user.username}</div>
 
-                        <p className="text-sm leading-relaxed whitespace-pre-line">{comment.content}</p>
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{comment.content}</p>
 
                         <div className="flex items-center space-x-4">
                             <div>
@@ -197,29 +238,29 @@ export const CommentItem = ({
                                     </Button>
                                 )}
 
-                                <DropdownMenu>
+                                {(comment.user.user_id === loginUserId && comment.comments.length === 0) || isAdmin ?
+                                    <DropdownMenu>
 
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="sm" className="h-8 px-2">
-                                            <MoreHorizontal className="w-3 h-3" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="sm" className="h-8 px-2">
+                                                <MoreHorizontal className="w-3 h-3" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
 
-                                    <DropdownMenuContent>
-                                        {(comment.user.user_id === loginUserId && comment.comments.length === 0) || isAdmin ? <>
+                                        <DropdownMenuContent>
                                             <DropdownMenuItem className={"flex justify-center"}
                                                 onClick={() => deleteComment(comment.comment_id)}>
                                                 삭제
                                             </DropdownMenuItem>
                                             <DropdownMenuItem className={"flex justify-center"}
-                                                onClick={() => deleteComment(comment.comment_id)}>
+                                                onClick={() => updateComment(comment.comment_id, comment.content)}>
                                                 수정
                                             </DropdownMenuItem>
-                                        </>
-                                            : null
-                                        }
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                    : null
+                                }
+
                             </div>
                         </div>
                     </div>
@@ -286,7 +327,7 @@ export const CommentItem = ({
                                         <div
                                             className={"text-xs text-muted-foreground/50 mb-3"}>@{reply.user.username}</div>
 
-                                        <p className="text-xs leading-relaxed whitespace-pre-line">
+                                        <p className="text-xs leading-relaxed whitespace-pre-wrap">
                                             {reply.mention ?
                                                 <span
                                                     onClick={() => navigate(`/profile/${reply.mention?.username}`)}
@@ -295,7 +336,6 @@ export const CommentItem = ({
                                                     @{reply.mention?.username}
                                                 </span> : null}
                                             {reply.content}
-
                                         </p>
 
                                         <div className="flex items-center space-x-3">
@@ -346,23 +386,27 @@ export const CommentItem = ({
                                                 답글
                                             </Button>
 
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="sm" className="h-8 px-2">
-                                                        <MoreHorizontal className="w-3 h-3" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent>
-                                                    {reply.user.user_id === loginUserId || isAdmin
-                                                        ? <DropdownMenuItem
+                                            {reply.user.user_id === loginUserId || isAdmin ?
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="ghost" size="sm" className="h-8 px-2">
+                                                            <MoreHorizontal className="w-3 h-3" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent>
+                                                        <DropdownMenuItem
                                                             className={"flex justify-center"}
                                                             onClick={() => deleteComment(reply.comment_id)}>
                                                             삭제
                                                         </DropdownMenuItem>
-                                                        : null
-                                                    }
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                                        <DropdownMenuItem className={"flex justify-center"}
+                                                            onClick={() => updateComment(reply.comment_id, reply.content)}>
+                                                            수정
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                                : null
+                                            }
 
                                         </div>
                                         {showReplyReplyForm.has(reply.comment_id) ?
