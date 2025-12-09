@@ -12,3 +12,5 @@
 
 .env
 /react-email-starter/node_modules/
+
+.vscode/settings.json

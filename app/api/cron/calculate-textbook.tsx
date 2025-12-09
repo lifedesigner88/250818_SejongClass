@@ -1,7 +1,8 @@
 import type { Route } from "./+types/calculate-textbook";
 import db from "~/db";
 import { textbooksTable } from "~/feature/textbooks/schema";
-import { eq,} from "drizzle-orm";
+import { eq, lt, sql } from "drizzle-orm";
+import { notificationsTable } from "#app/feature/notifications/schema.js";
 
 
 // 텍스트북 실제 데이터 계산 함수
@@ -98,7 +99,6 @@ export const action = async ({ request }: Route.LoaderArgs) => {
 
         // 실제 데이터 계산
         const calculatedData = calculateTextbooksRealInfo(textbooksRealInfo);
-        console.log("calculatedData:", calculatedData);
 
         // DB 업데이트 부분 (트랜잭션 사용)
         await db.transaction(async (tx) => {
@@ -114,6 +114,17 @@ export const action = async ({ request }: Route.LoaderArgs) => {
         });
         console.timeEnd("calculate-textbook Cron Job🔥");
 
+
+        console.time("delete 7 days Notification Cron Job🔥");
+        await db.delete(notificationsTable)
+            .where(
+                lt(notificationsTable.created_at, sql`NOW() - INTERVAL '7 days'`)
+            );
+        console.timeEnd("delete 7 days Notification Cron Job🔥");
+
+
+        return { message: "ok", updatedCount: calculatedData.length };
+
     } catch (error) {
         console.error("텍스트북 계산 중 오류:", error);
         return Response.json({
@@ -121,37 +132,5 @@ export const action = async ({ request }: Route.LoaderArgs) => {
             error: error instanceof Error ? error.message : "알 수 없는 오류"
         }, { status: 500 });
     }
-};
 
-// export default function CalculateTextbook() {
-//
-//     const secretKey = import.meta.env.VITE_SEJONG_SECRET_KEY;
-//
-//     const activateAction = async () => {
-//         try {
-//             const response = await fetch("/api/cron/calculate-textbook", {
-//                 method: "POST",
-//                 headers: {
-//                     "X-SEJONG": secretKey!,
-//                     "Content-Type": "application/json",
-//                 },
-//             });
-//
-//             if (!response.ok) {
-//                 console.error(`HTTP error! status: ${response.status}`);
-//                 return;
-//             }
-//
-//             const data = await response.json();
-//             console.log("계산 결과:", data);
-//             console.log("calculate-textbook🕺");
-//
-//         } catch (error) {
-//             console.error('요청 오류:', error);
-//         }
-//     };
-//
-//     return <div>
-//         <Button onClick={() => activateAction()}>Calculate Textbooks</Button>
-//     </div>;
-// }
+};

@@ -1,0 +1,7 @@
+{
+  "rest-client.environmentVariables": {
+    "local": {
+      "secret": "여기에_세종_시크릿값"
+    }
+  }
+}

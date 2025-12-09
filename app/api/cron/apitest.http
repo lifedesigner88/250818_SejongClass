@@ -1,0 +1,3 @@
+POST http://localhost:5173/api/cron/calculate-textbook
+X-SEJONG: {{secret}}
+Content-Type: application/json
