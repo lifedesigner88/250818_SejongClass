@@ -25,6 +25,7 @@ export default [
             route("/update-title", "api/units/update-title.tsx"),
             route("/create-title", "api/units/create-title.tsx"),
             route("/delete-title", "api/units/delete-title.tsx"),
+            route("/update-video", "api/units/update-video.tsx"),
         ]),
         ...prefix("/notes", [
             route("/create-note", "api/notes/create-note.tsx"),

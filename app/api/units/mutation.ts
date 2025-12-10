@@ -44,7 +44,7 @@ export const updateMiddle = async (middle_id: number, title: string, sort_order:
         .where(eq(middlesTable.middle_id, middle_id));
 }
 export const updateUnit = async (unit_id: number, title: string, sort_order: number,
-                                 is_free: boolean, is_published: boolean, middle_chapter_id:number) => {
+    is_free: boolean, is_published: boolean, middle_chapter_id: number) => {
     return db.update(unitsTable)
         .set({
             title,
@@ -92,7 +92,17 @@ export const deleteUnit = async (unit_id: number) => {
 
 
 
+// Update Time and YouTubeID
+export const updateUnitVideo = async (unit_id: number, youtube_video_id: string, estimated_seconds: number) => {
+    return db.update(unitsTable)
+        .set({
+            unit_id,
+            youtube_video_id,
+            estimated_seconds
+        })
+        .where(eq(unitsTable.unit_id, unit_id))
 
+}
 
 
 

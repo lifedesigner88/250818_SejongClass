@@ -27,6 +27,8 @@ import { Button } from "@/components/ui/button";
 import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import { DateTime } from "luxon";
 import CommentsSection from "~/feature/comments/page/comment-section";
+import { EditVideoDialog } from "./edit-video-dialog";
+import YouTube from "react-youtube";
 
 type UnitDataType = Awaited<ReturnType<typeof getUnitAndConceptsByUnitId>>;
 export type UnitCommentsType = NonNullable<UnitDataType>['comments'];
@@ -150,21 +152,45 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     }, [unitData])
 
 
+    const [openEditVideo, setOpenEditVideo] = useState<boolean>(false)
+
+
+
     // 개념보기 시트
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
     return (
         <ScrollArea className="p-0 w-full h-[calc(100vh-64px)] overflow-hidden">
-            <div className={"max-w-[1280px] mx-auto mb-200"}>
 
+            <div className={"max-w-[1280px] mx-auto mb-200"}>
+                {isAdmin ? <>
+                    <Button className={"absolute "} onClick={() => setOpenEditVideo(true)}> 수정 </Button>
+                    <EditVideoDialog
+                        unit_id={unitData.unit_id}
+                        youtube_video_id={unitData.youtube_video_id}
+                        estimated_seconds={unitData.estimated_seconds}
+                        open={openEditVideo}
+                        onOpenChange={setOpenEditVideo}
+                    />
+                </>
+                    : null
+                }
                 {/* 영상 섹션 */}
                 <div className="aspect-video">
-                    <iframe
-                        src={`https://www.youtube.com/embed/${unitData.youtube_video_id}`}
-                        className="w-full h-full"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                    />
+                    <div className="w-full h-full">
+                        <YouTube
+                            className="w-full h-full"
+                            videoId={unitData.youtube_video_id??""}
+                            opts={{
+                                width: "100%",
+                                height: "100%",
+                                playerVars: {
+                                    modestbranding: 1,
+                                    rel: 0,
+                                },
+                            }}
+                        />
+                    </div>
                 </div>
 
                 {/* 콘텐츠 섹션 */}

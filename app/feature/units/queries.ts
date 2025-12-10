@@ -16,6 +16,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
             is_free: true,
             is_published: true,
             updated_at: true,
+            estimated_seconds: true,
         },
         with: {
             middle: {
