@@ -4,7 +4,6 @@ import { getUnitAndConceptsByUnitId } from "../queries";
 import { redirect, useFetcher, useLocation, useOutletContext } from "react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useMemo, useState } from "react";
-import colors from "~/feature/textbooks/major-color";
 import { ChevronDown, Brain, Loader2 } from "lucide-react";
 import type { JSONContent } from "@tiptap/react";
 import type { Route } from "./+types/unit-page";
@@ -25,7 +24,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
-import { DateTime } from "luxon";
 import CommentsSection from "~/feature/comments/page/comment-section";
 import { EditVideoDialog } from "./edit-video-dialog";
 import YouTube from "react-youtube";
@@ -105,55 +103,13 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const fetcher = useFetcher()
 
 
-    // Note
-    const noteFetcher = useFetcher()
-    const isNoteExists = unitData.notes.length > 0;
-
-    const [noteData, setNoteData] = useState<JSONContent>(EMPTY_NOTE)
-    const [isNoteNeedSave, setIsNoteNeedSave] = useState(false)
-    const [noteOpen, setNoteOpen] = useState(isNoteExists);
-    const firstLodingNoteData = isNoteExists ? unitData.notes[0].readme_json : EMPTY_NOTE
-
-    useEffect(() => {
-        if (JSON.stringify(noteData) !== JSON.stringify(firstLodingNoteData)) {
-            setIsNoteNeedSave(true);
-        } else {
-            setIsNoteNeedSave(false);
-        }
-    }, [noteData]);
-
-    // 노트가 없는경우 생성
-    const createFirstNote = () => {
-        if (unitData.notes.length == 0)
-            void fetcher.submit(
-                { unit_id: unitData.unit_id },
-                { action: "/api/notes/create-note", method: "POST" }
-            )
-        else if (JSON.stringify(noteData) === JSON.stringify(EMPTY_NOTE) && !isNoteNeedSave)
-            fetch("/api/notes/delete-note", {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    unit_id: unitData.unit_id
-                })
-            }).catch(console.error);
-        setNoteOpen(pre => !pre);
-    }
-
     // unit 페이지 이동시.
     useEffect(() => {
         if (unitData.readme_json) {
             setContent(unitData.readme_json);
         }
-        if (isNoteExists) {
-            setNoteData(unitData.notes[0].readme_json);
-        }
-        setIsNoteNeedSave(false);
         setContentNeedSave(false);
         setContentOpen(true);
-        setNoteOpen(isNoteExists);
     }, [unitData])
 
 
@@ -175,7 +131,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
             })
         }
     }
-
 
     // 개념보기 시트
     const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -274,57 +229,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     </CollapsibleContent>
                 </Collapsible>
 
-                {/* Memo */}
-                <Collapsible open={noteOpen} onOpenChange={createFirstNote} className={"relative"}>
-                    <CollapsibleTrigger
-                        className={`cursor-pointer flex items-center justify-between w-full mt-3 p-4 sm:pl-6 hover:opacity-80 transition-opacity bg-indigo-100  text-indigo-700 rounded-t-lg`}>
-                        <div className="flex items-center space-x-2 ">
-                            <Breadcrumb>
-                                <BreadcrumbList className={"text-md text-indigo-700"}>
-
-                                    {isNoteExists && noteOpen && isNoteNeedSave
-                                        ? <BreadcrumbItem>
-                                            {DateTime.fromJSDate(unitData.notes[0].updated_at!).setLocale('ko').toRelative()}
-                                        </BreadcrumbItem>
-                                        : null}
-
-                                    <BreadcrumbSeparator className={noteOpen ? "rotate-90" : ""} />
-                                    <BreadcrumbItem className={"text-lg font-semibold "}>
-                                        {noteOpen ? "✏️ 메모" : "✅ 메모"}
-                                    </BreadcrumbItem>
-                                </BreadcrumbList>
-                            </Breadcrumb>
-                        </div>
-                        <ChevronDown
-                            className={`h-5 w-5 transition-transform duration-200 ${!noteOpen ? "rotate-90" : ""}`} />
-                    </CollapsibleTrigger>
-
-                    {isNoteExists ?
-                        <CollapsibleContent className="mt-4 mb-20">
-                            <Tiptap content={noteData} editable={true} onChange={setNoteData} />
-                            {isNoteNeedSave ?
-                                <noteFetcher.Form method="post" className="flex justify-center  "
-                                    action={'/api/notes/update-note'}>
-                                    <input type="hidden" name="content" value={JSON.stringify(noteData)} />
-                                    <input type="hidden" name="unit_id" value={unitData.unit_id} />
-                                    <Button
-                                        type="submit"
-                                        disabled={noteFetcher.state !== "idle"}
-                                        className="fixed bottom-0 z-50 w-full max-w-xl px-4 py-2 mb-10 mt-4 bg-indigo-100 font-bold text-indigo-700 hover:text-white">
-                                        {noteFetcher.state !== "idle" ? (
-                                            <div className="flex items-center justify-center">
-                                                <Loader2 className="size-5 mr-3 animate-spin" />
-                                                저장 중...
-                                            </div>
-                                        ) : (
-                                            "노트저장"
-                                        )}
-                                    </Button>
-                                </noteFetcher.Form> : null
-                            }
-                        </CollapsibleContent> : null
-                    }
-                </Collapsible>
 
                 {/* 댓글 */}
                 <div className="container mx-auto py-8">

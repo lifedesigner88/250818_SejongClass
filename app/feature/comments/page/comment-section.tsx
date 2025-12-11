@@ -45,6 +45,7 @@ const CommentsSection = ({
                         <h3 className="text-lg font-semibold">댓글 {comments.length}개</h3>
                         <div className="space-y-3">
                             <Textarea
+                                id={`${unitId}-text`}
                                 placeholder="댓글을 작성하세요..."
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}

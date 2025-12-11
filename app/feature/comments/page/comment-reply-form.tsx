@@ -51,6 +51,7 @@ export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, reply_userinfo
         <div className="mt-3 pb-4 pr-3">
             <div className="space-y-2">
                 <Textarea
+                    id={`${comment_id}-reply`}
                     placeholder={`to ${reply_userinfo?.nickname}(${reply_userinfo?.username})`}
                     value={replyReplyContent}
                     onChange={(e) => setReplyReplyContent(e.target.value)}

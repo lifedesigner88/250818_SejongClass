@@ -15,7 +15,6 @@ import { usersRelations, usersTable, } from '~/feature/users/schema';
 import { checklistsRelations, checklistsTable } from "~/feature/checklists/schema";
 import { curriculumsRelations, curriculumsTable } from "~/feature/curriculums/schema";
 import { paymentsRelations, paymentsTable } from "~/feature/payments/schema";
-import { notesRelations, notesTable } from "~/feature/note/schema";
 import { commentLikesRelations, commentLikesTable, commentsRelations, commentsTable } from "~/feature/comments/schema";
 import { visitlogsRelations, visitlogsTable } from "~/feature/visitlogs/schema";
 import { notificationsRelation, notificationsTable } from "~/feature/notifications/schema";
@@ -56,9 +55,6 @@ const schema = {
 
     paymentsTable,
     paymentsRelations,
-
-    notesTable,
-    notesRelations,
 
     commentsTable,
     commentsRelations,

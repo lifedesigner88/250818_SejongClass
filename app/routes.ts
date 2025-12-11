@@ -28,11 +28,6 @@ export default [
             route("/update-video", "api/units/update-video.tsx"),
             route("/complete-unit", "api/units/complete-unit.tsx")
         ]),
-        ...prefix("/notes", [
-            route("/create-note", "api/notes/create-note.tsx"),
-            route("/update-note", "api/notes/update-note.tsx"),
-            route("/delete-note", "api/notes/delete-note.tsx"),
-        ]),
         ...prefix("/notifi", [
             route("check-notifi", "api/notifications/check-notifi.tsx")
         ]),

@@ -14,7 +14,6 @@ import { relations, sql } from "drizzle-orm";
 import { progressTable } from "~/feature/progress/schema";
 import { curriculumsTable } from "~/feature/curriculums/schema";
 import type { JSONContent } from "@tiptap/react";
-import { notesTable } from "~/feature/note/schema";
 import { commentsTable } from "~/feature/comments/schema";
 const EMPTY_NOTE: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const
 
@@ -92,8 +91,6 @@ export const unitsRelations = relations(unitsTable, ({ one, many }) => ({
     progress: many(progressTable),
 
     curriculums: many(curriculumsTable),
-
-    notes: many(notesTable),
 
     comments: many(commentsTable),
 

@@ -149,6 +149,7 @@ export const CommentItem = ({
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <Textarea
+                        id={`${unitId}-youtube`}
                         value={updateContent}
                         onChange={(e) => setUpdateContent(e.target.value)}
                         className="min-h-[80px] text-sm"
@@ -271,6 +272,7 @@ export const CommentItem = ({
                     <div className="mt-4 ml-11">
                         <div className="space-y-2">
                             <Textarea
+                                id={`${comment.comment_id}`}
                                 placeholder={`to ${comment.user.nickname}(${comment.user.username})`}
                                 value={replyContent}
                                 onChange={(e) => setReplyContent(e.target.value)}

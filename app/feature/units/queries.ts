@@ -1,7 +1,6 @@
 import db from "~/db";
 import { unitsTable } from "~/feature/units/schema";
 import { eq, isNull } from "drizzle-orm";
-import { notesTable } from "~/feature/note/schema";
 import { commentLikesTable, commentsTable } from "~/feature/comments/schema";
 import { progressTable } from "../progress/schema";
 
@@ -46,14 +45,6 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                 },
                 where: eq(progressTable.user_id, user_id)
             },
-            notes: {
-                columns: {
-                    readme_json: true,
-                    updated_at: true,
-                },
-                where: eq(notesTable.user_id, user_id),
-            },
-
             comments: {
                 columns: {
                     comment_id: true,
