@@ -133,14 +133,14 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     const handleUnitClick = (unitId: number, isFree: boolean, isPublished: boolean) => {
 
-        if (isFree || isAdmin) {
+        if (isFree && isPublished || isAdmin) {
             navigate(`${unitId}`);
             if (window.innerWidth < 768) setIsMobileMenuOpen(false);
             return
         }
 
         if (!isPublished) {
-            openNotPubAlert(true)
+            setNotPubAlert(true)
             return
         }
 
@@ -156,8 +156,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     const fetcher = useFetcher()
     const handleUnitToggleClick = (unit_id: number, isPublished: boolean) => {
 
-        if (!isPublished) {
-            openNotPubAlert(true)
+        if (!isPublished && !isAdmin) {
+            setNotPubAlert(true)
             return
         }
 
@@ -174,7 +174,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         })
     }
 
-    // 과먹 진행상황 계산.
+    // 과목 진행상황 계산.
     const progressRate = Math.floor(calculateTotalProgressOptimized(textbookInfo!))
     useEffect(() => {
         if (progressRate >= 0) {
@@ -225,28 +225,28 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
     const enrollTextBooks = async () => {
         if (price === 0) {
             await enrollFetcher.submit({
-                    textbook_id: textbookId,
-                    price
-                },
+                textbook_id: textbookId,
+                price
+            },
                 {
                     method: "post",
                     action: "/api/enrollments/enroll-free",
                 })
         } else {
             await widgets.current?.requestPayment({
-                    orderId: crypto.randomUUID(),
-                    orderName: `SejongClass-${textbookInfo!.title}`,
+                orderId: crypto.randomUUID(),
+                orderName: `SejongClass-${textbookInfo!.title}`,
+                customerEmail: auth.publicUserData.email,
+                customerName: auth.publicUserData.username,
+                metadata: {
+                    textbook_id: textbookId,
+                    user_id: auth.publicUserData.user_id,
+                    redirect_url: afterEnrollNaviUrl,
                     customerEmail: auth.publicUserData.email,
-                    customerName: auth.publicUserData.username,
-                    metadata: {
-                        textbook_id: textbookId,
-                        user_id: auth.publicUserData.user_id,
-                        redirect_url: afterEnrollNaviUrl,
-                        customerEmail: auth.publicUserData.email,
-                    },
-                    successUrl: `${window.location.origin}/api/enrollments/enroll`,
-                    failUrl: `${window.location.href}/fail`,
-                }
+                },
+                successUrl: `${window.location.origin}/api/enrollments/enroll`,
+                failUrl: `${window.location.href}/fail`,
+            }
             )
         }
     }
@@ -284,7 +284,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
         }, 1000)
     }
 
-    const [notPublished, openNotPubAlert] = useState(false)
+    const [notPublished, setNotPubAlert] = useState<boolean>(false)
 
 
     // 좌측 네비게이션 토글 관련 변수
@@ -358,7 +358,12 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                 unitInfo={unitInfo}
                 setUnitInfo={setUnitInfo}
             />
-            <NotPublishedAlert open={notPublished} onOpenChange={openNotPubAlert}/>
+
+            <NotPublishedAlert
+                open={notPublished}
+                onOpenChange={setNotPubAlert}
+                defaultUrl={`/${themeSlug}/${subjectSlug}/${textbookId}`}
+            />
 
             {/* 결제 관련 */}
             <EnrollAlertDialog
@@ -405,7 +410,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 setIsMobileMenuOpen={setIsMobileMenuOpen}
                             />
                         </ResizablePanel>
-                        <ResizableHandle withHandle/>
+                        <ResizableHandle withHandle />
                         <ResizablePanel defaultSize={80}>
                             <Outlet
                                 context={{
@@ -415,8 +420,9 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                     isEnrolled,
                                     setOpenEnrollWindow,
                                     setAfterEnrollNaviUrl,
+                                    setNotPubAlert,
                                     justOpenMajor
-                                }}/>
+                                }} />
                         </ResizablePanel>
                     </ResizablePanelGroup>
                 </div>
@@ -430,7 +436,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                     variant="outline"
                                     size="icon"
                                     className="size-12 shrink-0 shadow-lg bg-background border-2 hover:bg-accent">
-                                    <Menu className="size-7"/>
+                                    <Menu className="size-7" />
                                 </Button>
                             </SheetTrigger>
                             <SheetContent side="left">
@@ -468,8 +474,9 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 isEnrolled,
                                 setOpenEnrollWindow,
                                 setAfterEnrollNaviUrl,
+                                setNotPubAlert,
                                 justOpenMajor,
-                            }}/>
+                            }} />
                     </div>
                 </div>
             }

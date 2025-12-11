@@ -59,7 +59,9 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         isEnrolled,
         setOpenEnrollWindow,
         setAfterEnrollNaviUrl,
+        setNotPubAlert,
     } = useOutletContext<OutletContextType>();
+
     const EMPTY_NOTE: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const
     const { unitData, userId } = loaderData;
     const isFree = unitData.is_free;
@@ -70,7 +72,10 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const location = useLocation();
     const shouldHandleEnrollment = useMemo(() => {
         if (isFree || isAdmin) return false;
-        if (!isPublished) return true;
+        if (!isPublished) {
+            setNotPubAlert(true)
+            return true;
+        }
         if (!isEnrolled) {
             setAfterEnrollNaviUrl(location.pathname);
             setOpenEnrollWindow(true);
@@ -169,8 +174,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 action: "/api/units/complete-unit"
             })
         }
-
-
     }
 
 

@@ -18,9 +18,10 @@ export type OutletContextType = {
     textbookInfo: TextbookInfo;
     handleUnitClick: (unitId: number, isFree: boolean, isPublish: boolean) => void;
     isEnrolled: boolean
-    setOpenEnrollWindow: (open: boolean) => void;
-    setAfterEnrollNaviUrl: (url: string) => void;
-    justOpenMajor: (majorId: number) => void;
+    setOpenEnrollWindow: (open: boolean) => void
+    setAfterEnrollNaviUrl: (url: string) => void
+    setNotPubAlert: (open: boolean) => void
+    justOpenMajor: (majorId: number) => void
     docUrlSetter: (url: string) => void
 };
 
@@ -31,7 +32,7 @@ export default function TextbookPage() {
         handleUnitClick,
         isEnrolled,
         setOpenEnrollWindow,
-        justOpenMajor
+        justOpenMajor,
     } = useOutletContext<OutletContextType>();
 
     const [selectedFilter, setSelectedFilter] = useState<string>('all');
