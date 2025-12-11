@@ -230,10 +230,16 @@ export default function App({ loaderData }: Route.ComponentProps) {
                         </div>
 
                         <div className="flex items-center space-x-3">
-                            <Button size="sm"
-                                className=" bg-emerald-600 hover:bg-emerald-700 text-white">
-                                계속하기
-                            </Button>
+                            <a
+                                href="https://doc.sejongclass.kr/"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                <Button size="sm"
+                                    className=" bg-emerald-600 hover:bg-emerald-700 text-white">
+                                    공식문서
+                                </Button>
+                            </a>
+
                         </div>
                     </div>
                 </div>

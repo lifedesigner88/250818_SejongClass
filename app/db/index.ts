@@ -9,11 +9,6 @@ import { textbooksRelations, textbooksTable } from "~/feature/textbooks/schema";
 import { majorsRelations, majorsTable } from "~/feature/majors/schema";
 import { middlesRelations, middlesTable } from "~/feature/middles/schema";
 import { unitsRelations, unitsTable } from "~/feature/units/schema";
-import { dealingsRelations, dealingsTable } from "~/feature/dealings/schema";
-import { conceptsRelations, conceptsTable } from "~/feature/concepts/schema";
-import { prerequisitesTable, prerequisitesRelations } from "~/feature/prerequisites/schema";
-import { supportivesTable, supportivesRelations } from "~/feature/supportives/schema";
-import { mastersRelations, mastersTable } from "~/feature/masters/schema";
 import { enrollmentsRelations, enrollmentsTable } from "~/feature/enrollments/schema";
 import { progressRelations, progressTable, } from '~/feature/progress/schema';
 import { usersRelations, usersTable, } from '~/feature/users/schema';
@@ -43,21 +38,6 @@ const schema = {
 
     unitsTable,
     unitsRelations,
-
-    dealingsTable,
-    dealingsRelations,
-
-    conceptsTable,
-    conceptsRelations,
-
-    prerequisitesTable,
-    prerequisitesRelations,
-
-    supportivesTable,
-    supportivesRelations,
-
-    mastersTable,
-    mastersRelations,
 
     enrollmentsTable,
     enrollmentsRelations,

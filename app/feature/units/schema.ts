@@ -11,7 +11,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { middlesTable } from "~/feature/middles/schema";
 import { relations, sql } from "drizzle-orm";
-import { dealingsTable } from "~/feature/dealings/schema";
 import { progressTable } from "~/feature/progress/schema";
 import { curriculumsTable } from "~/feature/curriculums/schema";
 import type { JSONContent } from "@tiptap/react";
@@ -88,7 +87,6 @@ export const unitsRelations = relations(unitsTable, ({ one, many }) => ({
         fields: [unitsTable.middle_chapter_id],
         references: [middlesTable.middle_id],
     }),
-    dealings: many(dealingsTable),
 
     // 이 단원의 학습 진도를 가진 사용자들
     progress: many(progressTable),
