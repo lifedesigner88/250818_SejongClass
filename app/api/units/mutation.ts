@@ -4,6 +4,7 @@ import db from "~/db";
 import { unitsTable } from "~/feature/units/schema";
 import { majorsTable } from "~/feature/majors/schema";
 import { middlesTable } from "~/feature/middles/schema";
+import { progressTable } from "#app/feature/progress/schema.js";
 
 export const toggleUnit = async (unitId: number, userId: string | null) => {
     await db.execute(sql`
@@ -16,6 +17,13 @@ export const toggleUnit = async (unitId: number, userId: string | null) => {
         SELECT ${unitId}, ${userId}
         WHERE NOT EXISTS (SELECT 1 FROM deleted)
     `)
+}
+
+export const completeUnitCheck = async (unit_id: number, user_id: string) => {
+    await db.insert(progressTable).values({
+        unit_id, 
+        user_id
+    })
 }
 
 // Update

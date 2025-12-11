@@ -3,6 +3,7 @@ import { unitsTable } from "~/feature/units/schema";
 import { eq, isNull } from "drizzle-orm";
 import { notesTable } from "~/feature/note/schema";
 import { commentLikesTable, commentsTable } from "~/feature/comments/schema";
+import { progressTable } from "../progress/schema";
 
 export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: string) {
     return db.query.unitsTable.findFirst({
@@ -39,18 +40,11 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                 }
 
             },
-            dealings: {
-                with: {
-                    concept: {
-                        columns: {
-                            concept_id: true,
-                            name: true,
-                            slug: true,
-                            definition: true,
-                            name_eng: true,
-                        },
-                    }
-                }
+            progress:{
+                columns:{
+                    completion_status:true
+                },
+                where: eq(progressTable.user_id, user_id)
             },
             notes: {
                 columns: {
