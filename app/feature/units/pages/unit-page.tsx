@@ -138,9 +138,9 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     return (
         <ScrollArea className="p-0 w-full h-[calc(100vh-64px)] overflow-hidden">
 
-            <div className={"max-w-[1280px] mx-auto mb-200"}>
+            <div className={"max-w-[1280px] mx-auto mb-200 relative"}>
                 {isAdmin ? <>
-                    <Button className={"absolute "} onClick={() => setOpenEditVideo(true)}> 수정 </Button>
+                    <Button className={"absolute right-0 top-30"} onClick={() => setOpenEditVideo(true)}> 수정 </Button>
                     <EditVideoDialog
                         unit_id={unitData.unit_id}
                         youtube_video_id={unitData.youtube_video_id}
