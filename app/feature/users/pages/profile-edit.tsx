@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Edit3, Calendar, CheckCircle, MessageCircle, Clock, User, ChartNoAxesCombined } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { UsernameInput } from "~/feature/users/pages/username-input";
@@ -131,6 +131,8 @@ export default function profileEdit({
                                         <DialogContent className="w-full sm:max-w-md max-h-screen overflow-y-auto">
                                             <DialogHeader>
                                                 <DialogTitle>수정</DialogTitle>
+                                                <DialogDescription className="hidden">.</DialogDescription>
+
                                             </DialogHeader>
                                             <div className="space-y-4 ">
                                                 <div className={'relative mt-8'}>

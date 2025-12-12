@@ -55,7 +55,7 @@ export function EditUnitDialog({ open, onOpenChange, unitInfo, setUnitInfo }: Ed
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>수정</DialogTitle>
-                    <DialogDescription>.</DialogDescription>
+                    <DialogDescription className="hidden">.</DialogDescription>
                 </DialogHeader>
                 <div className={"grid grid-cols-5"}>
                     <Input

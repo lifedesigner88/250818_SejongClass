@@ -135,7 +135,7 @@ export default function Enroll({ loaderData }: Route.ComponentProps) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-linear-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
             <div className="max-w-2xl w-full space-y-6">
                 {/* 성공 헤더 */}
                 <div className="text-center space-y-4">

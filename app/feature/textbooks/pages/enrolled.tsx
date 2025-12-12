@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { CreditCard, CheckCircle2, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { EnrolledTextbooksType } from "~/feature/textbooks/pages/my-textbooks";
@@ -34,6 +34,7 @@ function PaymentInfoDialog({ payment, textbookTitle }: PaymentInfoDialogProps) {
         <DialogContent className="max-w-md max-h-screen overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>결제 정보</DialogTitle>
+                <DialogDescription className="hidden">.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
                 <div>

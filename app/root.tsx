@@ -15,7 +15,7 @@ import "./app.css";
 import React from "react";
 import { makeSSRClient } from "~/supa-clents";
 import { UserStatus } from "@/components/user-status";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -260,6 +260,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>로그인</DialogTitle>
+                        <DialogDescription/>
                     </DialogHeader>
                     <Form method="post" className="space-y-4">
                         <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''} />

@@ -33,6 +33,7 @@ export default [
             route("/enroll", "api/enrollments/enroll.tsx"),
             route("/enroll-free", "api/enrollments/enroll-free.tsx"),
             route("/update-progress", "api/enrollments/update-progress.tsx"),
+            route("/update-review", "api/enrollments/update-review.tsx")
         ]),
         ...prefix("/cron", [
             route("/calculate-textbook", "api/cron/calculate-textbook.tsx")

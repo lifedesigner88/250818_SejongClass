@@ -19,6 +19,7 @@ import { Node } from "@tiptap/pm/model";
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -363,9 +364,10 @@ const Tiptap = ({
             < EditorContent onKeyDown={handleKeyDown} editor={editor}/>
 
             <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
-                <DialogContent className="w-full !max-w-5xl max-h-screen overflow-y-auto ">
+                <DialogContent className="w-full max-w-5xl! max-h-screen overflow-y-auto ">
                     <DialogHeader>
                         <DialogTitle>KaTeX {isInlin ? " - 인라인" : " - 블록"}  </DialogTitle>
+                        <DialogDescription/>
                     </DialogHeader>
                     {!isInlin
                         ? <Textarea
@@ -373,13 +375,13 @@ const Tiptap = ({
                             value={latex}
                             onChange={(e) => setLatex(e.target.value)}
                             placeholder="KaTeX - (Latex 의 수식만 지원)"
-                            className="font-mono min-h-[200px] resize-y break-words overflow-wrap-anywhere"/>
+                            className="font-mono min-h-[200px] resize-y wrap-break-word overflow-wrap-anywhere"/>
                         : <Input
                             id="latex"
                             value={latex}
                             onChange={(e) => setLatex(e.target.value)}
                             placeholder="KaTeX - (Latex 의 수식만 지원)"
-                            className="font-mono break-words"/>
+                            className="font-mono wrap-break-word"/>
                     }
                     {/* KaTeX 미리보기 - 가로 스크롤 방지 */}
                     {latex && (

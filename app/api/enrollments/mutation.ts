@@ -44,6 +44,23 @@ export const updateEnrolledProgress = async (textbook_id: number, user_id: strin
         )
 }
 
+// 리뷰 업데이트 함수 
+export const updateReviewRating = async (textbook_id: number, user_id: string, rating: number, review: string) => {
+    return db.update(enrollmentsTable)
+        .set({
+            rating,
+            review
+        })
+        .where(
+            and(
+                eq(enrollmentsTable.user_id, user_id),
+                eq(enrollmentsTable.textbook_id, textbook_id)
+            )
+        )
+
+}
+
+
 
 // 토스페이먼츠 응답 로그 저장 함수
 export async function saveTossPaymentLog(

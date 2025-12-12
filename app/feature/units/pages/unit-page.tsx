@@ -11,8 +11,11 @@ import Tiptap from "@/editor/Tiptap";
 import { z } from "zod";
 import {
     Sheet,
+    SheetClose,
     SheetContent,
     SheetDescription,
+    SheetFooter,
+    SheetHeader,
     SheetTitle,
     SheetTrigger
 } from "@/components/ui/sheet";
@@ -27,6 +30,7 @@ import { getUserIdForServer } from "~/feature/auth/useAuthUtil";
 import CommentsSection from "~/feature/comments/page/comment-section";
 import { EditVideoDialog } from "./edit-video-dialog";
 import YouTube from "react-youtube";
+import { StarRating } from "./star-rating";
 
 type UnitDataType = Awaited<ReturnType<typeof getUnitAndConceptsByUnitId>>;
 export type UnitCommentsType = NonNullable<UnitDataType>['comments'];
@@ -121,7 +125,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
     const completeFetcher = useFetcher()
     const completeUnit = () => {
-        console.log("complete")
         if (unitData.progress.length === 0) {
             void completeFetcher.submit({
                 unit_id: unitData.unit_id
@@ -132,8 +135,39 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         }
     }
 
-    // 개념보기 시트
+    // 리뷰 시트
     const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const start_value = unitData.middle.major.textbook.enrollments[0]?.rating ?? 0
+    const review_text = unitData.middle.major.textbook.enrollments[0]?.review ?? ""
+    const [stars, setStarts] = useState<number>(start_value)
+    const [review, setReview] = useState<string>(review_text)
+
+    const reviewFetcher = useFetcher()
+    const saveReview = () => {
+        setIsSheetOpen(false)
+        void reviewFetcher.submit({
+            textbook_id: unitData.middle.major.textbook.textbook_id,
+            rating: stars,
+            review: review
+        },
+            {
+                method: "POST",
+                action: "/api/enrollments/update-review"
+            }
+        )
+
+    }
+
+    const reviewSheetOpen = () => {
+        if (!isEnrolled) {
+            setAfterEnrollNaviUrl(location.pathname);
+            setOpenEnrollWindow(true);
+            return
+        }
+        setStarts(start_value)
+        setReview(review_text)
+        setIsSheetOpen(true)
+    }
 
     return (
         <ScrollArea className="p-0 w-full h-[calc(100vh-64px)] overflow-hidden">
@@ -229,7 +263,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     </CollapsibleContent>
                 </Collapsible>
 
-
                 {/* 댓글 */}
                 <div className="container mx-auto py-8">
                     <CommentsSection
@@ -242,24 +275,43 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
                 {/* 개념 보기 Sheet */}
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                    <SheetTrigger asChild>
-                        <button
-                            className="fixed bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700
-                            text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
-                            aria-label="개념 보기">
-                            <Brain className="h-6 w-6" />
-                        </button>
-                    </SheetTrigger>
-                    <SheetContent side="right">
-                        <SheetTitle className="p-10 flex items-center gap-3 text-xl">
-                            <div className="p-2 bg-purple-500/10 rounded-xl">
-                                <Brain className="h-8 w-8 text-purple-600 dark:text-purple-400" />
-                            </div>
-                            개념 문서
-                        </SheetTitle>
-                        <SheetDescription>
-                            .
-                        </SheetDescription>
+                    <button
+                        onClick={reviewSheetOpen}
+                        className="fixed bottom-4 right-4 w-14 h-14 bg-blue-600 hover:bg-blue-700
+                        text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
+                        aria-label="개념 보기">
+                        <Brain className="h-6 w-6" />
+                    </button>
+                    <SheetContent side="right"
+                        className="max-h-screen overflow-y-auto"
+                        onInteractOutside={(e) => e.preventDefault()}>
+                        <SheetHeader>
+                            <SheetTitle> 강의평가 </SheetTitle>
+                            <SheetDescription >{`${unitData.middle.major.textbook.title}`} 강의 전반의 후기를 적어주세요. 다른 예비수강생들에게 공유 됩니다. </SheetDescription>
+                        </SheetHeader>
+                        <a
+                            href={`https://doc.sejongclass.kr/${location.pathname}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >
+                            <Button 
+                            variant={"secondary"}
+                            className="w-full cursor-pointer bg-red-100 mb-3">
+                                {`${unitData.title}`}
+                            </Button>
+                        </a>
+                        <StarRating
+                            value={stars}
+                            onChange={setStarts}
+                            review={review}
+                            setReview={setReview}
+                        />
+                        <SheetFooter>
+                            <Button onClick={saveReview} className="cursor-pointer">저장</Button>
+                            <SheetClose asChild>
+                                <Button variant="outline">취소</Button>
+                            </SheetClose>
+                        </SheetFooter>
                     </SheetContent>
                 </Sheet>
             </div>
