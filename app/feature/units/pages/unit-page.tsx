@@ -62,6 +62,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         setAfterEnrollNaviUrl,
         setNotPubAlert,
         progressRate,
+        openedSet,
+        setOpenedSet,
     } = useOutletContext<OutletContextType>();
 
     const EMPTY_NOTE: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const
@@ -90,6 +92,29 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         return <h1>강의 준비중입니다.</h1>;
     }
 
+    // 열어본 과목들
+    const openedSetFetcher = useFetcher();
+
+    useEffect(() => {
+        if (!isEnrolled) return;
+        if (openedSet.has(unitData.unit_id)) return;
+
+        const nextSet = new Set(openedSet);
+        nextSet.add(unitData.unit_id);
+
+        setOpenedSet(nextSet);
+
+        void openedSetFetcher.submit(
+            {
+                textbook_id: String(unitData.middle.major.textbook.textbook_id),
+                opened_chapter_ids: JSON.stringify(Array.from(nextSet)),
+            },
+            { method: "POST", action: "/api/enrollments/update-opened" }
+        );
+    }, [isEnrolled, unitData.unit_id, unitData.middle.major.textbook.textbook_id]);
+
+
+
     const [content, setContent] = useState<JSONContent>(EMPTY_NOTE);
     const [isContentNeedSave, setContentNeedSave] = useState(false);
     const firstLodingUnitReadme = unitData.readme_json;
@@ -104,9 +129,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         }
     }, [content])
 
+
     const fetcher = useFetcher()
-
-
     // unit 페이지 이동시.
     useEffect(() => {
         if (unitData.readme_json) {
@@ -151,7 +175,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     }
 
 
-    
+
 
     // 영상 정보 수정
     const [openEditVideo, setOpenEditVideo] = useState<boolean>(false)
@@ -169,11 +193,11 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 action: "/api/units/complete-unit"
             })
 
-            if (stars == 0 && ((progressRate >= 40 && progressRate <= 51 ) || progressRate==100)) {
+            if (stars == 0 && ((progressRate >= 40 && progressRate <= 51) || progressRate == 100)) {
                 setIsSheetOpen(true)
             }
         }
-        
+
     }
 
     return (
@@ -300,10 +324,10 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                             href={`https://doc.sejongclass.kr/${location.pathname}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            >
-                            <Button 
-                            variant={"secondary"}
-                            className="w-full cursor-pointer bg-red-100 mb-3">
+                        >
+                            <Button
+                                variant={"secondary"}
+                                className="w-full cursor-pointer bg-red-100 mb-3">
                                 {`${unitData.title}`}
                             </Button>
                         </a>

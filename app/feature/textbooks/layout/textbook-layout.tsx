@@ -126,6 +126,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     // 강의 등록 여부 체크
     const isEnrolled = textbookInfo!.enrollments.length > 0;
+
+    const [openedSet, setOpenedSet] = useState<Set<number>>(new Set(textbookInfo!.enrollments[0]?.opened_chapter_ids ?? []));
     const canEnroll = textbookInfo!.can_enroll
     const price = textbookInfo!.price;
 
@@ -409,6 +411,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 isAdmin={isAdmin}
                                 updateUnitOnClick={updateUnitOnClick}
                                 setIsMobileMenuOpen={setIsMobileMenuOpen}
+                                openedSet={openedSet}
                             />
                         </ResizablePanel>
                         <ResizableHandle withHandle />
@@ -424,7 +427,9 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                     setOpenEnrollWindow,
                                     setAfterEnrollNaviUrl,
                                     setNotPubAlert,
-                                    justOpenMajor
+                                    justOpenMajor,
+                                    openedSet,
+                                    setOpenedSet
                                 }} />
                         </ResizablePanel>
                     </ResizablePanelGroup>
@@ -462,6 +467,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                     isAdmin={isAdmin}
                                     updateUnitOnClick={updateUnitOnClick}
                                     setIsMobileMenuOpen={setIsMobileMenuOpen}
+                                    openedSet={openedSet}
                                 />
                             </SheetContent>
                         </Sheet>
@@ -481,6 +487,8 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 setAfterEnrollNaviUrl,
                                 setNotPubAlert,
                                 justOpenMajor,
+                                openedSet,
+                                setOpenedSet
                             }} />
                     </div>
                 </div>

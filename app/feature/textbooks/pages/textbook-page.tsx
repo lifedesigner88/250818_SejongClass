@@ -25,6 +25,8 @@ export type OutletContextType = {
     setNotPubAlert: (open: boolean) => void
     justOpenMajor: (majorId: number) => void
     docUrlSetter: (url: string) => void
+    openedSet: Set<number>,
+    setOpenedSet: React.Dispatch<React.SetStateAction<Set<number>>>
 };
 
 export default function TextbookPage() {
@@ -218,13 +220,13 @@ export default function TextbookPage() {
                                 {canEnroll || isAdmin
                                     ? <Button
                                         className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-red-600 cursor-pointer shadow-xl/10"}>
-                                         {isAdmin ? `canEnroll ${canEnroll}`: "강의등록"}
+                                        {isAdmin ? `canEnroll ${canEnroll}` : "강의등록"}
                                     </Button>
                                     : <Button
                                         className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-orange-600 shadow-xl/10"}>
                                         준비중 ...
                                     </Button>
-                                }   
+                                }
 
                             </>
                             }

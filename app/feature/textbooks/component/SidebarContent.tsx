@@ -35,6 +35,7 @@ export type SidebarContentProps = {
     isAdmin: boolean;
     updateUnitOnClick: (payload: UnitInfoType) => void;
     setIsMobileMenuOpen: (open: boolean) => void;
+    openedSet: Set<number>
 };
 
 export default function SidebarContent(props: SidebarContentProps) {
@@ -57,19 +58,19 @@ export default function SidebarContent(props: SidebarContentProps) {
         isAdmin,
         updateUnitOnClick,
         setIsMobileMenuOpen,
+        openedSet
     } = props;
 
     const themeSlug = textbookInfo?.subject.theme.slug
     const subjectSlug = textbookInfo?.subject.slug
     const titleFetcher = useFetcher()
-
     return (
         <div className={"h-screen sm:h-[calc(100vh-64px)] overflow-hidden"}>
             {/*상단 고정 버튼 */}
             <div className="flex justify-center items-center h-[64px] relative">
                 {/* 모든 목차 열고 닫기 */}
                 <Button variant="outline" size="sm" onClick={onToggle} className="cursor-pointer ml-5">
-                    {isExpanded ? <ChevronsUp className="h-4 w-4"/> : <ChevronsDown className="h-4 w-4"/>}
+                    {isExpanded ? <ChevronsUp className="h-4 w-4" /> : <ChevronsDown className="h-4 w-4" />}
                 </Button>
                 <Link
                     to={`/${themeSlug}/${subjectSlug}/${textbookId}`}
@@ -80,7 +81,7 @@ export default function SidebarContent(props: SidebarContentProps) {
                 >
                     <h2 className="font-semibold text-xl text-center w-full truncate pr-8">{textbookInfo?.title}</h2>
                 </Link>
-                <Progress value={progressRate} className="absolute -bottom-1 w-full z-30"/>
+                <Progress value={progressRate} className="absolute -bottom-1 w-full z-30" />
             </div>
 
             {/* 실제 네비 게이션*/}
@@ -99,11 +100,11 @@ export default function SidebarContent(props: SidebarContentProps) {
                                 onOpenChange={() => toggleSection(major.major_id, 0)}>
                                 <CollapsibleTrigger asChild>
                                     <Button variant="ghost"
-                                            className={`w-full justify-start p-2 h-auto text-left mt-4`}>
+                                        className={`w-full justify-start p-2 h-auto text-left mt-4`}>
                                         {!closeSection.has(`${major.major_id}-${0}`) ? (
-                                            <ChevronDown className={`h-4 w-4 mr-2 shrink-0 ${colorSet.badge}`}/>
+                                            <ChevronDown className={`h-4 w-4 mr-2 shrink-0 ${colorSet.badge}`} />
                                         ) : (
-                                            <ChevronRight className={`h-4 w-4 mr-2 shrink-0 ${colorSet.badge}`}/>
+                                            <ChevronRight className={`h-4 w-4 mr-2 shrink-0 ${colorSet.badge}`} />
                                         )}
                                         <div className={`font-medium truncate ${colorSet.badge} py-1 px-3 rounded-4xl`}>
                                             {`${major.sort_order}. `}
@@ -169,9 +170,9 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                         variant="ghost"
                                                         className="w-full justify-start p-2 h-auto text-left text-sm my-1">
                                                         {!closeSection.has(`${major.major_id}-${middle.middle_id}`) ? (
-                                                            <ChevronDown className="h-3 w-3 mr-2 shrink-0"/>
+                                                            <ChevronDown className="h-3 w-3 mr-2 shrink-0" />
                                                         ) : (
-                                                            <ChevronRight className="h-3 w-3 mr-2 shrink-0"/>
+                                                            <ChevronRight className="h-3 w-3 mr-2 shrink-0" />
                                                         )}
                                                         <div className="text-muted-foreground truncate">
                                                             {`${major.sort_order}-${middle.sort_order}. `}
@@ -235,7 +236,7 @@ export default function SidebarContent(props: SidebarContentProps) {
 
                                                         return (
                                                             <div className="flex items-center relative"
-                                                                 key={unit.unit_id} data-unit-id={unit.unit_id}>
+                                                                key={unit.unit_id} data-unit-id={unit.unit_id}>
                                                                 <Checkbox
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
@@ -247,9 +248,10 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                 />
                                                                 <Button
                                                                     variant="ghost"
-                                                                    className={`w-full justify-start p-2 h-auto text-left text-sm group/time ${
-                                                                        isActive ? "bg-accent text-accent-foreground" : ""
-                                                                    }`}
+                                                                    className={`w-full justify-start p-2 h-auto text-left text-sm group/time 
+                                                                        ${isActive ? "bg-accent text-accent-foreground" : ""}
+                                                                        ${isEnrolled && !openedSet.has(unit.unit_id) ? "bg-green-50" : ""}
+                                                                        `}
                                                                     onClick={() => handleUnitClick(unit.unit_id, unit.is_free, unit.is_published)}>
                                                                     <div className="truncate w-full pl-10">
                                                                         {`${unit.sort_order.toString().padStart(2, "0")}. `}
@@ -259,7 +261,7 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                                 ""
                                                                             ) : unit.is_free ? (
                                                                                 <Badge className={"ml-2 bg-sky-200"}
-                                                                                       variant={"outline"}>
+                                                                                    variant={"outline"}>
                                                                                     free
                                                                                 </Badge>
                                                                             ) : (
@@ -285,9 +287,8 @@ export default function SidebarContent(props: SidebarContentProps) {
                                                                         )}
                                                                     </div>
                                                                     <div
-                                                                        className={`text-xs text-muted-foreground shrink-0 pr-2 ${
-                                                                            isActive ? "" : "opacity-35"
-                                                                        }`}>
+                                                                        className={`text-xs text-muted-foreground shrink-0 pr-2 ${isActive ? "" : "opacity-35"
+                                                                            }`}>
                                                                         {isActive ? "🔥 " : null}
                                                                         {Math.ceil(unit.estimated_seconds / 60)}분
                                                                     </div>

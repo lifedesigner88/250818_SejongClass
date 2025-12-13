@@ -32,6 +32,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                 where: eq(enrollmentsTable.user_id, user_id),
                 columns: {
                     payment_status: true,
+                    opened_chapter_ids: true
                 }
             },
             majors: {

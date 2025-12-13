@@ -15,6 +15,17 @@ export const getTextbookPrice = async (textbook_id: number) => {
     });
 }
 
+export const updateOpenedUnits = async (textbook_id: number, user_id: string, opened_chapter_ids: number[]) => {
+    return db.update(enrollmentsTable)
+        .set({
+            opened_chapter_ids
+        })
+        .where(and(
+            eq(enrollmentsTable.user_id, user_id),
+            eq(enrollmentsTable.textbook_id, textbook_id)
+        ))
+}
+
 export const enrollFreeTextbook = async (textbook_id: number, user_id: string) => {
     return db.insert(enrollmentsTable).values({
         user_id,

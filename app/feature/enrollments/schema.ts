@@ -15,24 +15,28 @@ import { relations, sql } from "drizzle-orm";
 import { paymentsTable } from "~/feature/payments/schema";
 
 export const enrollmentsTable = pgTable("enrollments", {
-        user_id: uuid().references(() => usersTable.user_id,{
-            onDelete: "cascade",
-        }).notNull(),
-        textbook_id: integer().references(() => textbooksTable.textbook_id,{
-            onDelete: "cascade"
-        }).notNull(),
+    user_id: uuid().references(() => usersTable.user_id, {
+        onDelete: "cascade",
+    }).notNull(),
+    textbook_id: integer().references(() => textbooksTable.textbook_id, {
+        onDelete: "cascade"
+    }).notNull(),
 
-        enrollment_type: varchar({ length: 20 }).default('FREE').notNull(), // PAID, FREE, TRIAL, PROMOTION
-        payment_status: varchar({ length: 20 }).default('PENDING').notNull(), // PENDING, COMPLETED, FAILED
+    enrollment_type: varchar({ length: 20 }).default('FREE').notNull(), // PAID, FREE, TRIAL, PROMOTION
+    payment_status: varchar({ length: 20 }).default('PENDING').notNull(), // PENDING, COMPLETED, FAILED
 
-        progress_rate: smallint().default(0).notNull(),
-        review: varchar({ length: 2000 }).default("").notNull(),
-        rating: smallint().default(0).notNull(),
+    progress_rate: smallint().default(0).notNull(),
+    review: varchar({ length: 2000 }).default("").notNull(),
+    rating: smallint().default(0).notNull(),
 
-        last_study_date: timestamp().defaultNow().notNull(),
-        created_at: timestamp().defaultNow().notNull(),
-        updated_at: timestamp().defaultNow().$onUpdate(() => new Date()).notNull(),
-    },
+    last_study_date: timestamp().defaultNow().notNull(),
+    opened_chapter_ids: integer("opened_chapter_ids")
+        .array()
+        .notNull()
+        .default(sql`'{}'::int[]`),
+    created_at: timestamp().defaultNow().notNull(),
+    updated_at: timestamp().defaultNow().$onUpdate(() => new Date()).notNull(),
+},
     (table) => [
         primaryKey({
             name: 'pk_enrollment_user_textbook',
