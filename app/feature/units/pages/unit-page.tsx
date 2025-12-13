@@ -17,7 +17,6 @@ import {
     SheetFooter,
     SheetHeader,
     SheetTitle,
-    SheetTrigger
 } from "@/components/ui/sheet";
 import {
     Breadcrumb,
@@ -62,6 +61,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         setOpenEnrollWindow,
         setAfterEnrollNaviUrl,
         setNotPubAlert,
+        progressRate,
     } = useOutletContext<OutletContextType>();
 
     const EMPTY_NOTE: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const
@@ -117,24 +117,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     }, [unitData])
 
 
-    // 영상 정보 수정
-    const [openEditVideo, setOpenEditVideo] = useState<boolean>(false)
-
-    const [isClient, setIsClient] = useState(false);
-    useEffect(() => { setIsClient(true); }, []);
-
-    const completeFetcher = useFetcher()
-    const completeUnit = () => {
-        if (unitData.progress.length === 0) {
-            void completeFetcher.submit({
-                unit_id: unitData.unit_id
-            }, {
-                method: "POST",
-                action: "/api/units/complete-unit"
-            })
-        }
-    }
-
     // 리뷰 시트
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const start_value = unitData.middle.major.textbook.enrollments[0]?.rating ?? 0
@@ -155,7 +137,6 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 action: "/api/enrollments/update-review"
             }
         )
-
     }
 
     const reviewSheetOpen = () => {
@@ -167,6 +148,32 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         setStarts(start_value)
         setReview(review_text)
         setIsSheetOpen(true)
+    }
+
+
+    
+
+    // 영상 정보 수정
+    const [openEditVideo, setOpenEditVideo] = useState<boolean>(false)
+
+    const [isClient, setIsClient] = useState(false);
+    useEffect(() => { setIsClient(true); }, []);
+
+    const completeFetcher = useFetcher()
+    const completeUnit = () => {
+        if (unitData.progress.length === 0) {
+            void completeFetcher.submit({
+                unit_id: unitData.unit_id
+            }, {
+                method: "POST",
+                action: "/api/units/complete-unit"
+            })
+
+            if (stars == 0 && ((progressRate >= 40 && progressRate <= 51 ) || progressRate==100)) {
+                setIsSheetOpen(true)
+            }
+        }
+        
     }
 
     return (

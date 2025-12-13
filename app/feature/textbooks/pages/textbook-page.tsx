@@ -19,6 +19,7 @@ export type OutletContextType = {
     handleUnitClick: (unitId: number, isFree: boolean, isPublish: boolean) => void;
     isEnrolled: boolean
     canEnroll: boolean
+    progressRate: number
     setOpenEnrollWindow: (open: boolean) => void
     setAfterEnrollNaviUrl: (url: string) => void
     setNotPubAlert: (open: boolean) => void
@@ -29,6 +30,7 @@ export type OutletContextType = {
 export default function TextbookPage() {
 
     const {
+        isAdmin,
         textbookInfo,
         handleUnitClick,
         isEnrolled,
@@ -185,7 +187,7 @@ export default function TextbookPage() {
                     <Card
                         className={`hover:shadow-md transition-shadow duration-300 ${isEnrolled || !canEnroll ? "" : "cursor-pointer"}`}
                         onClick={() => {
-                            if (!isEnrolled && canEnroll) {
+                            if (!isEnrolled && canEnroll || isAdmin) {
                                 setOpenEnrollWindow(true)
                                 return
                             }
@@ -213,14 +215,14 @@ export default function TextbookPage() {
                                 <div className="text-xs md:text-sm text-center truncate max-w-full text-green-600">
                                     {price === 0 ? "무료" : price.toLocaleString() + "원"}
                                 </div>
-                                {canEnroll
+                                {canEnroll || isAdmin
                                     ? <Button
                                         className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-red-600 cursor-pointer shadow-xl/10"}>
-                                        강의등록
+                                         {isAdmin ? "Admin": "강의등록"}
                                     </Button>
                                     : <Button
                                         className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-orange-600 shadow-xl/10"}>
-                                        준비중
+                                        준비중 ...
                                     </Button>
                                 }   
 

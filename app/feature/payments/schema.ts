@@ -55,12 +55,13 @@ export const paymentsTable = pgTable("payments", {
         updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
 
     }, (table) => [
-        // Foreign key constraint to enrollments
+
+        // enrollment에 복합키로 설정함. 
         foreignKey({
             name: 'fk_payment_enrollment',
             columns: [table.user_id, table.textbook_id],
             foreignColumns: [enrollmentsTable.user_id, enrollmentsTable.textbook_id]
-        }),
+        }).onDelete("cascade"),
 
         // Indexes for common queries
         index("idx_payments_user_id").on(table.user_id), // 사용자별 결제 내역 조회용
