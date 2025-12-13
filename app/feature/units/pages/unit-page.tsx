@@ -119,9 +119,9 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
 
     // 리뷰 시트
     const [isSheetOpen, setIsSheetOpen] = useState(false);
-    const start_value = unitData.middle.major.textbook.enrollments[0]?.rating ?? 0
+    const star_value = unitData.middle.major.textbook.enrollments[0]?.rating ?? 0
     const review_text = unitData.middle.major.textbook.enrollments[0]?.review ?? ""
-    const [stars, setStarts] = useState<number>(start_value)
+    const [stars, setStarts] = useState<number>(star_value)
     const [review, setReview] = useState<string>(review_text)
 
     const reviewFetcher = useFetcher()
@@ -145,7 +145,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
             setOpenEnrollWindow(true);
             return
         }
-        setStarts(start_value)
+        setStarts(star_value)
         setReview(review_text)
         setIsSheetOpen(true)
     }
@@ -280,7 +280,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                     />
                 </div>
 
-                {/* 개념 보기 Sheet */}
+                {/* 강의평가 시트 Sheet */}
                 <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                     <button
                         onClick={reviewSheetOpen}
