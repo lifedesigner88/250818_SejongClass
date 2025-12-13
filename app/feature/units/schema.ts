@@ -31,9 +31,7 @@ export const unitsTable = pgTable("units", {
     updated_at: timestamp().defaultNow().$onUpdate(() => new Date()),
 
     // foreign key
-    middle_chapter_id: integer().references(() => middlesTable.middle_id, {
-        onDelete: "cascade"
-    }).notNull(),
+    middle_chapter_id: integer().references(() => middlesTable.middle_id).notNull(),
 
 }, () => [
     check("sort_order_positive", sql`sort_order >= 0`),

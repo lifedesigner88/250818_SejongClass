@@ -13,9 +13,7 @@ export const subjectsTable = pgTable("subjects", {
         emoji: varchar({ length: 100 }).notNull(),
 
         // foreign key
-        themes_id: integer().references(() => themesTable.themes_id, {
-            onDelete: "cascade"
-        }).notNull(),
+        themes_id: integer().references(() => themesTable.themes_id).notNull(),
     },
     () => [
         check("sort_order_positive", sql`sort_order > 0`),

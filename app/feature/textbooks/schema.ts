@@ -21,9 +21,7 @@ export const textbooksTable = pgTable("textbooks", {
     average_rating: decimal({ precision: 2, scale: 1 }).default('0.0').notNull(),
 
     // foreign key
-    subjects_id: integer().references(() => subjectsTable.subject_id, {
-        onDelete: "cascade"
-    }).notNull(),
+    subjects_id: integer().references(() => subjectsTable.subject_id).notNull(),
 
 }, () => [
     check("sort_order_positive", sql`sort_order > 0`),

@@ -10,9 +10,7 @@ export const majorsTable = pgTable("majors", {
     is_published: boolean().default(false).notNull(),
 
     // foreign key
-    textbook_id: integer().references(() => textbooksTable.textbook_id, {
-        onDelete: "cascade",
-    }).notNull(),
+    textbook_id: integer().references(() => textbooksTable.textbook_id).notNull(),
 
 }, () => [
     check("sort_order_positive", sql`sort_order >= 0`),
