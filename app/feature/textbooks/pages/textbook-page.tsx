@@ -18,6 +18,7 @@ export type OutletContextType = {
     textbookInfo: TextbookInfo;
     handleUnitClick: (unitId: number, isFree: boolean, isPublish: boolean) => void;
     isEnrolled: boolean
+    canEnroll: boolean
     setOpenEnrollWindow: (open: boolean) => void
     setAfterEnrollNaviUrl: (url: string) => void
     setNotPubAlert: (open: boolean) => void
@@ -31,6 +32,7 @@ export default function TextbookPage() {
         textbookInfo,
         handleUnitClick,
         isEnrolled,
+        canEnroll,
         setOpenEnrollWindow,
         justOpenMajor,
     } = useOutletContext<OutletContextType>();
@@ -181,9 +183,9 @@ export default function TextbookPage() {
 
                     {/* 남은시간 카드 */}
                     <Card
-                        className={`hover:shadow-md transition-shadow duration-300 ${isEnrolled ? "" : "cursor-pointer"}`}
+                        className={`hover:shadow-md transition-shadow duration-300 ${isEnrolled || !canEnroll ? "" : "cursor-pointer"}`}
                         onClick={() => {
-                            if (!isEnrolled) {
+                            if (!isEnrolled && canEnroll) {
                                 setOpenEnrollWindow(true)
                                 return
                             }
@@ -211,10 +213,17 @@ export default function TextbookPage() {
                                 <div className="text-xs md:text-sm text-center truncate max-w-full text-green-600">
                                     {price === 0 ? "무료" : price.toLocaleString() + "원"}
                                 </div>
-                                <Button
-                                    className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-red-600 cursor-pointer shadow-xl/10"}>
-                                    강의등록
-                                </Button>
+                                {canEnroll
+                                    ? <Button
+                                        className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-red-600 cursor-pointer shadow-xl/10"}>
+                                        강의등록
+                                    </Button>
+                                    : <Button
+                                        className={"text-xl md:text-xl mt-2 px-10  pt-4 pb-4 truncate max-w-full bg-orange-600 shadow-xl/10"}>
+                                        준비중
+                                    </Button>
+                                }   
+
                             </>
                             }
 

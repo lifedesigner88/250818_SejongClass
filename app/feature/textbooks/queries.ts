@@ -13,6 +13,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
             cover_image_url: true,
             youtube_video_id: true,
             price: true,
+            can_enroll: true,
         },
         with: {
             subject: {

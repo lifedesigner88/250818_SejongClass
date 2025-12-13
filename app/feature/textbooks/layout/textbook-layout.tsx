@@ -126,6 +126,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
 
     // 강의 등록 여부 체크
     const isEnrolled = textbookInfo!.enrollments.length > 0;
+    const canEnroll = textbookInfo!.can_enroll
     const price = textbookInfo!.price;
 
     const [openEnrollWindow, setOpenEnrollWindow] = useState(false);
@@ -418,6 +419,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                     textbookInfo,
                                     handleUnitClick,
                                     isEnrolled,
+                                    canEnroll,
                                     setOpenEnrollWindow,
                                     setAfterEnrollNaviUrl,
                                     setNotPubAlert,
@@ -472,6 +474,7 @@ export default function TextbookLayout({ loaderData, params }: Route.ComponentPr
                                 textbookInfo,
                                 handleUnitClick,
                                 isEnrolled,
+                                canEnroll,
                                 setOpenEnrollWindow,
                                 setAfterEnrollNaviUrl,
                                 setNotPubAlert,
