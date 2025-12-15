@@ -64,5 +64,7 @@ export default [
         ...prefix(":unit-id", [index("feature/units/pages/unit-page.tsx")])
     ]),
 
+    
+
     route("*", "common/pages/not-found.tsx")
 ] satisfies RouteConfig;

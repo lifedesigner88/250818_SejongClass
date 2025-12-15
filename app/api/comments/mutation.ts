@@ -97,14 +97,14 @@ export const adminDeleteComment = async (comment_id: number) => {
 
 export const adminUpdateComment = async (comment_id: number, content: string) => {
     await db.update(commentsTable)
-        .set({ content })
+        .set({ content, is_edited: true })
         .where(eq(commentsTable.comment_id, comment_id))
 }
 
 
 export const updateComment = async (comment_id: number, content: string, userId: string) => {
     await db.update(commentsTable)
-        .set({ content })
+        .set({ content, is_edited: true })
         .where(and(
             eq(commentsTable.comment_id, comment_id),
             eq(commentsTable.user_id, userId)

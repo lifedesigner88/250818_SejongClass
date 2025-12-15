@@ -178,6 +178,7 @@ export const CommentItem = ({
                             <span className="font-medium text-sm text-muted-foreground">{comment.user.nickname}</span>
                             <span className="text-xs text-muted-foreground">
                                 {DateTime.fromJSDate(comment.updated_at!).setLocale("ko").toRelative()}
+                                {comment.is_edited ? " (수정)" : ""}
                             </span>
                         </div>
 
@@ -324,6 +325,7 @@ export const CommentItem = ({
                                                 className="font-medium text-xs text-muted-foreground">{reply.user.nickname}</span>
                                             <span className="text-xs text-muted-foreground">
                                                 {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
+                                                {reply.is_edited ? " (수정)" : ""}
                                             </span>
                                         </div>
                                         <div
