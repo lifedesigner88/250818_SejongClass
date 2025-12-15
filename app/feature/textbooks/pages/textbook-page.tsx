@@ -2,14 +2,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { getTextbookInfobyTextBookId } from "~/feature/textbooks/queries";
-import { Target, Hash, TrendingUp, BarChart, BanIcon } from "lucide-react";
+import { Target, Hash, TrendingUp, BarChart, BanIcon, Megaphone } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFetcher, useOutletContext } from "react-router";
 import colors from "~/feature/textbooks/major-color";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog.js";
+import YouTube from "react-youtube";
 
 
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
@@ -163,10 +165,67 @@ export default function TextbookPage() {
     const curriculumProgress = (checkedCurriculums.length / curriculumList.length) * 100;
     const totalProgress = Math.floor((unitProgress * 0.5) + (curriculumProgress * 0.5));
     const price = textbookInfo!.price;
+    const isIntroVideoExist = !!textbookInfo.youtube_video_id
+
+    const [introOpen, setIntroOpen] = useState<boolean>(!isEnrolled && isIntroVideoExist)
+    const [isClient, setIsClient] = useState(false);
+    useEffect(() => { setIsClient(true); }, []);
 
     return (
         <div className=" p-3 h-[calc(100vh-64px)] overflow-y-scroll">
+            {isIntroVideoExist ? <>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <button
+                            onClick={() => setIntroOpen(true)}
+                            className="fixed bottom-4 right-4 w-14 h-14 bg-emerald-600 hover:bg-emerald-900 z-50
+                                        text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
+                            aria-label="개념 보기">
+                            <Megaphone className="size-8" />
+                        </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        소개영상
+                    </TooltipContent>
+                </Tooltip>
+
+                {/* 소개영상 다이얼로그 */}
+                <Dialog open={introOpen} onOpenChange={setIntroOpen}>
+                    <DialogHeader>
+                        <DialogContent className="max-w-4xl lg:min-w-[50vw] p-0 overflow-hidden ">
+                            <DialogTitle className="hidden">Edit profile</DialogTitle>
+                            <DialogDescription className="hidden" />
+                            {/* 영상 섹션 */}
+                            <div className="aspect-video">
+                                <div className="w-full h-full">
+                                    {isClient
+                                        ? < YouTube
+                                            key={textbookInfo.youtube_video_id}
+                                            className="w-full h-full"
+                                            videoId={textbookInfo.youtube_video_id ?? ""}
+                                            opts={{
+                                                width: "100%",
+                                                height: "100%",
+                                                playerVars: {
+                                                    modestbranding: 1,
+                                                    rel: 0,
+                                                },
+                                            }}
+                                            onEnd={() => setIntroOpen(false)}
+                                        />
+                                        : <div className="w-full h-full" />
+                                    }
+                                </div>
+                            </div>
+                        </DialogContent>
+                    </DialogHeader>
+                </Dialog>
+            </>
+                : null
+            }
+
             <div className={"max-w-full"}>
+
 
                 {/* 📊 통계 정보 카드들 */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
