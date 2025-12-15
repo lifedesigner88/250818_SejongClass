@@ -13,7 +13,7 @@ export default function HomePage() {
                 {/* Badge */}
                 <div className="mb-8">
                     <Badge variant="secondary"
-                           className="text-emerald-700 bg-emerald-50 border-emerald-200 px-4 py-2">
+                        className="text-emerald-700 bg-emerald-50 border-emerald-200 px-4 py-2">
                         🚀 새로운 학습 패러다임
                     </Badge>
                 </div>
@@ -22,25 +22,25 @@ export default function HomePage() {
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
                         Code Your <span
-                        className="bg-gradient-to-r from-red-500 to-orange-300 bg-clip-text text-transparent">Life</span> with
+                            className="bg-linear-to-r from-red-500 to-orange-300 bg-clip-text text-transparent">Life</span> with
                         <span
-                            className="block bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-                                Math & Physics
-                            </span>
+                            className="block bg-linear-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                            Math & Physics
+                        </span>
                     </h1>
 
                     <div className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto">
-                        종이와 연필을 넘어 새로운 학습 경험.
+                        수학, 물리, 코딩, 인생
                     </div>
 
                     {/* CTA Buttons */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                         <Link to="/themes">
                             <Button size="lg"
-                                    className="text-lg bg-emerald-600 hover:bg-emerald-700 text-white group">
+                                className="text-lg bg-emerald-600 hover:bg-emerald-700 text-white group">
                                 Start learning
                                 <ArrowRight
-                                    className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform"/>
+                                    className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Button>
                         </Link>
                     </div>
@@ -63,12 +63,12 @@ export default function HomePage() {
                                 <div className="mt-2">
                                     <span className="text-purple-400">import</span>{" "}
                                     <span className="text-yellow-400">numpy</span> <span
-                                    className="text-purple-400">as</span> np
+                                        className="text-purple-400">as</span> np
                                 </div>
                                 <div>
                                     <span className="text-purple-400">import</span>{" "}
                                     <span className="text-yellow-400">matplotlib.pyplot</span> <span
-                                    className="text-purple-400">as</span> plt
+                                        className="text-purple-400">as</span> plt
                                 </div>
                                 <div className="mt-2">
                                     x = np.<span className="text-blue-400">linspace</span>(-10, 10, 100)
@@ -78,11 +78,11 @@ export default function HomePage() {
                                 </div>
                                 <div className="mt-2">
                                     plt.<span className="text-blue-400">plot</span>(x, y, <span
-                                    className="text-orange-400">'b-'</span>, linewidth=2)
+                                        className="text-orange-400">'b-'</span>, linewidth=2)
                                 </div>
                                 <div>
                                     plt.<span className="text-blue-400">grid</span>(<span
-                                    className="text-orange-400">True</span>, alpha=0.3)
+                                        className="text-orange-400">True</span>, alpha=0.3)
                                 </div>
                                 <div>
                                     plt.<span className="text-blue-400">show</span>()
@@ -98,10 +98,10 @@ export default function HomePage() {
                     <div className={"flex flex-col items-center gap-4 mt-16"}>
                         <Link to="/themes">
                             <Button size="lg"
-                                    className="text-lg bg-emerald-600 hover:bg-emerald-700 text-white group">
+                                className="text-lg bg-emerald-600 hover:bg-emerald-700 text-white group">
                                 Start learning
                                 <ArrowRight
-                                    className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform"/>
+                                    className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Button>
                         </Link>
 
@@ -113,19 +113,27 @@ export default function HomePage() {
                                 className="text-gray-600 hover:text-gray-900 transition-colors">
                                 Youtube
                             </a>
-                            <a
-                                href="http://github.com/lifedesigner88"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-600 hover:text-gray-900 transition-colors">
-                                Github
-                            </a>
+
                             <a
                                 href="https://blog.naver.com/lifedesigner88"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-600 hover:text-gray-900 transition-colors">
                                 Blog
+                            </a>
+                            <a
+                                href="https://www.instagram.com/lifedesignersj"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Insta
+                            </a>
+                            <a
+                                href="http://github.com/lifedesigner88"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Github
                             </a>
                         </div>
                     </div>
@@ -138,7 +146,7 @@ export default function HomePage() {
                 <div className="container mx-auto px-6">
                     <div className="flex flex-col md:flex-row items-center justify-between mb-15">
                         <Link to="/" className="flex items-center space-x-2 mb-4 md:mb-0">
-                            <img src="/logo.svg" alt="SejongClass Logo" className="size-6"/>
+                            <img src="/logo.svg" alt="SejongClass Logo" className="size-6" />
                             <span className="font-semibold text-gray-900">SejongClass</span>
                         </Link>
 

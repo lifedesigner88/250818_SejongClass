@@ -205,7 +205,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                         </Link>
 
                         {/* Navigation Links */}
-                        <div className="hidden md:flex items-center space-x-8">
+                        <div className="hidden md:flex items-center space-x-8 mr-23">
                             <a
                                 href="https://www.youtube.com/@sejongclass"
                                 target="_blank"
@@ -214,18 +214,25 @@ export default function App({ loaderData }: Route.ComponentProps) {
                                 Youtube
                             </a>
                             <a
-                                href="http://github.com/lifedesigner88"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-600 hover:text-gray-900 transition-colors">
-                                Github
-                            </a>
-                            <a
                                 href="https://blog.naver.com/lifedesigner88"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-600 hover:text-gray-900 transition-colors">
                                 Blog
+                            </a>
+                            <a
+                                href="https://www.instagram.com/lifedesignersj"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Insta
+                            </a>
+                            <a
+                                href="http://github.com/lifedesigner88"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-600 hover:text-gray-900 transition-colors">
+                                Github
                             </a>
                         </div>
 
@@ -260,7 +267,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>로그인</DialogTitle>
-                        <DialogDescription/>
+                        <DialogDescription />
                     </DialogHeader>
                     <Form method="post" className="space-y-4">
                         <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''} />
