@@ -1,4 +1,3 @@
-import type { getPublicUserData } from "#app/feature/users/quries.js";
 import { TabsContent } from "@radix-ui/react-tabs";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "./ui/item";
@@ -6,8 +5,9 @@ import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useFetcher, useNavigate } from "react-router";
 import { DateTime } from "luxon";
+import type { getPublicUserDataWithNotifi } from "#app/feature/users/quries.js";
 
-type GetPublicUserDataType = Awaited<ReturnType<typeof getPublicUserData>>;
+type GetPublicUserDataType = Awaited<ReturnType<typeof getPublicUserDataWithNotifi>>;
 export type NotificationsType = NonNullable<GetPublicUserDataType>["notifications"]
 
 interface AlertContentProps {

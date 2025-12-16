@@ -64,6 +64,10 @@ export default [
         ...prefix(":unit-id", [index("feature/units/pages/unit-page.tsx")])
     ]),
 
+    route("/admin", "feature/admin/layout/admin-layout.tsx", [
+        index("feature/admin/pages/admin-home.tsx"),
+        ...prefix("comments", [index("feature/admin/pages/admin-comments.tsx")])
+    ]),
     
 
     route("*", "common/pages/not-found.tsx")

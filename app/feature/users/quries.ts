@@ -13,6 +13,12 @@ function generateRandomString(length: number = 8): string {
 export async function getPublicUserData(userId: string) {
     return db.query.usersTable.findFirst({
         where: eq(usersTable.user_id, userId),
+    });
+}
+
+export async function getPublicUserDataWithNotifi(userId: string) {
+    return db.query.usersTable.findFirst({
+        where: eq(usersTable.user_id, userId),
         with: {
             notifications: {
                 columns: {

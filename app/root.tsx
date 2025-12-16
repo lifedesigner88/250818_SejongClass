@@ -5,7 +5,7 @@ import {
     Meta,
     Outlet, redirect,
     Scripts,
-    ScrollRestoration, useNavigate, useNavigation,
+    ScrollRestoration, useNavigation,
 } from "react-router";
 
 import { useEffect, useState } from "react";
@@ -21,7 +21,7 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
 import { Loader2 } from "lucide-react";
-import { createPublicUserData, getPublicUserData } from "~/feature/users/quries";
+import { createPublicUserData, getPublicUserDataWithNotifi } from "~/feature/users/quries";
 import { getInAppBrowserType, isInAppBrowser, type publicUserDataType } from "~/feature/auth/useAuthUtil";
 
 export const links: Route.LinksFunction = () => [
@@ -117,7 +117,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     const loginedUuserProviderId = user.user_metadata.provider_id;
     const loginedUserDataFromProvider = user.identities?.filter(identity => identity.id === loginedUuserProviderId)[0];
 
-    let publicUserData = await getPublicUserData(supabaseAuthData.user?.id)
+    let publicUserData = await getPublicUserDataWithNotifi(supabaseAuthData.user?.id)
 
     // DB에 없는 사용자는 가입
     if (!publicUserData) {
