@@ -37,7 +37,7 @@ export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, isAdmin, reply
         void subCommentFetcher.submit({
             content: replyReplyContent,
             unit_id,
-            isAdmin,
+            isAdmin: `${isAdmin}`,
             type: 'reply',
             parent_comment_id: comment_id,
             mentioned_user_id: reply_userinfo.user_id,

@@ -17,7 +17,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
         mentioned_user_id: z.uuid().optional(),
         to_unit_url: z.string().min(1).optional(),
         type: z.enum(['comment', 'reply']),
-        isAdmin: z.coerce.boolean()
+        isAdmin: z.string()
     });
     const formData = await request.formData()
     const formDataObject = Object.fromEntries(formData.entries());
@@ -34,15 +34,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
     if (!user_id) return { status: 401, body: { error: 'Unauthorized' } };
 
     if (data.type === 'comment') {
-        await createComment({ user_id, ...data })
-
+        await createComment({ user_id, ...data, isAdmin: data.isAdmin! === "true" })
 
     } else if (data.type === 'reply' && data.parent_comment_id !== undefined) {
         const refineData = {
             ...data,
             parent_comment_id: data.parent_comment_id,
             mentioned_user_id: data.mentioned_user_id!,
-            isAdmin: data.isAdmin!
+            isAdmin: data.isAdmin! === "true"
         }
         const [{ reply_id }] = await createReply({ user_id, ...refineData })
 

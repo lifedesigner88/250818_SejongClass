@@ -21,14 +21,13 @@ const CommentsSection = ({
     const [newComment, setNewComment] = useState('');
 
     const commentFetcher = useFetcher()
-
     const handleNewComment = () => {
         if (newComment.trim()) {
             void commentFetcher.submit({
                 content: newComment,
                 unit_id: unitId,
                 type: 'comment',
-                isAdmin
+                isAdmin: `${isAdmin}`
             }, {
                 method: 'POST',
                 action: '/api/comments/create-comment',

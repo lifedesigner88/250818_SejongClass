@@ -1,4 +1,4 @@
-import { useNavigate, useOutletContext } from "react-router"
+import { useFetcher, useOutletContext } from "react-router"
 import type { AdminOutletContext } from "../layout/admin-layout"
 import type { Route } from "./+types/admin-comments"
 import { getCommentsToAdmin } from "../queries"
@@ -25,6 +25,22 @@ export default function AdminComments({ loaderData }: Route.ComponentProps) {
     if (!isAdmin) return "관리자만 접속 가능합니다. /admin/comments"
     const { comments } = loaderData
 
+    const fetcher = useFetcher()
+
+    const checkComment = (comment_id: number, writter_id: string, to_unit_url: string) => {
+        void fetcher.submit({
+            comment_id,
+            writter_id,
+            to_unit_url
+        }, {
+            method: "post",
+            action: "/api/comments/check-comment"
+        })
+
+    }
+
+
+
     return (
         <div className="w-full m-3 max-h-[calc(100vh-100px)] overflow-y-auto">
             {isAdmin
@@ -35,6 +51,7 @@ export default function AdminComments({ loaderData }: Route.ComponentProps) {
                         const textbook = unit.middle.major.textbook
                         const subject = textbook.subject
                         const theme = subject.theme
+                        const to_unit_url = `/${theme.slug}/${subject.slug}/${textbook.textbook_id}/${unit.unit_id}`
 
                         return (
                             <Card key={comment.comment_id} className="flex flex-col justify-between">
@@ -45,7 +62,7 @@ export default function AdminComments({ loaderData }: Route.ComponentProps) {
                                     <CardDescription>{`${theme.name} > ${textbook.title} > ${unit.title}`}</CardDescription>
                                     <CardAction>
                                         <a
-                                            href={`/${theme.slug}/${subject.slug}/${textbook.textbook_id}/${unit.unit_id}`}
+                                            href={to_unit_url}
                                             target="_blank" >
                                             <Button variant={"outline"}>➡️</Button>
                                         </a>
@@ -70,11 +87,13 @@ export default function AdminComments({ loaderData }: Route.ComponentProps) {
                                                 </AvatarFallback>
                                             </Avatar>
                                         </a>
-                                        <Heart className={"size-4 fill-red-500  text-red-500"} />
+                                        <Heart className={`size-4 ${comment.likes_count === 0 ? "" : "fill-red-500  text-red-500"} `} />
                                         <span className="text-xs">
                                             {comment.likes_count}
                                         </span>
-                                        <Button variant={"outline"}>확인✅</Button>
+                                        <Button
+                                            onClick={() => checkComment(comment.comment_id, comment.user.user_id, to_unit_url)}
+                                            variant={"outline"}>확인✅</Button>
                                     </div>
                                 </CardFooter>
                             </Card>

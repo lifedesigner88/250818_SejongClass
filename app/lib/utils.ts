@@ -17,6 +17,7 @@ export const isNewInOneMonth = (updatedAt: Date): boolean => {
 
 
 import { useEffect, useState } from "react";
+import React from "react";
 
 export const useMediaQuery = (query: string) => {
     const [matches, setMatches] = useState<boolean>(false);
@@ -33,3 +34,11 @@ export const useMediaQuery = (query: string) => {
 
     return matches;
 }
+
+
+
+    export const useIsClient = () => {
+        const [isClient, setIsClient] = React.useState(false);
+        React.useEffect(() => setIsClient(true), []);
+        return isClient;
+    }

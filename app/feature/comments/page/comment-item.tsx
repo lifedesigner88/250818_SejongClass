@@ -22,6 +22,8 @@ import { useFetcher, useLocation, useNavigate } from 'react-router';
 import { CommnetReplyFrom } from './comment-reply-form';
 
 import type { UnitCommentsType } from "~/feature/units/pages/unit-page";
+import React from 'react';
+import { useIsClient } from '#app/lib/utils.js';
 type SubCommentsType = NonNullable<UnitCommentsType>[number];
 export type SubReplyUserType = SubCommentsType["comments"][number]["user"]
 
@@ -55,7 +57,8 @@ export const CommentItem = ({
             type: 'reply',
             parent_comment_id: comment.comment_id,
             mentioned_user_id: comment.user.user_id,
-            to_unit_url: location.pathname
+            to_unit_url: location.pathname,
+            isAdmin: `${isAdmin}`
         }, {
             method: 'POST',
             action: '/api/comments/create-comment',
@@ -125,6 +128,8 @@ export const CommentItem = ({
     const navigate = useNavigate();
     const [showReplyReplyForm, setShowReplyReplyForm] = useState<Set<number>>(new Set());
 
+    const isClient = useIsClient()
+
     return (
         <Card className="w-full">
             <AlertDialog open={deleteCommentOpen} onOpenChange={setDeleteCommentOpen}>
@@ -177,7 +182,7 @@ export const CommentItem = ({
                             onClick={() => navigate(`/profile/${comment.user.username}`)}>
                             <span className="font-medium text-sm text-muted-foreground">{comment.user.nickname}</span>
                             <span className="text-xs text-muted-foreground">
-                                {DateTime.fromJSDate(comment.updated_at!).setLocale("ko").toRelative()}
+                                {isClient ? DateTime.fromJSDate(comment.updated_at!).setLocale("ko").toRelative(): null}
                                 {comment.is_edited ? " (수정)" : ""}
                             </span>
                         </div>
@@ -324,7 +329,7 @@ export const CommentItem = ({
                                             <span
                                                 className="font-medium text-xs text-muted-foreground">{reply.user.nickname}</span>
                                             <span className="text-xs text-muted-foreground">
-                                                {DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative()}
+                                                {isClient? DateTime.fromJSDate(reply.updated_at!).setLocale("ko").toRelative(): null}
                                                 {reply.is_edited ? " (수정)" : ""}
                                             </span>
                                         </div>

@@ -10,7 +10,6 @@ export const createComment = ({ user_id, content, unit_id, isAdmin }: {
     unit_id: number,
     isAdmin: boolean
 }) => {
-    console.log(isAdmin)
     return db.insert(commentsTable).values({
         user_id,
         content,
@@ -105,6 +104,11 @@ export const adminUpdateComment = async (comment_id: number, content: string) =>
         .where(eq(commentsTable.comment_id, comment_id))
 }
 
+export const adminCommentChecked = async (comment_id: number) => {
+    await db.update(commentsTable)
+        .set({ is_admin_checked: true })
+        .where(eq(commentsTable.comment_id, comment_id))
+}
 
 export const updateComment = async (comment_id: number, content: string, userId: string) => {
     await db.update(commentsTable)

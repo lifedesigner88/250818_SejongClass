@@ -22,6 +22,7 @@ export async function getCommentsToAdmin() {
                     username: true,
                     nickname: true,
                     profile_url: true,
+                    user_id:true
                 },
             },
             unit: {
