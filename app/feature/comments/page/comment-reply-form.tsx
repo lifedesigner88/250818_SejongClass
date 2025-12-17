@@ -10,11 +10,12 @@ interface CommnetReplyFromProps {
     comment_id: number,
     unit_id: number,
     reply_id: number,
+    isAdmin: boolean,
     reply_userinfo: SubReplyUserType,
     setShowReplyReplyForm: React.Dispatch<React.SetStateAction<Set<number>>>
 }
 
-export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, reply_userinfo, setShowReplyReplyForm }: CommnetReplyFromProps) => {
+export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, isAdmin, reply_userinfo, setShowReplyReplyForm }: CommnetReplyFromProps) => {
 
     const [replyReplyContent, setReplyReplyContent] = useState('');
 
@@ -36,6 +37,7 @@ export const CommnetReplyFrom = ({ comment_id, unit_id, reply_id, reply_userinfo
         void subCommentFetcher.submit({
             content: replyReplyContent,
             unit_id,
+            isAdmin,
             type: 'reply',
             parent_comment_id: comment_id,
             mentioned_user_id: reply_userinfo.user_id,

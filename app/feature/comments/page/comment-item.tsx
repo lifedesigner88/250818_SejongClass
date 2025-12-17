@@ -419,6 +419,7 @@ export const CommentItem = ({
                                                 reply_userinfo={reply.user}
                                                 unit_id={unitId}
                                                 reply_id={reply.comment_id}
+                                                isAdmin={isAdmin}
                                                 setShowReplyReplyForm={setShowReplyReplyForm}
                                             />
                                             : null}

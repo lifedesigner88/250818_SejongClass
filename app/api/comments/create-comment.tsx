@@ -16,13 +16,19 @@ export const action = async ({ request }: Route.ActionArgs) => {
         parent_comment_id: z.coerce.number().int().positive().optional(),
         mentioned_user_id: z.uuid().optional(),
         to_unit_url: z.string().min(1).optional(),
-        type: z.enum(['comment', 'reply'])
+        type: z.enum(['comment', 'reply']),
+        isAdmin: z.coerce.boolean()
     });
-
     const formData = await request.formData()
     const formDataObject = Object.fromEntries(formData.entries());
+
+
     const { success, data, error } = schema.safeParse(formDataObject);
-    if (!success) return { status: 400, body: { errors: error } };
+    if (!success) {
+        console.log(error)
+        return { status: 400, body: { errors: error } };
+    }
+
 
     const user_id = await getUserIdForServer(request)
     if (!user_id) return { status: 401, body: { error: 'Unauthorized' } };
@@ -35,13 +41,14 @@ export const action = async ({ request }: Route.ActionArgs) => {
         const refineData = {
             ...data,
             parent_comment_id: data.parent_comment_id,
-            mentioned_user_id: data.mentioned_user_id!
+            mentioned_user_id: data.mentioned_user_id!,
+            isAdmin: data.isAdmin!
         }
-        const [{reply_id}] = await createReply({user_id, ...refineData})
-        
+        const [{ reply_id }] = await createReply({ user_id, ...refineData })
+
         await insertNotification({
-            type : "reply",
-            comment_id : reply_id,
+            type: "reply",
+            comment_id: reply_id,
             from_user_id: user_id,
             to_user_id: data.mentioned_user_id!,
             to_unit_url: data.to_unit_url

@@ -28,6 +28,7 @@ const CommentsSection = ({
                 content: newComment,
                 unit_id: unitId,
                 type: 'comment',
+                isAdmin
             }, {
                 method: 'POST',
                 action: '/api/comments/create-comment',

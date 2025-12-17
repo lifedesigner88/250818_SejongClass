@@ -4,31 +4,36 @@ import { commentLikesTable, commentsTable } from "~/feature/comments/schema";
 import { deleteLikeNotification, insertNotification } from "../notifications/mutations";
 
 
-export const createComment = ({ user_id, content, unit_id }: {
+export const createComment = ({ user_id, content, unit_id, isAdmin }: {
     user_id: string,
     content: string,
-    unit_id: number
+    unit_id: number,
+    isAdmin: boolean
 }) => {
+    console.log(isAdmin)
     return db.insert(commentsTable).values({
         user_id,
         content,
-        unit_id
+        unit_id,
+        is_admin_checked: isAdmin
     })
 }
 
-export const createReply = ({ user_id, content, unit_id, parent_comment_id, mentioned_user_id }: {
+export const createReply = ({ user_id, content, unit_id, parent_comment_id, mentioned_user_id, isAdmin }: {
     user_id: string,
     content: string,
     unit_id: number,
     parent_comment_id: number,
     mentioned_user_id: string,
+    isAdmin: boolean
 }) => {
     return db.insert(commentsTable).values({
         user_id,
         content,
         parent_comment_id,
         unit_id,
-        mentioned_user_id
+        mentioned_user_id,
+        is_admin_checked: isAdmin
     }).returning({ reply_id: commentsTable.comment_id })
 }
 
@@ -96,14 +101,14 @@ export const adminDeleteComment = async (comment_id: number) => {
 
 export const adminUpdateComment = async (comment_id: number, content: string) => {
     await db.update(commentsTable)
-        .set({ content, is_edited: true, is_admin_checked:true })
+        .set({ content, is_edited: true, is_admin_checked: true })
         .where(eq(commentsTable.comment_id, comment_id))
 }
 
 
 export const updateComment = async (comment_id: number, content: string, userId: string) => {
     await db.update(commentsTable)
-        .set({ content, is_edited: true, is_admin_checked:false })
+        .set({ content, is_edited: true, is_admin_checked: false })
         .where(and(
             eq(commentsTable.comment_id, comment_id),
             eq(commentsTable.user_id, userId)
