@@ -19,7 +19,7 @@ export default function IncorrectPath() {
     };
 
     return (
-        <div className="pb-25 flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4">
+        <div className="pb-25 flex flex-col justify-center items-center min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4">
             {/* 제목 */}
             <div className="text-center mb-12">
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-200 mb-4">
@@ -34,7 +34,7 @@ export default function IncorrectPath() {
             <div className="mb-16">
                 <div
                     onClick={handleGoBack}
-                    className="w-48 h-48 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500
+                    className="w-48 h-48 bg-linear-to-br from-amber-400 via-orange-500 to-red-500
                              text-white font-bold text-6xl rounded-3xl shadow-xl
                              flex items-center justify-center transition-all duration-300
                              hover:scale-105 hover:rotate-1 hover:shadow-2xl
@@ -65,7 +65,7 @@ export default function IncorrectPath() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
                 {/* 홈으로 */}
                 <Link to="/" className="group">
-                    <div className="h-32 bg-gradient-to-br from-blue-500 to-indigo-600
+                    <div className="h-32 bg-linear-to-br from-blue-500 to-indigo-600
                                   text-white font-semibold rounded-2xl shadow-lg
                                   flex flex-col items-center justify-center transition-all duration-300
                                   hover:scale-105 hover:-rotate-1 hover:shadow-xl
@@ -79,7 +79,7 @@ export default function IncorrectPath() {
 
                 {/* 테마 선택 */}
                 <Link to="/themes" className="group">
-                    <div className="h-32 bg-gradient-to-br from-emerald-500 to-teal-600
+                    <div className="h-32 bg-linear-to-br from-emerald-500 to-teal-600
                                   text-white font-semibold rounded-2xl shadow-lg
                                   flex flex-col items-center justify-center transition-all duration-300
                                   hover:scale-105 hover:rotate-1 hover:shadow-xl
