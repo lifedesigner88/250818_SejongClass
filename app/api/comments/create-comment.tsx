@@ -14,7 +14,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
         content: z.string().min(1),
         unit_id: z.coerce.number().int().positive(),
         parent_comment_id: z.coerce.number().int().positive().optional(),
-        mentioned_user_id: z.uuid().optional(), 
+        mentioned_user_id: z.uuid().optional(),
         to_unit_url: z.string().min(1).optional(),
         type: z.enum(['comment', 'reply'])
     });

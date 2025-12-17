@@ -77,7 +77,6 @@ export const updateCommentLike = async (comment_id: number, userId: string, writ
             to_user_id: writter_id,
             to_unit_url
         })
-
     }
 }
 
@@ -97,14 +96,14 @@ export const adminDeleteComment = async (comment_id: number) => {
 
 export const adminUpdateComment = async (comment_id: number, content: string) => {
     await db.update(commentsTable)
-        .set({ content, is_edited: true })
+        .set({ content, is_edited: true, is_admin_checked:true })
         .where(eq(commentsTable.comment_id, comment_id))
 }
 
 
 export const updateComment = async (comment_id: number, content: string, userId: string) => {
     await db.update(commentsTable)
-        .set({ content, is_edited: true })
+        .set({ content, is_edited: true, is_admin_checked:false })
         .where(and(
             eq(commentsTable.comment_id, comment_id),
             eq(commentsTable.user_id, userId)

@@ -37,7 +37,7 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
                 ? <button
                     onClick={() => navigate('/admin')}
                     className="fixed bottom-4 right-4 w-14 h-14 bg-yellow-600 hover:bg-yellow-900 z-50
-                                                    text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
+                    text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
                     aria-label="개념 보기">
                     <ShieldCheck className="size-8" />
                 </button>

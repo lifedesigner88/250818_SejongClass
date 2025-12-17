@@ -36,6 +36,7 @@ export const commentsTable = pgTable("comments", {
 
     // 상태 관리
     is_deleted: boolean().default(false).notNull(),
+    is_admin_checked: boolean().default(false).notNull(),
     is_edited: boolean().default(false).notNull(),
 
     created_at: timestamp().defaultNow().notNull(),

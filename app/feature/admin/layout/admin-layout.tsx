@@ -3,7 +3,7 @@ import type { Route } from "./+types/admin-layout"
 import { getUserIdForServer } from "#app/feature/auth/useAuthUtil.js"
 import { getPublicUserData } from "#app/feature/users/quries.js"
 import {
-    Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu,
+    Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu,
     SidebarMenuButton, SidebarMenuItem, SidebarProvider
 } from "@/components/ui/sidebar"
 import { Button } from "#app/common/components/ui/button.js"
@@ -36,6 +36,8 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
         <div className="flex">
             <SidebarProvider>
                 <Sidebar>
+                    <SidebarHeader>
+                    </SidebarHeader>
                     <SidebarContent className="mt-16">
                         <SidebarGroup>
                             <SidebarGroupContent>
@@ -51,7 +53,7 @@ export default function AdminLayout({ loaderData }: Route.ComponentProps) {
                                         <SidebarMenuButton asChild>
                                             <Button
                                                 onClick={() => navigate("/admin/comments")}
-                                            >댓글들</Button>
+                                            >댓글</Button>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 </SidebarMenu>
