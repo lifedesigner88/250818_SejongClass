@@ -178,7 +178,7 @@ export default function TextbookPage() {
                     <TooltipTrigger asChild>
                         <button
                             onClick={() => setIntroOpen(true)}
-                            className="fixed bottom-4 right-4 w-14 h-14 bg-emerald-600 hover:bg-emerald-900 z-50
+                            className="fixed bottom-4 right-4 w-14 h-14 bg-orange-600 hover:bg-orange-900 z-50
                                         text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
                             aria-label="개념 보기">
                             <Megaphone className="size-8" />

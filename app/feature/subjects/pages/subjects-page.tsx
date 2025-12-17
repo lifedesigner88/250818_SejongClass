@@ -152,7 +152,7 @@ export function TextbookCard({
             {/* 유튜브 썸네일 비율 (16:9) 카드 */}
             <AspectRatio ratio={16 / 9}>
                 <Card
-                    className={`relative w-full h-full transition-all duration-300 border-0 bg-gradient-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden 
+                    className={`relative w-full h-full transition-all duration-300 border-0 bg-linear-to-br from-white to-gray-50/80 dark:from-gray-900 dark:to-gray-800/80 overflow-hidden 
                     ${
                         isClickable || isAdmin
                             ? 'group-hover:shadow-lg group-hover:scale-[0.95] cursor-pointer'
@@ -161,7 +161,7 @@ export function TextbookCard({
                     `}>
 
                     {/* 메인 커버 이미지 */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500">
+                    <div className="absolute inset-0 bg-linear-to-br from-blue-400 to-purple-500">
                         {textbook.cover_image_url ? (
                             <img
                                 src={textbook.cover_image_url}
@@ -216,7 +216,7 @@ export function TextbookCard({
 
                     {/* 제목 오버레이 (하단) */}
                     <div
-                        className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/50 to-transparent p-4 z-10">
+                        className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black via-black/50 to-transparent p-4 z-10">
 
                         <div className={"flex justify-between items-center"}>
                             <h3 className={`text-2xl pt-6 pb-2 font-bold leading-tight line-clamp-2 text-white transition-colors ${

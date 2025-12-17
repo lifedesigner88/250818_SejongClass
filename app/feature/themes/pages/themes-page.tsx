@@ -3,6 +3,7 @@ import type { Route } from "./+types/themes-page";
 import React from "react";
 import { useNavigate, } from "react-router";
 import { useAuthOutletData } from "~/feature/auth/useAuthUtil";
+import { ShieldCheck } from "lucide-react";
 
 export const loader = async () => {
     const themes = await getThemes()
@@ -32,6 +33,16 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
 
     return (
         <div className={"flex flex-col sm:justify-center items-center h-[calc(100vh-64px)] overflow-auto"}>
+            {isAdmin
+                ? <button
+                    onClick={() => navigate('/admin')}
+                    className="fixed bottom-4 right-4 w-14 h-14 bg-yellow-600 hover:bg-yellow-900 z-50
+                                                    text-white rounded-full shadow-lg transition-colors duration-200 flex items-center justify-center"
+                    aria-label="개념 보기">
+                    <ShieldCheck className="size-8" />
+                </button>
+                : null
+            }
             <div className="grid grid-cols-1 mt-10 sm:grid-cols-2 pb-20 gap-7">
                 {themes.map((t) => (
                     t.is_active || isAdmin ? (
@@ -49,8 +60,8 @@ export default function ThemesPage({ loaderData }: Route.ComponentProps) {
 
                             {/* 기본 상태의 테마 이름 - 호버시 사라짐 */}
                             <span className="group-hover:opacity-0 transition-opacity duration-300">
-                                    {t.name}
-                                </span>
+                                {t.name}
+                            </span>
 
                             {/* 호버 시 나타나는 내용 */}
                             <div
