@@ -14,7 +14,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import YouTube from "react-youtube";
 
 
+
+
 type TextbookInfo = Awaited<ReturnType<typeof getTextbookInfobyTextBookId>>;
+
 export type OutletContextType = {
     isAdmin: boolean;
     textbookInfo: TextbookInfo;
