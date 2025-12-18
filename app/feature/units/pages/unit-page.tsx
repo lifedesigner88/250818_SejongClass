@@ -337,6 +337,17 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                             review={review}
                             setReview={setReview}
                         />
+                        <a
+                            href={`${unitData.middle.major.textbook.ppt_url}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Button
+                                variant={"secondary"}
+                                className="w-full cursor-pointer mt-8 bg-blue-100 mb-3">
+                                강의자료
+                            </Button>
+                        </a>
                         <SheetFooter>
                             <Button onClick={saveReview} className="cursor-pointer">저장</Button>
                             <SheetClose asChild>

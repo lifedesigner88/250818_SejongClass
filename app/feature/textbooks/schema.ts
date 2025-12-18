@@ -15,6 +15,8 @@ export const textbooksTable = pgTable("textbooks", {
     can_enroll: boolean().default(false).notNull(),
     sort_order: integer().default(1).notNull(),
     cover_image_url: varchar({ length: 500 }),
+    ppt_url: varchar({ length: 500 }),
+
     youtube_video_id: varchar({ length: 20 }),
     enrolled_students: smallint().default(0).notNull(),
     estimated_hours: decimal({ precision: 2, scale: 1 }).default('0.0').notNull(),

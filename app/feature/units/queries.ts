@@ -34,6 +34,7 @@ export async function getUnitAndConceptsByUnitId(unit_id: number, user_id: strin
                                 columns: {
                                     textbook_id: true,
                                     title: true,
+                                    ppt_url:true
                                 },
                                 with: {
                                     enrollments: {

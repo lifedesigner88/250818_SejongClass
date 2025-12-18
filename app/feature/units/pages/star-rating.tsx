@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Textarea } from "#app/common/components/ui/textarea.js";
 
 type StarRatingProps = {
-    value: number;                 
-    onChange: (v: number) => void; 
+    value: number;
+    onChange: (v: number) => void;
     review: string
     setReview: (s: string) => void
 };
@@ -20,15 +20,24 @@ export const StarRating = ({
     const [hover, setHover] = useState<number>(value);
     const max = 5
     const size = 20
+    const MAX_LENGTH = 800
     return (
         <div className="flex flex-col">
             <Textarea
                 value={review}
-                onChange={(e) => setReview(e.target.value)}
+                onChange={(e) => {
+                    if (e.target.value.length <= MAX_LENGTH)
+                        setReview(e.target.value)
+                }}
+                maxLength={MAX_LENGTH}
                 placeholder="수강평을 남겨주세요"
+                className="max-h-120 resize-y"
             />
+            <div className="text-xs text-muted-foreground text-right mr-2 mt-1">
+                {review.length} / {MAX_LENGTH}
+            </div>
 
-            <div className="inline-flex items-center gap-2 justify-center mt-2">
+            <div className="inline-flex items-center gap-2 justify-center mt-5">
                 <ToggleGroup
                     type="single"
                     value={String(value || "0")}
