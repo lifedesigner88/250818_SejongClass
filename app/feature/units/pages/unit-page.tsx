@@ -207,6 +207,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 {isAdmin ? <>
                     <Button className={"absolute right-0 top-30"} onClick={() => setOpenEditVideo(true)}> 수정 </Button>
                     <EditVideoDialog
+                        key={unitData.unit_id}
                         unit_id={unitData.unit_id}
                         youtube_video_id={unitData.youtube_video_id}
                         estimated_seconds={unitData.estimated_seconds}
@@ -337,17 +338,19 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                             review={review}
                             setReview={setReview}
                         />
-                        <a
-                            href={`${unitData.middle.major.textbook.ppt_url}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button
-                                variant={"secondary"}
-                                className="w-full cursor-pointer mt-8 bg-blue-100 mb-3">
-                                강의자료
-                            </Button>
-                        </a>
+                        {unitData.middle.major.textbook.ppt_url &&
+                            <a
+                                href={`${unitData.middle.major.textbook.ppt_url}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <Button
+                                    variant={"secondary"}
+                                    className="w-full cursor-pointer mt-8 bg-blue-100 mb-3">
+                                    강의자료
+                                </Button>
+                            </a>
+                        }
                         <SheetFooter>
                             <Button onClick={saveReview} className="cursor-pointer">저장</Button>
                             <SheetClose asChild>

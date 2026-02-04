@@ -23,7 +23,10 @@ export const EditVideoDialog = ({
 }: EditVideoDialogProps) => {
 
     const [youtubeID, setYoutubeID] = useState<string | null>(youtube_video_id ?? null)
+
     const [estimatedSecond, setEstimatedSecond] = useState<number>(estimated_seconds)
+    const [seoond, setSecond] = useState<number>(estimated_seconds % 60)
+    const [minute, setMinute] = useState<number>(Math.floor(estimated_seconds / 60))
 
 
     const updateFetcher = useFetcher()
@@ -54,15 +57,41 @@ export const EditVideoDialog = ({
                     <DialogDescription className="hidden">.</DialogDescription>
                 </DialogHeader>
                 소요시간
-                <Input
-                    value={estimatedSecond}
-                    required
-                    min={0}
-                    type="number"
-                    inputMode="numeric"
-                    step={1}
-                    onChange={(e) => setEstimatedSecond(Number(e.target.value))}
-                />
+                <div className="grid grid-cols-2 gap-2 items-center">
+                    <div className="flex flex-col gap-1">
+                        <span className="text-xs text-muted-foreground">분</span>
+                        <Input
+                            value={minute}
+                            required
+                            min={0}
+                            type="number"
+                            inputMode="numeric"
+                            step={1}
+                            onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setMinute(val);
+                                setEstimatedSecond(seoond + (val * 60));
+                            }}
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                        <span className="text-xs text-muted-foreground">초</span>
+                        <Input
+                            value={seoond}
+                            required
+                            min={0}
+                            type="number"
+                            inputMode="numeric"
+                            step={1}
+                            onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setSecond(val);
+                                setEstimatedSecond(val + (minute * 60));
+                            }}
+                        />
+                    </div>
+                </div>
                 유튜브ID
                 <Input
                     value={youtubeID ?? ""}
@@ -79,6 +108,8 @@ export const EditVideoDialog = ({
                         onClick={() => {
                             setYoutubeID(youtube_video_id ?? "")
                             setEstimatedSecond(estimated_seconds)
+                            setSecond(estimated_seconds % 60)
+                            setMinute(Math.floor(estimated_seconds / 60))
                         }}
                         variant={"outline"}>
                         🔃
