@@ -70,6 +70,7 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                                             curriculum_id: true,
                                             code: true,
                                             achievement_text: true,
+                                            sort_order:true
                                         },
                                         with: {
                                             checklists: {

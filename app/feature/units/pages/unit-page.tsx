@@ -30,10 +30,19 @@ import CommentsSection from "~/feature/comments/page/comment-section";
 import { EditVideoDialog } from "./edit-video-dialog";
 import YouTube from "react-youtube";
 import { StarRating } from "./star-rating";
+import { EditCurriculumDialog } from "./edit-curriculum-dialog";
 
 type UnitDataType = Awaited<ReturnType<typeof getUnitAndConceptsByUnitId>>;
 export type UnitCommentsType = NonNullable<UnitDataType>['comments'];
 
+export type CurriculumListType = {
+    code: string;
+    achievement_text: string;
+    unit_id: number;
+    curriculum_id: number;
+    isChecked: boolean;
+    sort_order: number;
+}[];
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
     const paramsSchema = z.object({
@@ -58,6 +67,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
     const {
         isAdmin,
         isEnrolled,
+        textbookInfo,
         setOpenEnrollWindow,
         setAfterEnrollNaviUrl,
         setNotPubAlert,
@@ -65,6 +75,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         openedSet,
         setOpenedSet,
     } = useOutletContext<OutletContextType>();
+
+    if (!textbookInfo) return (<div> TextbookInfo 가 없습니다. </div>)
 
     const EMPTY_NOTE: JSONContent = { "type": "doc", "content": [{ "type": "paragraph" }] } as const
     const { unitData, userId } = loaderData;
@@ -113,13 +125,10 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         );
     }, [isEnrolled, unitData.unit_id, unitData.middle.major.textbook.textbook_id]);
 
-
-
     const [content, setContent] = useState<JSONContent>(EMPTY_NOTE);
     const [isContentNeedSave, setContentNeedSave] = useState(false);
     const firstLodingUnitReadme = unitData.readme_json;
     const [contentOpen, setContentOpen] = useState(true);
-
 
     useEffect(() => {
         if (JSON.stringify(content) !== JSON.stringify(firstLodingUnitReadme)) {
@@ -197,7 +206,34 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                 setIsSheetOpen(true)
             }
         }
+    }
 
+
+    // 영상 커리큘럼 수정
+    const [oepnEditCurriculum, setOepnEditCurriculum] = useState<boolean>(false)
+    const [curriculumList, setCurriculumList] = useState<CurriculumListType>([])
+
+    const getCurriculumList = () => {
+        const cur_list: CurriculumListType = []
+        textbookInfo?.majors.forEach(major => {
+            major.middles.forEach(middle => {
+                middle.units.forEach(unit => {
+                    if (unit.unit_id === unitData.unit_id && unit.curriculums && unit.curriculums.length > 0) {
+                        unit.curriculums.forEach(curriculum => {
+                            cur_list.push({
+                                code: curriculum.code,
+                                achievement_text: curriculum.achievement_text,
+                                unit_id: unit.unit_id,
+                                curriculum_id: curriculum.curriculum_id,
+                                isChecked: curriculum.checklists.length > 0,
+                                sort_order: curriculum.sort_order
+                            });
+                        });
+                    }
+                });
+            });
+        });
+        setCurriculumList(cur_list)
     }
 
     return (
@@ -213,6 +249,21 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         estimated_seconds={unitData.estimated_seconds}
                         open={openEditVideo}
                         onOpenChange={setOpenEditVideo}
+                    />
+                </>
+                    : null
+                }
+                {isAdmin ? <>
+                    <Button className={"absolute left-0 top-30 bg-red-500"} onClick={() => {
+                        getCurriculumList()
+                        setOepnEditCurriculum(true)
+                    }}> 성취 </Button>
+
+                    <EditCurriculumDialog
+                        unit_id={unitData.unit_id}
+                        open={oepnEditCurriculum}
+                        onOpenChange={setOepnEditCurriculum}
+                        curriculumList={curriculumList}
                     />
                 </>
                     : null
