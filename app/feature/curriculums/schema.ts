@@ -14,7 +14,7 @@ export const curriculumsTable = pgTable("curriculums", {
     achievement_text: text().notNull(), // 성취기준 전체 내용
     unit_id: integer().references(() => unitsTable.unit_id, {
         onDelete: "cascade"
-    }),
+    }).notNull(),
 
 }, (table) => [
 

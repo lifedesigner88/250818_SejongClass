@@ -1,9 +1,10 @@
 import { Button } from "#app/common/components/ui/button.js"
 import { Dialog, DialogHeader, DialogContent, DialogDescription, DialogTitle, DialogFooter, DialogClose } from "#app/common/components/ui/dialog.js"
-import { Plus, Save, Trash2 } from "lucide-react"
+import { Loader2, Plus, Save, Trash2 } from "lucide-react"
 import type { CurriculumListType } from "./unit-page"
 import { Input } from "#app/common/components/ui/input.js"
 import { useEffect, useState } from "react"
+import { useFetcher } from "react-router"
 
 
 
@@ -11,26 +12,92 @@ type EditCurriculumDialogProps = {
     unit_id: number,
     open: boolean,
     onOpenChange: (open: boolean) => void,
-    curriculumList: CurriculumListType
+    curriculumList: CurriculumListType,
+    getCurriculumList: () => void
 }
 
 export const EditCurriculumDialog = ({
+    unit_id,
     open,
     onOpenChange,
-    curriculumList
+    curriculumList,
+    getCurriculumList
 }: EditCurriculumDialogProps) => {
 
 
     const [localList, setLocalList] = useState<CurriculumListType>(curriculumList)
+
     useEffect(() => {
-        setLocalList(curriculumList);
+        setLocalList(curriculumList)
     }, [curriculumList]);
 
-    const handleAddRow = () => {
 
+    const fetcher = useFetcher()
+    const isLoading = fetcher.state !== "idle";
+
+    const handleAddRow = () => {
+        void fetcher.submit(
+            {
+                type: "newRow",
+                unit_id,
+            },
+            {
+                method: "post",
+                action: "/api/curriculums/update-curriculum"
+            }
+        )
     }
 
-    console.log(curriculumList)
+    const handleDeleteRow = (curriculum_id: number) => {
+        void fetcher.submit(
+            {
+                type: "deleteRow",
+                curriculum_id,
+            },
+            {
+                method: "post",
+                action: "/api/curriculums/update-curriculum"
+            }
+        )
+    }
+
+    const handleSaveRow = (index: number) => {
+        const item = localList[index]
+
+        void fetcher.submit(
+            {
+                type: "saveRow",
+                curriculum_id: item.curriculum_id,
+                sort_order: item.sort_order,
+                code: item.code,
+                achievement_text: item.achievement_text,
+            },
+            {
+                method: "post",
+                action: "/api/curriculums/update-curriculum"
+            }
+        )
+    }
+
+    const handleChange = (
+        index: number,
+        field: keyof CurriculumListType[number],
+        value: string | number
+    ) => {
+        setLocalList((prev) =>
+            prev.map((item, i) => {
+                if (i === index)
+                    return { ...item, [field]: value }
+                return item;
+            })
+        )
+    }
+
+    useEffect(() => {
+        if (fetcher.state === "idle" && fetcher.data?.success) {
+            getCurriculumList();
+        }
+    }, [fetcher.state, fetcher.data]);
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -40,9 +107,16 @@ export const EditCurriculumDialog = ({
                     <DialogDescription className="hidden">.</DialogDescription>
                 </DialogHeader>
 
-                <div className="flex justify-end mb-2">
-                    <Button onClick={handleAddRow} size="sm" className="gap-2">
-                        <Plus size={16} /> 행 추가
+                <div className="flex justify-between mb-2">
+                    <Button onClick={() => setLocalList(curriculumList)} size="sm" className="gap-2 bg-blue-100">
+                        🔃
+                    </Button>
+                    <Button disabled={isLoading} onClick={handleAddRow} >
+                        {isLoading ? (
+                            <> <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 처리 중... </>
+                        ) : (
+                            <> <Plus size={16} /> 행 추가 </>
+                        )}
                     </Button>
                 </div>
 
@@ -59,38 +133,35 @@ export const EditCurriculumDialog = ({
                     {localList.map((item, index) => (
                         <div key={item.curriculum_id || index} className="grid grid-cols-[80px_120px_1fr_100px] gap-2 items-center">
 
-                            {/* 순서 Input */}
                             <Input
                                 type="number"
                                 className="text-center h-9"
                                 value={item.sort_order}
-                            // onChange={(e) => handleChange(index, 'sort_order', Number(e.target.value))}
+                                onChange={(e) => handleChange(index, 'sort_order', Number(e.target.value))}
                             />
 
-                            {/* 코드 Input */}
                             <Input
                                 className="h-9"
                                 placeholder="예: 12국01-01"
                                 value={item.code}
-                            // onChange={(e) => handleChange(index, 'code', e.target.value)}
+                                onChange={(e) => handleChange(index, 'code', e.target.value)}
                             />
 
-                            {/* 내용 Input */}
                             <Input
                                 className="h-9"
                                 placeholder="성취기준 내용을 입력하세요"
                                 value={item.achievement_text}
-                            // onChange={(e) => handleChange(index, 'achievement_text', e.target.value)}
+                                onChange={(e) => handleChange(index, 'achievement_text', e.target.value)}
                             />
 
-                            {/* 버튼 그룹 */}
                             <div className="flex items-center gap-1 justify-center">
                                 <Button
                                     size="icon"
                                     variant="outline"
                                     className="h-8 w-8 text-green-600 hover:text-green-700"
                                     title="저장"
-                                // onClick={() => handleSaveRow(item)}
+                                    disabled={curriculumList[index] ? JSON.stringify(curriculumList[index]) === JSON.stringify(item) : false}
+                                    onClick={() => handleSaveRow(index)}
                                 >
                                     <Save size={14} />
                                 </Button>
@@ -100,7 +171,8 @@ export const EditCurriculumDialog = ({
                                     variant="ghost"
                                     className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                                     title="삭제"
-                                // onClick={() => handleDeleteRow(index, item.curriculum_id)}
+                                    disabled={localList[index].achievement_text != "Delete"}
+                                    onClick={() => handleDeleteRow(item.curriculum_id)}
                                 >
                                     <Trash2 size={14} />
                                 </Button>

@@ -79,7 +79,8 @@ export async function getTextbookInfobyTextBookId(textbook_id: number, user_id: 
                                                     completion_status: true,
                                                 }
                                             }
-                                        }
+                                        },
+                                        orderBy: (curriculums, { asc }) => [asc(curriculums.sort_order)],
                                     },
                                     progress: {
                                         where: eq(checklistsTable.user_id, user_id),

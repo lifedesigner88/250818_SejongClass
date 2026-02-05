@@ -236,6 +236,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
         setCurriculumList(cur_list)
     }
 
+
     return (
         <ScrollArea className="p-0 w-full h-[calc(100vh-64px)] overflow-hidden">
 
@@ -264,6 +265,7 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         open={oepnEditCurriculum}
                         onOpenChange={setOepnEditCurriculum}
                         curriculumList={curriculumList}
+                        getCurriculumList={getCurriculumList}
                     />
                 </>
                     : null
