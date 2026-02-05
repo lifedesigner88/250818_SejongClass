@@ -36,7 +36,6 @@ export const action = async ({ request }: Route.ActionArgs) => {
             const code = fromData.get("code") as string
             const achievement_text = fromData.get("achievement_text") as string
 
-            console.log(curriculum_id, sort_order, code, achievement_text)
             await updateCurriculum(curriculum_id, sort_order, code, achievement_text)
         }
         else if (type === "saveAll") {
