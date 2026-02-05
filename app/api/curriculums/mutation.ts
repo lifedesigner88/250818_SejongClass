@@ -1,4 +1,5 @@
 import { curriculumsTable } from "#app/feature/curriculums/schema.js";
+import type { CurriculumListType } from "#app/feature/units/pages/unit-page.js";
 import { eq, sql } from "drizzle-orm";
 import db from "~/db";
 
@@ -46,4 +47,20 @@ export const updateCurriculum = async (
     }).where(
         eq(curriculumsTable.curriculum_id, curriculum_id)
     )
-} 
+}
+
+// db 로직 파일
+export const upsertCurriculums = async (dataList: CurriculumListType) => {
+    return db.transaction(async (tx) => {
+        for (const item of dataList) {
+            await tx
+                .update(curriculumsTable)
+                .set({
+                    sort_order: item.sort_order,
+                    code: item.code,
+                    achievement_text: item.achievement_text,
+                })
+                .where(eq(curriculumsTable.curriculum_id, item.curriculum_id));
+        }
+    });
+};

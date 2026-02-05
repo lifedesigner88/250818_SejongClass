@@ -63,7 +63,6 @@ export const EditCurriculumDialog = ({
 
     const handleSaveRow = (index: number) => {
         const item = localList[index]
-
         void fetcher.submit(
             {
                 type: "saveRow",
@@ -78,6 +77,27 @@ export const EditCurriculumDialog = ({
             }
         )
     }
+
+    const handleSaveAll = () => {
+
+        const changedItems = localList.filter((item, index) => {
+            return JSON.stringify(curriculumList[index]) !== JSON.stringify(item);
+        });
+
+        if (changedItems.length === 0)
+            return;
+
+        void fetcher.submit(
+            {
+                type: "saveAll",
+                curriculums: JSON.stringify(changedItems),
+            },
+            {
+                method: "post",
+                action: "/api/curriculums/update-curriculum"
+            }
+        );
+    };
 
     const handleChange = (
         index: number,
@@ -110,6 +130,13 @@ export const EditCurriculumDialog = ({
                 <div className="flex justify-between mb-2">
                     <Button onClick={() => setLocalList(curriculumList)} size="sm" className="gap-2 bg-blue-100">
                         🔃
+                    </Button>
+                    <Button onClick={handleSaveAll} disabled={isLoading} className="bg-green-200 text-black">
+                        {isLoading ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        ) : (
+                            <Save className="w-4 h-4" /> 
+                        )}
                     </Button>
                     <Button disabled={isLoading} onClick={handleAddRow} >
                         {isLoading ? (

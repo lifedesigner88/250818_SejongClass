@@ -1,7 +1,8 @@
 import { getUserIdForServer } from "#app/feature/auth/useAuthUtil.js";
+import type { CurriculumListType } from "#app/feature/units/pages/unit-page.js";
 import { getPublicUserData } from "#app/feature/users/quries.js";
 import type { Route } from "./+types/update-curriculum";
-import { createNewCurriculum, deleteCurriculum, updateCurriculum } from "./mutation";
+import { createNewCurriculum, deleteCurriculum, updateCurriculum, upsertCurriculums } from "./mutation";
 
 
 
@@ -24,11 +25,11 @@ export const action = async ({ request }: Route.ActionArgs) => {
         if (type === "newRow") {
             const unit_id = Number(fromData.get("unit_id") as string)
             await createNewCurriculum(unit_id)
-        } 
+        }
         else if (type === "deleteRow") {
             const curriculum_id = Number(fromData.get("curriculum_id") as string)
             await deleteCurriculum(curriculum_id)
-        } 
+        }
         else if (type === "saveRow") {
             const curriculum_id = Number(fromData.get("curriculum_id") as string)
             const sort_order = Number(fromData.get("sort_order") as string)
@@ -37,7 +38,12 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
             console.log(curriculum_id, sort_order, code, achievement_text)
             await updateCurriculum(curriculum_id, sort_order, code, achievement_text)
-        } 
+        }
+        else if (type === "saveAll") {
+            const curriculumsRaw = fromData.get("curriculums") as string;
+            const curriculums = JSON.parse(curriculumsRaw) as CurriculumListType;
+                await upsertCurriculums(curriculums);
+        }
     }
 
     return { success: true }
