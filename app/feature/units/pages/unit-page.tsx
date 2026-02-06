@@ -321,8 +321,8 @@ export default function UnitPage({ loaderData }: Route.ComponentProps) {
                         <ChevronDown
                             className={`h-5 w-5 transition-transform duration-200 ${!contentOpen ? "rotate-90" : ""}`} />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-4">
-                        <Tiptap content={content} editable={isAdmin} onChange={setContent} />
+                    <CollapsibleContent className="mt-4 ">
+                            <Tiptap content={content} editable={isAdmin} onChange={setContent} />
                         {isContentNeedSave ?
                             <fetcher.Form method="POST" className="space-y-4 flex justify-center "
                                 action={'/api/units/update-readme'}>

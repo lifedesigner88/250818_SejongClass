@@ -39,10 +39,10 @@ lowlight.register('python', python)
 lowlight.register('latex', latex)
 
 const Tiptap = ({
-                    editable,
-                    content,
-                    onChange,
-                }: {
+    editable,
+    content,
+    onChange,
+}: {
     editable: boolean,
     content?: JSONContent | null,
     onChange?: (content: JSONContent) => void,
@@ -251,7 +251,7 @@ const Tiptap = ({
                         disabled={!editorState?.heading1.canToggle}
                         data-state={editorState?.heading1.isActive ? 'on' : 'off'}
                         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
-                        <Heading1 className="h-4 w-4"/>
+                        <Heading1 className="h-4 w-4" />
                     </ToggleGroupItem>
 
                     <ToggleGroupItem
@@ -260,7 +260,7 @@ const Tiptap = ({
                         disabled={!editorState?.heading2.canToggle}
                         data-state={editorState?.heading2.isActive ? 'on' : 'off'}
                         onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
-                        <Heading2 className="h-4 w-4"/>
+                        <Heading2 className="h-4 w-4" />
                     </ToggleGroupItem>
 
 
@@ -270,7 +270,7 @@ const Tiptap = ({
                         disabled={!editorState?.blockquote.canToggle}
                         data-state={editorState?.blockquote.isActive ? 'on' : 'off'}
                         onClick={() => editor.chain().focus().toggleBlockquote().run()}>
-                        <Quote className="h-4 w-4"/>
+                        <Quote className="h-4 w-4" />
                         {/* Ctrl + Shift + B */}
                     </ToggleGroupItem>
 
@@ -282,7 +282,7 @@ const Tiptap = ({
                             const url = window.prompt('이미지 URL을 입력해주세요.')
                             if (url) editor.commands.setImage({ src: url })
                         }}>
-                        <Image className="h-4 w-4"/>
+                        <Image className="h-4 w-4" />
                     </ToggleGroupItem>
 
                 </ToggleGroup>
@@ -329,7 +329,7 @@ const Tiptap = ({
                         aria-label="인라인 수학 수식"
                         data-state={"off"}
                         onClick={onInsertInlineMath}>
-                        <Sigma className="h-4 w-4"/>
+                        <Sigma className="h-4 w-4" />
                     </ToggleGroupItem>
 
                     <ToggleGroupItem
@@ -337,7 +337,7 @@ const Tiptap = ({
                         aria-label="블록 수학 수식"
                         data-state={"off"}
                         onClick={onInsertBlockMath}>
-                        <SquareSigma className="h-4 w-4"/>
+                        <SquareSigma className="h-4 w-4" />
                     </ToggleGroupItem>
 
                     <ToggleGroupItem
@@ -355,19 +355,19 @@ const Tiptap = ({
                                 editor.commands.setLink({ href: normalizedUrl, target: '_blank' })
                             }
                         }}>
-                        <Link2 className="h-4 w-4"/>
+                        <Link2 className="h-4 w-4" />
                     </ToggleGroupItem>
                 </ToggleGroup>
             </div> : null
             }
-
-            < EditorContent onKeyDown={handleKeyDown} editor={editor}/>
-
+            <div className="w-full overflow-x-auto max-w-[100vw] sm:max-w-full">
+                < EditorContent onKeyDown={handleKeyDown} editor={editor} />
+            </div>
             <Dialog open={latexDialogOpen} onOpenChange={setLatexDialogOpen}>
                 <DialogContent className="w-full max-w-5xl! max-h-screen overflow-y-auto ">
                     <DialogHeader>
                         <DialogTitle>KaTeX {isInlin ? " - 인라인" : " - 블록"}  </DialogTitle>
-                        <DialogDescription/>
+                        <DialogDescription />
                     </DialogHeader>
                     {!isInlin
                         ? <Textarea
@@ -375,19 +375,19 @@ const Tiptap = ({
                             value={latex}
                             onChange={(e) => setLatex(e.target.value)}
                             placeholder="KaTeX - (Latex 의 수식만 지원)"
-                            className="font-mono min-h-[200px] resize-y wrap-break-word overflow-wrap-anywhere"/>
+                            className="font-mono min-h-[200px] resize-y wrap-break-word overflow-wrap-anywhere" />
                         : <Input
                             id="latex"
                             value={latex}
                             onChange={(e) => setLatex(e.target.value)}
                             placeholder="KaTeX - (Latex 의 수식만 지원)"
-                            className="font-mono wrap-break-word"/>
+                            className="font-mono wrap-break-word" />
                     }
                     {/* KaTeX 미리보기 - 가로 스크롤 방지 */}
                     {latex && (
                         <div className="p-2 border rounded bg-gray-50 overflow-x-auto">
                             <div className="min-w-0">
-                                <SafeKatexRenderer latex={latex} displayMode={!isInlin}/>
+                                <SafeKatexRenderer latex={latex} displayMode={!isInlin} />
                             </div>
                         </div>
                     )}
@@ -441,5 +441,5 @@ const SafeKatexRenderer = ({ latex, displayMode }: {
 
     return <div
         className="max-w-full overflow-x-auto whitespace-nowrap"
-        dangerouslySetInnerHTML={{ __html: renderedHtml }}/>
+        dangerouslySetInnerHTML={{ __html: renderedHtml }} />
 }
