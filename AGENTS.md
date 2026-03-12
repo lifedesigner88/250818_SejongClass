@@ -53,6 +53,7 @@
 - `DEMO_MODE=true`일 때 로그인 다이얼로그에서 `면접용 Admin 바로 입장` 버튼 노출.
 - 데모 바로 입장은 `DEMO_ADMIN_EMAIL`, `DEMO_ADMIN_PASSWORD` 사용.
 - 데모 Supabase 연결 정보는 `DEMO_SUPABASE_*`, `DEMO_VITE_SUPABASE_*` 환경 변수 사용.
+- 데모 DB 연결 정보는 `DEMO_DATABASE_URL` 환경 변수 사용.
 - 데모 admin 계정은 Supabase Auth 계정과 앱 DB `users.role=admin`을 함께 맞춰야 함.
 - Supabase 쿠키 파싱은 고정 project id 대신 현재 활성 Supabase 프로젝트 기준으로 처리.
 

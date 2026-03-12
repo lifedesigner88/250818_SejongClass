@@ -6,8 +6,6 @@ import { getUserInitials, type UserProfile } from "~/feature/users/pages/profile
 import { SquarePen } from "lucide-react";
 import { useFetcher } from "react-router";
 
-const supabase = makePublicClient()
-
 type AvatarUploaderProps = {
     userProfile: UserProfile
     loginUserId: string
@@ -67,6 +65,7 @@ export default function AvatarUploader({ loginUserId, userProfile }: AvatarUploa
             })
 
             const filePath = `${loginUserId}/${Date.now()}`
+            const supabase = makePublicClient()
 
             // Supabase Storage 업로드
             const { error } = await supabase.storage

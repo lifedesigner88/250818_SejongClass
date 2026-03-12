@@ -19,6 +19,15 @@ import { commentLikesRelations, commentLikesTable, commentsRelations, commentsTa
 import { visitlogsRelations, visitlogsTable } from "~/feature/visitlogs/schema";
 import { notificationsRelation, notificationsTable } from "~/feature/notifications/schema";
 
+const isDemoMode = process.env.DEMO_MODE === "true";
+const databaseUrl = isDemoMode
+    ? process.env.DEMO_DATABASE_URL || process.env.DATABASE_URL
+    : process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+    throw new Error("DATABASE_URL is not configured.");
+}
+
 const schema = {
     themesTable,
     themesRelations,
@@ -70,7 +79,7 @@ const schema = {
 }
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL!,
+    connectionString: databaseUrl,
     ssl: {
         rejectUnauthorized: false,
         ca: undefined,
