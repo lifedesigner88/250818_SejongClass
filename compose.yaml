@@ -1,0 +1,17 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-3000}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      # Bridge the current local `.env` demo public key names to the runtime names the app expects.
+      DEMO_VITE_SUPABASE_ID: ${VITE_DEMO_SUPABASE_ID:-}
+      DEMO_VITE_SUPABASE_PUBLIC: ${VITE_DEMO_SUPABASE_PUBLIC:-}
+    ports:
+      - "${HOST_PORT:-5173}:${PORT:-3000}"
+    restart: unless-stopped
