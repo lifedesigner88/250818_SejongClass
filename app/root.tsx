@@ -13,14 +13,14 @@ import { useEffect, useState } from "react";
 import type { Route } from "./+types/root";
 import "./app.css";
 import React from "react";
-import { makeSSRClient } from "~/supa-clents";
+import { getPublicAppEnv, makeSSRClient } from "~/supa-clents";
 import { UserStatus } from "@/components/user-status";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldCheck } from "lucide-react";
 import { createPublicUserData, getPublicUserDataWithNotifi } from "~/feature/users/quries";
 import { getInAppBrowserType, isInAppBrowser, type publicUserDataType } from "~/feature/auth/useAuthUtil";
 
@@ -85,15 +85,34 @@ export const action = async ({ request }: Route.ActionArgs) => {
     const formData = await request.formData();
 
     const pendingUrlAfterLogin = formData.get('pendingUrlAfterLogin') as string;
+    const intent = formData.get("intent") as string | null;
     const provider = formData.get('provider') as string;
+
+    const { client, headers } = makeSSRClient(request);
+
+    if (intent === "demo-login") {
+        if (process.env.DEMO_MODE !== "true") {
+            throw new Response("Demo login is not enabled.", { status: 404 });
+        }
+
+        const email = process.env.DEMO_ADMIN_EMAIL;
+        const password = process.env.DEMO_ADMIN_PASSWORD;
+
+        if (!email || !password) {
+            throw new Error("DEMO_ADMIN_EMAIL or DEMO_ADMIN_PASSWORD is missing.");
+        }
+
+        const { error } = await client.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        return redirect(pendingUrlAfterLogin || "/admin", { headers });
+    }
 
     const redirectTo = new URL(`${BASE_URL}/callback`);
 
     // 로그인 이후 이동할 경로
     if (pendingUrlAfterLogin)
         redirectTo.searchParams.set('pendingUrl', pendingUrlAfterLogin);
-
-    const { client, headers } = makeSSRClient(request);
 
     // 로그인
     const { data, error } = await client.auth.signInWithOAuth({
@@ -108,11 +127,13 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
 // loader
 export const loader = async ({ request }: Route.LoaderArgs) => {
+    const appEnv = getPublicAppEnv();
 
     const { client } = makeSSRClient(request)
     const { data: supabaseAuthData, error } = await client.auth.getUser()
-    if (error) return { supabaseAuthData }
+    if (error) return { supabaseAuthData, appEnv }
     const user = supabaseAuthData.user;
+    if (!user) return { publicUserData: null, appEnv };
 
     const loginedUuserProviderId = user.user_metadata.provider_id;
     const loginedUserDataFromProvider = user.identities?.filter(identity => identity.id === loginedUuserProviderId)[0];
@@ -155,6 +176,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
     const isAdmin = publicUserData?.role === "admin";
     return {
+        appEnv,
         publicUserData: {
             ...publicUserData,
             isAdmin,
@@ -165,10 +187,10 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 
 export default function App({ loaderData }: Route.ComponentProps) {
-    const { publicUserData } = loaderData;
+    const { publicUserData, appEnv } = loaderData;
     const isLoggedIn = !!publicUserData;
     const [showLoginDialog, setShowLoginDialog] = useState(false);
-    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/themes");
+    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>(appEnv.demoMode ? "/admin" : "/themes");
     const provider = publicUserData?.provider;
 
     useEffect(() => {
@@ -183,11 +205,18 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
     // 어떤 provider가 클릭되었는지 감지
     const submittedProvider = navigation.formData?.get("provider");
+    const submittedIntent = navigation.formData?.get("intent");
     const isWebView = isInAppBrowser()
     const isAdmin = publicUserData?.isAdmin;
+    const appEnvScript = JSON.stringify(appEnv).replace(/</g, "\\u003c");
 
     return (
         <>
+            <script
+                dangerouslySetInnerHTML={{
+                    __html: `window.__APP_ENV__ = ${appEnvScript};`,
+                }}
+            />
             {(isLoading || isSubmitting) && (
                 <div className="fixed inset-0 z-30 flex items-center justify-center">
                     <Loader2 className="size-20 sm:size-30 animate-spin text-emerald-700" />
@@ -272,85 +301,111 @@ export default function App({ loaderData }: Route.ComponentProps) {
                     <Form method="post" className="space-y-4">
                         <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''} />
 
-                        {/* Kakao 버튼 */}
-                        <Button
-                            type="submit"
-                            name="provider"
-                            value="kakao"
-                            disabled={isSubmitting && submittedProvider !== "kakao"}
-                            className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] disabled:bg-gray-300 disabled:cursor-not-allowed 
+                        {appEnv.demoMode ? (
+                            <Button
+                                type="submit"
+                                name="intent"
+                                value="demo-login"
+                                disabled={isSubmitting && submittedIntent !== "demo-login"}
+                                className="cursor-pointer w-full h-20 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 disabled:cursor-not-allowed
+                                text-white border-0 rounded-lg transition-all duration-200 ease-in-out
+                                hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                            >
+                                {isSubmitting && submittedIntent === "demo-login" ? (
+                                    <>
+                                        <Loader2 className="size-12 mr-3 animate-spin" />
+                                        <div className="font-medium text-base">면접용 관리자 계정 연결 중...</div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <ShieldCheck className="size-12 mr-3" />
+                                        <div className="font-medium text-base">면접용 Admin 바로 입장</div>
+                                    </>
+                                )}
+                            </Button>
+                        ) : (
+                            <>
+                                {/* Kakao 버튼 */}
+                                <Button
+                                    type="submit"
+                                    name="provider"
+                                    value="kakao"
+                                    disabled={isSubmitting && submittedProvider !== "kakao"}
+                                    className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] disabled:bg-gray-300 disabled:cursor-not-allowed 
                             text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out 
                             hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
-                        >
-                            {isSubmitting && submittedProvider === "kakao" ? (
-                                <>
-                                    <Loader2 className="size-12 mr-3 animate-spin" />
-                                    <div className="font-medium text-base">연결 중...</div>
-                                </>
-                            ) : (
-                                <>
-                                    <RiKakaoTalkFill className="size-13 mr-3" />
-                                    <div className="font-medium text-base">KakaoTalk</div>
-                                </>
-                            )}
-                        </Button>
-
-                        {/* Google 버튼 */}
-                        <Button
-                            type="submit"
-                            name="provider"
-                            value="google"
-                            disabled={isSubmitting && submittedProvider !== "google" || isWebView}
-                            className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed
-                            text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out 
-                            hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
-                        >
-                            {isWebView ? <>
-                                <FcGoogle className="size-13 mr-3" />
-                                <div className="font-medium text- overflow-hidden">
-                                    <p>구글 로그인</p> {getInAppBrowserType()} 지원 ❌ <p> 크롬 이용 </p>
-                                </div>
-                            </> :
-                                <>
-                                    {isSubmitting && submittedProvider === "google" ? (
+                                >
+                                    {isSubmitting && submittedProvider === "kakao" ? (
                                         <>
                                             <Loader2 className="size-12 mr-3 animate-spin" />
                                             <div className="font-medium text-base">연결 중...</div>
                                         </>
                                     ) : (
                                         <>
-                                            <FcGoogle className="size-13 mr-3" />
-                                            <div className="font-medium text-base">Google</div>
+                                            <RiKakaoTalkFill className="size-13 mr-3" />
+                                            <div className="font-medium text-base">KakaoTalk</div>
                                         </>
                                     )}
+                                </Button>
 
-                                </>
-                            }
+                                {/* Google 버튼 */}
+                                <Button
+                                    type="submit"
+                                    name="provider"
+                                    value="google"
+                                    disabled={isSubmitting && submittedProvider !== "google" || isWebView}
+                                    className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed
+                            text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out 
+                            hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                                >
+                                    {isWebView ? <>
+                                        <FcGoogle className="size-13 mr-3" />
+                                        <div className="font-medium text- overflow-hidden">
+                                            <p>구글 로그인</p> {getInAppBrowserType()} 지원 ❌ <p> 크롬 이용 </p>
+                                        </div>
+                                    </> :
+                                        <>
+                                            {isSubmitting && submittedProvider === "google" ? (
+                                                <>
+                                                    <Loader2 className="size-12 mr-3 animate-spin" />
+                                                    <div className="font-medium text-base">연결 중...</div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <FcGoogle className="size-13 mr-3" />
+                                                    <div className="font-medium text-base">Google</div>
+                                                </>
+                                            )}
 
-                        </Button>
+                                        </>
+                                    }
 
-                        {/* GitHub 버튼 */}
-                        <Button
-                            type="submit"
-                            name="provider"
-                            value="github"
-                            disabled={isSubmitting && submittedProvider !== "github"}
-                            className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] disabled:bg-gray-500 disabled:cursor-not-allowed
+                                </Button>
+
+                                {/* GitHub 버튼 */}
+                                <Button
+                                    type="submit"
+                                    name="provider"
+                                    value="github"
+                                    disabled={isSubmitting && submittedProvider !== "github"}
+                                    className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] disabled:bg-gray-500 disabled:cursor-not-allowed
                             text-white border-0 rounded-lg transition-all duration-200 ease-in-out 
                             hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
-                        >
-                            {isSubmitting && submittedProvider === "github" ? (
-                                <>
-                                    <Loader2 className="size-12 mr-3 animate-spin" />
-                                    <div className="font-medium text-base">연결 중...</div>
-                                </>
-                            ) : (
-                                <>
-                                    <FaGithub className="size-13 mr-3" />
-                                    <div className="font-medium text-base">GitHub</div>
-                                </>
-                            )}
-                        </Button>
+                                >
+                                    {isSubmitting && submittedProvider === "github" ? (
+                                        <>
+                                            <Loader2 className="size-12 mr-3 animate-spin" />
+                                            <div className="font-medium text-base">연결 중...</div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaGithub className="size-13 mr-3" />
+                                            <div className="font-medium text-base">GitHub</div>
+                                        </>
+                                    )}
+                                </Button>
+                            </>
+                        )}
                     </Form>
                 </DialogContent>
             </Dialog>

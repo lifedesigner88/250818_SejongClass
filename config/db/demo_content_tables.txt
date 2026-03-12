@@ -1,0 +1,9 @@
+# Demo-safe content tables to snapshot from the current production database.
+# Order here is for readability; pg_dump will resolve dependencies.
+themes
+subjects
+textbooks
+majors
+middles
+units
+curriculums

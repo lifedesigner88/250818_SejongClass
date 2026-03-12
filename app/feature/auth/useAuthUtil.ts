@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router";
-import { makeSSRClient } from "~/supa-clents";
+import { getActiveSupabaseProjectRef, makeSSRClient } from "~/supa-clents";
 import { parseCookieHeader } from "@supabase/ssr";
 import { jwtDecode } from "jwt-decode";
 import type { NotificationsType } from "#app/common/components/alert-content.js";
@@ -90,7 +90,8 @@ export const getUserIdForServer = async (request: Request) => {
 export const getUserIdFromCookieSync = (request: Request): string | null => {
     try {
         const cookies = parseCookieHeader(request.headers.get("Cookie") ?? "");
-        const projectId = "ierkuifrgbcadwasnkih";
+        const projectId = getActiveSupabaseProjectRef();
+        if (!projectId) return null;
 
         // 토큰 청크들 찾아서 합치기
         const tokenChunks = cookies

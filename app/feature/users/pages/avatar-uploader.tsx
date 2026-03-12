@@ -6,7 +6,7 @@ import { getUserInitials, type UserProfile } from "~/feature/users/pages/profile
 import { SquarePen } from "lucide-react";
 import { useFetcher } from "react-router";
 
-const supabase = makePublicClient
+const supabase = makePublicClient()
 
 type AvatarUploaderProps = {
     userProfile: UserProfile
