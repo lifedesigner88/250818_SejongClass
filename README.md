@@ -37,16 +37,14 @@
 - 배치 작업: 교재 통계 재계산, 오래된 알림 정리
 - 관리자 접근: 프론트와 서버에서 모두 권한 검증
 
-## 면접용 데모 운영 전략
+## 면접용 데모 현재 상태
 
-- 목적: 면접 기간 3주 동안 안정적으로 재현 가능한 데모 환경 운영
-- 배포 기준: `Docker Compose` 기반으로 앱과 DB를 함께 실행
-- 배포 대상: `AWS Lightsail 4GB` Linux VM 우선 검토
-- 배포 방식: `AWS CLI`로 인스턴스 생성 후 SSH 접속, `docker compose up -d`
-- IaC: 현재 범위에서는 Terraform보다 CLI + Compose가 더 단순하고 실용적
-- 운영 원칙: 운영 서비스와 데모 환경 분리
-- 데이터 원칙: 운영 DB를 직접 노출하지 않고, 가능하면 샘플/데모 데이터 사용
-- 부작용 차단: 데모에서는 결제, 메일, 알림 등 실운영 부작용 최소화
+- 운영용과 분리된 데모용 Supabase/Auth/DB 사용
+- `DEMO_MODE=true`일 때 로그인 다이얼로그에 `KakaoTalk`, `Google`, `GitHub`, `Admin` 버튼 노출
+- 데모의 소셜 버튼은 실제 OAuth가 아니라 고정된 데모 계정으로 로그인
+- `Admin`은 `/admin`, 일반 데모 유저는 `/themes`로 진입
+- 프로필 사진 업로드는 Supabase Storage `avatars` 버킷 사용
+- Docker Compose 기본 포트는 내부/외부 모두 `5173`
 
 ## 기술 스택
 
@@ -83,6 +81,29 @@ nvm use
 npm install
 npm run dev
 ```
+
+## 데모 배포 최소 절차
+
+```bash
+nvm use
+npm install
+cp .env.example .env
+# BASE_URL, DEMO_DATABASE_URL, DEMO_SUPABASE_*, VITE_DEMO_SUPABASE_*, DEMO_* 계정 값 입력
+
+# 필요 시 데모 콘텐츠 복원
+node ./scripts/db/restore_demo_dump.mjs
+
+# 데모 계정/권한/스토리지 준비
+npm run demo:ensure-admin
+npm run demo:setup-storage
+
+# 앱 배포
+docker compose up -d --build
+```
+
+- 기본 접속 주소: `http://localhost:5173`
+- 원격 배포 시 `BASE_URL`은 실제 공개 도메인으로 맞춤
+- 데모 환경은 운영 DB, 운영 Supabase 프로젝트와 반드시 분리 유지
 
 ## 면접에서 강조할 포인트
 

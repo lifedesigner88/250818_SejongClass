@@ -7,11 +7,8 @@ services:
       - .env
     environment:
       NODE_ENV: production
-      PORT: ${PORT:-3000}
+      PORT: ${PORT:-5173}
       DEMO_MODE: ${DEMO_MODE:-false}
-      # Bridge the current local `.env` demo public key names to the runtime names the app expects.
-      DEMO_VITE_SUPABASE_ID: ${VITE_DEMO_SUPABASE_ID:-}
-      DEMO_VITE_SUPABASE_PUBLIC: ${VITE_DEMO_SUPABASE_PUBLIC:-}
     ports:
-      - "${HOST_PORT:-5173}:${PORT:-3000}"
+      - "${HOST_PORT:-5173}:${PORT:-5173}"
     restart: unless-stopped

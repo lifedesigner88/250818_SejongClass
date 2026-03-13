@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { User, LogIn, Loader2, UserRoundCog, LibraryBig, MessageCircleMore, Bell, LogOut } from 'lucide-react';
+import { User, LogIn, Loader2, UserRoundCog, LibraryBig, MessageCircleMore, Bell, LogOut, ShieldCheck } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { FaGithub } from "react-icons/fa";
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { AlertContent } from './alert-content';
 
-type Provider = 'kakao' | 'google' | 'github';
+type Provider = 'admin' | 'kakao' | 'google' | 'github';
 
 interface UserStatusProps {
     isLoggedIn: boolean;
@@ -47,6 +47,11 @@ export function UserStatus({
     // Provider별 아이콘과 색상 정의
     const getProviderConfig = (providerType?: string) => {
         switch (providerType) {
+            case 'admin':
+                return {
+                    icon: <ShieldCheck className="size-6 text-white" />,
+                    bgClass: 'bg-gradient-to-br from-emerald-600 to-emerald-800'
+                };
             case 'github':
                 return {
                     icon: <FaGithub className="size-6 text-white" />,

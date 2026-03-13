@@ -17,5 +17,5 @@ RUN npm ci --omit=dev
 COPY --from=build /app/build ./build
 COPY --from=build /app/public ./public
 COPY --from=build /app/scripts/start.mjs ./scripts/start.mjs
-EXPOSE 3000
+EXPOSE 5173
 CMD ["npm", "run", "start"]

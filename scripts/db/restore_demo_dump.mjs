@@ -5,6 +5,10 @@ import { Client } from "pg";
 
 const dumpsRoot = path.resolve("dumps/selective");
 
+function stripPsqlMetaCommands(sql) {
+  return sql.replace(/^\\(?:restrict|unrestrict)\s+.*$/gm, "").trim();
+}
+
 async function resolveDumpDir(inputDir) {
   if (inputDir) return path.resolve(inputDir);
 
@@ -32,10 +36,12 @@ async function main() {
   const schemaPath = path.join(dumpDir, "public_schema.sql");
   const dataPath = path.join(dumpDir, "demo_content_data.sql");
 
-  const [schemaSql, dataSql] = await Promise.all([
+  const [rawSchemaSql, rawDataSql] = await Promise.all([
     readFile(schemaPath, "utf8"),
     readFile(dataPath, "utf8"),
   ]);
+  const schemaSql = stripPsqlMetaCommands(rawSchemaSql);
+  const dataSql = stripPsqlMetaCommands(rawDataSql);
 
   const client = new Client({
     connectionString: databaseUrl,
@@ -53,12 +59,7 @@ async function main() {
     console.log(`Using dump directory: ${dumpDir}`);
     console.log(`Existing public tables: ${tableCount}`);
 
-    await client.query(`
-      drop schema if exists public cascade;
-      create schema public;
-      grant all on schema public to postgres;
-      grant all on schema public to public;
-    `);
+    await client.query("drop schema if exists public cascade;");
 
     await client.query(schemaSql);
     await client.query(dataSql);

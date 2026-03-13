@@ -38,7 +38,10 @@ const reactRouterServeCli = join(
 
 const child = spawn(process.execPath, [reactRouterServeCli, serverEntry], {
     stdio: "inherit",
-    env: process.env,
+    env: {
+        ...process.env,
+        PORT: process.env.PORT || "5173",
+    },
 });
 
 child.on("exit", (code, signal) => {

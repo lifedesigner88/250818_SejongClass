@@ -42,17 +42,23 @@
 
 - 샘플 데이터 또는 비식별화 데이터 우선 사용.
 - 운영 사용자, 결제, 알림, 방문 로그 데이터 재사용 금지.
-- 시간 부족 시 임시 데모 admin 계정 1개 운영 가능.
-- 면접 종료 후 임시 데모 admin 계정 권한 회수 또는 삭제.
+- 현재는 데모 admin 1개 + 데모 일반 유저 3개(kakao, google, github) 구조 사용.
+- 면접 종료 후 임시 데모 계정 권한 회수 또는 삭제.
 
 ## 현재 데모 구현 상태
 
 - 데모용 Supabase 프로젝트 별도 사용.
-- 데모 환경에서 OAuth 미사용.
-- 데모 환경에서 이메일/비밀번호 기반 admin 계정 1개 사용.
-- `DEMO_MODE=true`일 때 로그인 다이얼로그에서 `면접용 Admin 바로 입장` 버튼 노출.
-- 데모 바로 입장은 `DEMO_ADMIN_EMAIL`, `DEMO_ADMIN_PASSWORD` 사용.
-- 데모 Supabase 연결 정보는 `DEMO_SUPABASE_*`, `DEMO_VITE_SUPABASE_*` 환경 변수 사용.
+- 데모 환경에서 실제 OAuth provider 연동은 사용하지 않음.
+- 데모 환경에서 이메일/비밀번호 기반 demo 계정 4개(admin, kakao, google, github) 사용.
+- `DEMO_MODE=true`일 때 로그인 다이얼로그에서 `Kakao`, `Google`, `GitHub`, `Admin` 버튼 노출.
+- `Admin` 버튼은 `DEMO_ADMIN_EMAIL`, `DEMO_ADMIN_PASSWORD`를 사용하고 `/admin`으로 이동.
+- `Kakao`, `Google`, `GitHub` 버튼은 각각 `DEMO_KAKAO_*`, `DEMO_GOOGLE_*`, `DEMO_GITHUB_*` 계정으로 로그인.
+- 데모 로그인 성공 시 로그인 다이얼로그는 자동으로 닫힘.
+- 공용 demo 계정 로그아웃은 `signOut({ scope: "local" })`로 현재 브라우저 세션에만 적용.
+- 데모 admin 계정 프로비저닝은 `npm run demo:ensure-admin` 사용.
+- 프로필 사진 업로드용 Supabase Storage bucket `avatars`는 public bucket + image only + 1MB 제한 + 사용자 본인 폴더 정책으로 구성.
+- 데모 스토리지 프로비저닝은 `npm run demo:setup-storage` 사용.
+- 데모 Supabase 연결 정보는 `DEMO_SUPABASE_*`, `VITE_DEMO_SUPABASE_*` 환경 변수 사용.
 - 데모 DB 연결 정보는 `DEMO_DATABASE_URL` 환경 변수 사용.
 - 데모 admin 계정은 Supabase Auth 계정과 앱 DB `users.role=admin`을 함께 맞춰야 함.
 - Supabase 쿠키 파싱은 고정 project id 대신 현재 활성 Supabase 프로젝트 기준으로 처리.
@@ -60,12 +66,26 @@
 ## 데모 배포 메모
 
 - 데모 인프라 작업은 별도 공개 레포 `/home/lifedesigner88/260312-demo-infra`에서 진행.
+- 현재 앱 기본 포트는 호스트/컨테이너 모두 `5173`.
+- `compose.yaml`은 `PORT=${PORT:-5173}`, `HOST_PORT=${HOST_PORT:-5173}` 기준.
+- `BASE_URL`은 데모 공개 도메인과 반드시 일치시킴.
 - 현재 데모 도메인:
 - `vue-spring.sejongclass.kr`
 - `vue-spring-file.sejongclass.kr`
 - `rr7-fullstack.sejongclass.kr`
 - Cloudflare DNS + Lightsail + Caddy 조합 우선.
 - Cloudflare는 초기 연결 시 `DNS only` 우선.
+
+## 데모 배포/복구 순서
+
+- `.env.example`를 기반으로 `.env` 작성.
+- 필수 env: `BASE_URL`, `PORT`, `HOST_PORT`, `DEMO_MODE`, `DEMO_DATABASE_URL`, `DEMO_SUPABASE_KEY`, `DEMO_SUPABASE_ID`, `VITE_DEMO_SUPABASE_PUBLIC`, `VITE_DEMO_SUPABASE_ID`, `DEMO_ADMIN_*`, `DEMO_KAKAO_*`, `DEMO_GOOGLE_*`, `DEMO_GITHUB_*`.
+- 데모 DB 초기화가 필요하면 `node ./scripts/db/restore_demo_dump.mjs` 실행.
+- 데모 Auth 계정과 앱 DB role 정합성은 `npm run demo:ensure-admin`로 맞춤.
+- 데모 프로필 업로드용 storage bucket/policy는 `npm run demo:setup-storage`로 맞춤.
+- 앱 배포는 `docker compose up -d --build`.
+- 배포 후 확인 우선순위: `localhost:5173` 또는 공개 `BASE_URL` 접속, `Admin` 로그인 후 `/admin`, 일반 데모 유저 로그인 후 `/themes`, 프로필 사진 업로드.
+- 운영 DB, 운영 Supabase, 운영 결제/메일 키와 데모 env 혼용 금지.
 
 ## 데모 덤프 메모
 
@@ -74,6 +94,7 @@
 - 포함 테이블 목록은 `config/db/demo_content_tables.txt`에서 관리.
 - 현재 선별 덤프 결과는 `dumps/selective/20260312/` 기준으로 보관.
 - `users`, `enrollments`, `payments`, `notifications`, `visitlogs`, `comments` 데이터 제외.
+- `scripts/db/restore_demo_dump.mjs`는 demo DB의 `public` schema를 드롭 후 복원하므로 demo 환경에서만 실행.
 
 ## AI 작업 규칙
 

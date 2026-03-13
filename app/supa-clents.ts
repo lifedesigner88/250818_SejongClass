@@ -41,10 +41,10 @@ const resolveServerSupabaseConfig = () => {
 export const getPublicAppEnv = (): PublicAppEnv => {
     const useDemo = isDemoMode();
     const supabaseUrl = useDemo
-        ? process.env.DEMO_VITE_SUPABASE_ID || process.env.VITE_DEMO_SUPABASE_ID
+        ? process.env.VITE_DEMO_SUPABASE_ID
         : process.env.VITE_SUPABASE_ID;
     const supabaseAnonKey = useDemo
-        ? process.env.DEMO_VITE_SUPABASE_PUBLIC || process.env.VITE_DEMO_SUPABASE_PUBLIC
+        ? process.env.VITE_DEMO_SUPABASE_PUBLIC
         : process.env.VITE_SUPABASE_PUBLIC;
 
     if (!supabaseUrl || !supabaseAnonKey) {

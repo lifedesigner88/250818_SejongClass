@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import type { NotificationsType } from "#app/common/components/alert-content.js";
 
 
-type Provider = 'kakao' | 'google' | 'github';
+type Provider = 'admin' | 'kakao' | 'google' | 'github';
 
 export interface publicUserDataType {
     provider: Provider | undefined

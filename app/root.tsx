@@ -57,6 +57,41 @@ export const meta: Route.MetaFunction = () => {
     ];
 };
 
+type DemoAccount = "admin" | "kakao" | "google" | "github";
+
+const demoAccountEnv = {
+    admin: {
+        emailEnv: "DEMO_ADMIN_EMAIL",
+        passwordEnv: "DEMO_ADMIN_PASSWORD",
+        fallbackUrl: "/admin",
+    },
+    kakao: {
+        emailEnv: "DEMO_KAKAO_EMAIL",
+        passwordEnv: "DEMO_KAKAO_PASSWORD",
+        fallbackUrl: "/themes",
+    },
+    google: {
+        emailEnv: "DEMO_GOOGLE_EMAIL",
+        passwordEnv: "DEMO_GOOGLE_PASSWORD",
+        fallbackUrl: "/themes",
+    },
+    github: {
+        emailEnv: "DEMO_GITHUB_EMAIL",
+        passwordEnv: "DEMO_GITHUB_PASSWORD",
+        fallbackUrl: "/themes",
+    },
+} as const;
+
+const demoAccountLoadingLabels: Record<DemoAccount, string> = {
+    admin: "Admin 계정 연결 중...",
+    kakao: "Kakao 계정 연결 중...",
+    google: "Google 계정 연결 중...",
+    github: "GitHub 계정 연결 중...",
+};
+
+const isDemoAccount = (value: FormDataEntryValue | null): value is DemoAccount =>
+    typeof value === "string" && value in demoAccountEnv;
+
 
 export function Layout({ children }: { children: React.ReactNode }) {
 
@@ -87,6 +122,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     const pendingUrlAfterLogin = formData.get('pendingUrlAfterLogin') as string;
     const intent = formData.get("intent") as string | null;
     const provider = formData.get('provider') as string;
+    const demoAccount = formData.get("demoAccount");
 
     const { client, headers } = makeSSRClient(request);
 
@@ -95,17 +131,22 @@ export const action = async ({ request }: Route.ActionArgs) => {
             throw new Response("Demo login is not enabled.", { status: 404 });
         }
 
-        const email = process.env.DEMO_ADMIN_EMAIL;
-        const password = process.env.DEMO_ADMIN_PASSWORD;
+        if (!isDemoAccount(demoAccount)) {
+            throw new Response("Invalid demo account.", { status: 400 });
+        }
+
+        const config = demoAccountEnv[demoAccount];
+        const email = process.env[config.emailEnv];
+        const password = process.env[config.passwordEnv];
 
         if (!email || !password) {
-            throw new Error("DEMO_ADMIN_EMAIL or DEMO_ADMIN_PASSWORD is missing.");
+            throw new Error(`${config.emailEnv} or ${config.passwordEnv} is missing.`);
         }
 
         const { error } = await client.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        return redirect(pendingUrlAfterLogin || "/admin", { headers });
+        return redirect(pendingUrlAfterLogin || config.fallbackUrl, { headers });
     }
 
     const redirectTo = new URL(`${BASE_URL}/callback`);
@@ -137,6 +178,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
     const loginedUuserProviderId = user.user_metadata.provider_id;
     const loginedUserDataFromProvider = user.identities?.filter(identity => identity.id === loginedUuserProviderId)[0];
+    const demoProvider = user.app_metadata?.demoProvider || user.user_metadata?.provider || null;
 
     let publicUserData = await getPublicUserDataWithNotifi(supabaseAuthData.user?.id)
 
@@ -180,7 +222,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
         publicUserData: {
             ...publicUserData,
             isAdmin,
-            provider: loginedUserDataFromProvider?.provider || null,
+            provider: (loginedUuserProviderId && loginedUserDataFromProvider?.provider) || demoProvider || null,
         },
     }
 }
@@ -190,12 +232,13 @@ export default function App({ loaderData }: Route.ComponentProps) {
     const { publicUserData, appEnv } = loaderData;
     const isLoggedIn = !!publicUserData;
     const [showLoginDialog, setShowLoginDialog] = useState(false);
-    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>(appEnv.demoMode ? "/admin" : "/themes");
+    const [pendingUrlAfterLogin, setPendingUrlAfterLogin] = useState<string | null>("/themes");
     const provider = publicUserData?.provider;
 
     useEffect(() => {
-        if (isLoggedIn)
-            void fetch(`/api/users/visit-log`, { method: "POST", })
+        if (!isLoggedIn) return;
+        setShowLoginDialog(false);
+        void fetch(`/api/users/visit-log`, { method: "POST", })
     }, [isLoggedIn]); // isLoggedIn이 true로 변할 때만 실행
 
     // 로딩 상태 확인
@@ -205,10 +248,12 @@ export default function App({ loaderData }: Route.ComponentProps) {
 
     // 어떤 provider가 클릭되었는지 감지
     const submittedProvider = navigation.formData?.get("provider");
+    const submittedDemoAccount = navigation.formData?.get("demoAccount");
     const submittedIntent = navigation.formData?.get("intent");
     const isWebView = isInAppBrowser()
     const isAdmin = publicUserData?.isAdmin;
     const appEnvScript = JSON.stringify(appEnv).replace(/</g, "\\u003c");
+    const isDemoLoginSubmission = appEnv.demoMode && submittedIntent === "demo-login";
 
     return (
         <>
@@ -286,7 +331,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
                 isLoggedIn={isLoggedIn}
                 isLoading={isLoading || isSubmitting}
                 onLoginClick={() => setShowLoginDialog(true)}
-                provider={provider as 'github' | 'google' | 'kakao'}
+                provider={provider ?? undefined}
                 publicUserData={publicUserData as publicUserDataType | undefined}
             />
 
@@ -300,40 +345,108 @@ export default function App({ loaderData }: Route.ComponentProps) {
                     </DialogHeader>
                     <Form method="post" className="space-y-4">
                         <input type="hidden" name="pendingUrlAfterLogin" value={pendingUrlAfterLogin || ''} />
-
                         {appEnv.demoMode ? (
-                            <Button
-                                type="submit"
-                                name="intent"
-                                value="demo-login"
-                                disabled={isSubmitting && submittedIntent !== "demo-login"}
-                                className="cursor-pointer w-full h-20 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 disabled:cursor-not-allowed
+                            <>
+                                <input type="hidden" name="intent" value="demo-login" />
+
+                                <Button
+                                    type="submit"
+                                    name="demoAccount"
+                                    value="kakao"
+                                    disabled={isSubmitting && submittedDemoAccount !== "kakao"}
+                                    className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] disabled:bg-gray-300 disabled:cursor-not-allowed 
+                                text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out 
+                                hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                                >
+                                    {isDemoLoginSubmission && submittedDemoAccount === "kakao" ? (
+                                        <>
+                                            <Loader2 className="size-12 mr-3 animate-spin" />
+                                            <div className="font-medium text-base">{demoAccountLoadingLabels.kakao}</div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <RiKakaoTalkFill className="size-13 mr-3" />
+                                            <div className="font-medium text-base">KakaoTalk</div>
+                                        </>
+                                    )}
+                                </Button>
+
+                                <Button
+                                    type="submit"
+                                    name="demoAccount"
+                                    value="google"
+                                    disabled={isSubmitting && submittedDemoAccount !== "google"}
+                                    className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed
+                                text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out 
+                                hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                                >
+                                    {isDemoLoginSubmission && submittedDemoAccount === "google" ? (
+                                        <>
+                                            <Loader2 className="size-12 mr-3 animate-spin" />
+                                            <div className="font-medium text-base">{demoAccountLoadingLabels.google}</div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FcGoogle className="size-13 mr-3" />
+                                            <div className="font-medium text-base">Google</div>
+                                        </>
+                                    )}
+                                </Button>
+
+                                <Button
+                                    type="submit"
+                                    name="demoAccount"
+                                    value="github"
+                                    disabled={isSubmitting && submittedDemoAccount !== "github"}
+                                    className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] disabled:bg-gray-500 disabled:cursor-not-allowed
+                                text-white border-0 rounded-lg transition-all duration-200 ease-in-out 
+                                hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                                >
+                                    {isDemoLoginSubmission && submittedDemoAccount === "github" ? (
+                                        <>
+                                            <Loader2 className="size-12 mr-3 animate-spin" />
+                                            <div className="font-medium text-base">{demoAccountLoadingLabels.github}</div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaGithub className="size-13 mr-3" />
+                                            <div className="font-medium text-base">GitHub</div>
+                                        </>
+                                    )}
+                                </Button>
+
+                                <Button
+                                    type="submit"
+                                    name="demoAccount"
+                                    value="admin"
+                                    disabled={isSubmitting && submittedDemoAccount !== "admin"}
+                                    className="cursor-pointer w-full h-20 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-300 disabled:cursor-not-allowed
                                 text-white border-0 rounded-lg transition-all duration-200 ease-in-out
                                 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
-                            >
-                                {isSubmitting && submittedIntent === "demo-login" ? (
-                                    <>
-                                        <Loader2 className="size-12 mr-3 animate-spin" />
-                                        <div className="font-medium text-base">면접용 관리자 계정 연결 중...</div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <ShieldCheck className="size-12 mr-3" />
-                                        <div className="font-medium text-base">면접용 Admin 바로 입장</div>
-                                    </>
-                                )}
-                            </Button>
+                                >
+                                    {isDemoLoginSubmission && submittedDemoAccount === "admin" ? (
+                                        <>
+                                            <Loader2 className="size-12 mr-3 animate-spin" />
+                                            <div className="font-medium text-base">{demoAccountLoadingLabels.admin}</div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ShieldCheck className="size-12 mr-3" />
+                                            <div className="font-medium text-base">Admin</div>
+                                        </>
+                                    )}
+                                </Button>
+                            </>
                         ) : (
                             <>
-                                {/* Kakao 버튼 */}
                                 <Button
                                     type="submit"
                                     name="provider"
                                     value="kakao"
                                     disabled={isSubmitting && submittedProvider !== "kakao"}
                                     className="cursor-pointer w-full h-20 bg-[#FEE500] hover:bg-[#FDD000] disabled:bg-gray-300 disabled:cursor-not-allowed 
-                            text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out 
-                            hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                                text-[#3A1D1D] border-0 rounded-lg transition-all duration-200 ease-in-out 
+                                hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
                                 >
                                     {isSubmitting && submittedProvider === "kakao" ? (
                                         <>
@@ -348,15 +461,14 @@ export default function App({ loaderData }: Route.ComponentProps) {
                                     )}
                                 </Button>
 
-                                {/* Google 버튼 */}
                                 <Button
                                     type="submit"
                                     name="provider"
                                     value="google"
-                                    disabled={isSubmitting && submittedProvider !== "google" || isWebView}
+                                    disabled={(isSubmitting && submittedProvider !== "google") || isWebView}
                                     className="cursor-pointer w-full h-20 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed
-                            text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out 
-                            hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                                text-gray-700 border border-gray-300 rounded-lg transition-all duration-200 ease-in-out 
+                                hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
                                 >
                                     {isWebView ? <>
                                         <FcGoogle className="size-13 mr-3" />
@@ -376,21 +488,18 @@ export default function App({ loaderData }: Route.ComponentProps) {
                                                     <div className="font-medium text-base">Google</div>
                                                 </>
                                             )}
-
                                         </>
                                     }
-
                                 </Button>
 
-                                {/* GitHub 버튼 */}
                                 <Button
                                     type="submit"
                                     name="provider"
                                     value="github"
                                     disabled={isSubmitting && submittedProvider !== "github"}
                                     className="cursor-pointer w-full h-20 bg-[#24292e] hover:bg-[#1a1e22] disabled:bg-gray-500 disabled:cursor-not-allowed
-                            text-white border-0 rounded-lg transition-all duration-200 ease-in-out 
-                            hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
+                                text-white border-0 rounded-lg transition-all duration-200 ease-in-out 
+                                hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl disabled:hover:scale-100"
                                 >
                                     {isSubmitting && submittedProvider === "github" ? (
                                         <>
