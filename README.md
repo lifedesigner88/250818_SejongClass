@@ -105,6 +105,13 @@ docker compose up -d --build
 - 원격 배포 시 `BASE_URL`은 실제 공개 도메인으로 맞춤
 - 데모 환경은 운영 DB, 운영 Supabase 프로젝트와 반드시 분리 유지
 
+## 컨테이너 이미지 배포
+
+- GitHub Actions 워크플로 [`publish-container.yml`](/home/lifedesigner88/250818_SejongClass/.github/workflows/publish-container.yml)이 `ghcr.io/<github-owner>/250818-sejongclass-node` 이미지를 빌드해 GHCR에 푸시
+- `demo` 브랜치 푸시 시 자동 실행, 필요하면 GitHub Actions에서 수동 실행 가능
+- 기본 태그: `demo` 브랜치에서는 `latest`, 그 외에는 branch 태그와 `sha-<commit>`
+- Lightsail VM에서는 GHCR에서 이미지를 pull 해서 실행
+
 ## 면접에서 강조할 포인트
 
 - 실제 운영 중인 서비스라는 점

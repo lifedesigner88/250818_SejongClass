@@ -69,6 +69,10 @@
 - 현재 앱 기본 포트는 호스트/컨테이너 모두 `5173`.
 - `compose.yaml`은 `PORT=${PORT:-5173}`, `HOST_PORT=${HOST_PORT:-5173}` 기준.
 - `BASE_URL`은 데모 공개 도메인과 반드시 일치시킴.
+- GitHub Actions 컨테이너 워크플로는 `.github/workflows/publish-container.yml`.
+- 기본 이미지 이름은 `ghcr.io/<github-owner>/250818-sejongclass-node`.
+- `demo` 푸시 또는 수동 실행으로 GHCR에 `latest`, branch, `sha-*` 태그를 발행.
+- Lightsail에서 GHCR pull 시 private package면 GitHub PAT 또는 적절한 package read 권한 토큰 필요.
 - 현재 데모 도메인:
 - `vue-spring.sejongclass.kr`
 - `vue-spring-file.sejongclass.kr`
@@ -104,6 +108,7 @@
 - 인증, 결제, 메일, DB 변경은 특히 신중하게 처리.
 - 새 환경 생성 시 로컬 실행, 데모 실행, 운영 실행 구분 문서화.
 - 데모 관련 확정 사항과 변경 사항은 `AGENTS.md`에 누적 기록.
+- Docker 이미지 빌드 시 `.env`, `.env.*`는 build context에 포함하지 않고 `.env.example`만 유지.
 
 ## 자주 보는 경로
 
